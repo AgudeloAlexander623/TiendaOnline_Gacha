@@ -176,22 +176,17 @@ La siguiente estructura es orientativa y podrá modificarse cuando se cree el re
 
 ```text
 GearQuest/
+├── frontend/                # Frontend React + TS + Vite + Tailwind (estructura base)
+├── backend/                 # Monorepo backend (Node/TS, services, packages)
 ├── apps/
-│   ├── web/                 # Frontend React
 │   └── game/                # Proyecto Godot
-├── services/
-│   ├── api-gateway/         # Si se confirma como servicio independiente
-│   ├── auth-service/
-│   ├── catalog-service/
-│   ├── game-service/
-│   ├── discount-service/
-│   ├── notification-service/
-│   └── security-service/    # Python; alcance por definir
+├── services/                # Servicios adicionales (si se requiere fuera de backend)
 ├── packages/
 │   └── shared/              # Contratos o utilidades realmente compartidos
 ├── infrastructure/
 │   └── docker/
 ├── docs/
+├── documentation/           # Documentación general del proyecto
 ├── .env.example
 ├── .gitignore
 └── README.md
@@ -267,20 +262,32 @@ El orden y la profundidad de las fases se ajustarán al tiempo disponible. Se pr
 
 ## 10. Ejecución y configuración
 
-El proyecto está en planificación y todavía no se ha confirmado la estructura definitiva del repositorio.
+### Frontend (React + Vite + Tailwind)
 
-Por esta razón, este README no incluye comandos de instalación o ejecución que podrían resultar incorrectos.
+**Ubicación:** `frontend/`
 
-Cuando el repositorio y sus herramientas estén configurados, esta sección deberá documentar:
+```bash
+# Instalar dependencias
+cd frontend
+npm install
 
-* Requisitos de software y versiones.
-* Instalación de dependencias.
-* Variables de entorno requeridas.
-* Inicialización de PostgreSQL y migraciones de Prisma.
-* Ejecución local de cada aplicación y servicio.
-* Ejecución de pruebas.
-* Inicio de contenedores con Docker Compose, si se adopta.
-* Procedimiento de despliegue.
+# Desarrollo
+npm run dev
+
+# Build
+npm run build
+
+# Preview
+npm run preview
+```
+
+**Documentación arquitectura frontend:** [frontend/documentation/FRONTEND_ARCHITECTURE.md](frontend/documentation/FRONTEND_ARCHITECTURE.md)
+
+### Backend (Monorepo Node/TS)
+
+Ver [backend/README.md](backend/README.md) para detalles de instalación, migraciones, servicios y Docker.
+
+Resto pendiente de confirmar estructura definitiva para otros componentes (Godot, servicios Python).
 
 ## 11. Despliegue
 

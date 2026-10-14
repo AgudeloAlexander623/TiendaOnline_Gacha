@@ -1,0 +1,46 @@
+{
+  "name": "gearquest-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo del backend de GearQuest: servicios modulares (identity, store, economy, payments) y paquetes compartidos.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:identity": "npm run dev -w @gearquest/identity-service",
+    "dev:store": "npm run dev -w @gearquest/store-service",
+    "dev:economy": "npm run dev -w @gearquest/economy-service",
+    "dev:payments": "npm run dev -w @gearquest/payments-service",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prisma:generate": "npm run prisma:generate --workspaces --if-present",
+    "prisma:migrate": "npm run prisma:migrate --workspaces --if-present",
+    "prisma:deploy": "npm run prisma:deploy --workspaces --if-present",
+    "db:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "db:logs": "docker compose -f infra/docker/docker-compose.yml logs -f"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.9",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

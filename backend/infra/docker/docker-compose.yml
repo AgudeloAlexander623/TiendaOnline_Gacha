@@ -1,0 +1,33 @@
+name: gearquest-backend
+
+# PostgreSQL local para desarrollo.
+# Un solo contenedor con una base de datos por servicio
+# (ver ./initdb/01-create-databases.sql).
+#
+# Uso:
+#   npm run db:up     # levantar
+#   npm run db:down   # detener
+#   npm run db:logs   # ver logs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gearquest-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - gearquest-pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gearquest-pgdata:

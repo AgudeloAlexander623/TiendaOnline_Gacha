@@ -1,0 +1,12 @@
+# Dependencias y artefactos
+node_modules/
+dist/
+build/
+coverage/
+
+# Cliente Prisma generado
+**/generated/
+.prisma/
+
+# Lockfile (gestionado por npm)
+package-lock.json

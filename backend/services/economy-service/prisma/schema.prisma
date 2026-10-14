@@ -1,0 +1,12 @@
+// Esquema Prisma del economy-service.
+// Configuración base únicamente: los modelos se definirán cuando se autorice.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

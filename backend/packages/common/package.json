@@ -1,0 +1,23 @@
+{
+  "name": "@gearquest/common",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Utilidades y contratos compartidos entre los servicios del backend de GearQuest.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  }
+}

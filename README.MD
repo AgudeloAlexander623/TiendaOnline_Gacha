@@ -9,7 +9,7 @@
 
 **GearQuest** es una propuesta de tienda web de periféricos para computadores que combina el comercio electrónico con un sistema de recompensas gamificado.
 
-Los usuarios podrán consultar productos y jugar un minijuego 2D para obtener monedas virtuales que podrán utilizar para acceder a descuentos, de acuerdo con las reglas de negocio que defina el equipo.
+Los usuarios podrán consultar productos y participar en una experiencia de juego con dos componentes: una **ruta de juego gacha** (estilo maquinita), donde se gastan monedas en tiradas para obtener recompensas, y un **minijuego** donde se obtienen las monedas que luego se utilizan en el gacha. Las monedas permitirán acceder a descuentos, de acuerdo con las reglas de negocio que defina el equipo.
 
 El sistema distinguirá entre monedas obtenidas jugando y monedas adquiridas mediante recargas simuladas. Las monedas ganadas jugando vencerán a los **30 días**, mientras que las monedas compradas no caducarán.
 
@@ -18,7 +18,7 @@ El proyecto tiene fines académicos. Las funcionalidades descritas son objetivos
 ## 2. Objetivos
 
 * Desarrollar una tienda web de periféricos.
-* Integrar un minijuego 2D con la cuenta del usuario.
+* Integrar la experiencia de juego (ruta gacha y minijuego) con la cuenta del usuario.
 * Implementar monedas, vencimientos y descuentos validados en el servidor.
 * Separar responsabilidades mediante una arquitectura de microservicios.
 * Aplicar buenas prácticas de seguridad, pruebas, control de versiones y documentación.
@@ -37,9 +37,10 @@ El proyecto tiene fines académicos. Las funcionalidades descritas son objetivos
 * **Organización del código:** monorepo.
 * **Frontend:** React, TypeScript y Tailwind CSS.
 * **Backend:** Node.js, Express y TypeScript.
-* **Base de datos:** PostgreSQL.
+* **Base de datos:** PostgreSQL (SQL relacional, no NoSQL).
 * **ORM:** Prisma.
-* **Motor del juego:** Godot 2D con C#.
+* **Motor del juego:** Godot 2D con C++.
+* **Componentes del juego:** ruta de juego gacha (estilo maquinita) y minijuego para obtener monedas.
 * **Contenedores:** Docker.
 * **Pagos:** simulados, sin procesar dinero real.
 * **Monedas:** ganadas jugando y adquiridas mediante recargas simuladas.
@@ -77,7 +78,10 @@ Se prevé desarrollar las siguientes funcionalidades:
 
 ### 4.2. Juego y sistema de monedas
 
-El minijuego se desarrollará en Godot con C# y estará integrado con la cuenta del usuario.
+La experiencia de juego se desarrollará en Godot con C++ y estará integrada con la cuenta del usuario. Se compone de dos partes:
+
+* **Ruta de juego gacha (estilo maquinita):** modalidad donde el usuario gasta monedas en tiradas para obtener recompensas.
+* **Minijuego:** modalidad donde el usuario obtiene las monedas que después podrá utilizar en el gacha.
 
 Las funcionalidades previstas son:
 
@@ -137,13 +141,13 @@ La integración dependerá de la selección y configuración de los proveedores.
 | Backend               | Node.js + Express + TypeScript    | API y reglas de negocio                        |
 | Base de datos         | PostgreSQL                        | Persistencia relacional                        |
 | Acceso a datos        | Prisma ORM                        | Consultas y migraciones                        |
-| Minijuego             | Godot 2D + C#                     | Experiencia de juego                           |
+| Juego                 | Godot 2D + C++                    | Experiencia de juego (gacha y minijuego)       |
 | Análisis de seguridad | Python + FastAPI                  | Análisis complementario de eventos sospechosos |
 | Contenedores          | Docker                            | Entornos reproducibles                         |
 | Orquestación          | Kubernetes (opcional)             | Orquestación de contenedores, si se justifica  |
 | Alojamiento           | Por seleccionar                   | Publicación temporal con HTTPS                 |
 
-PostgreSQL es una base de datos relacional SQL.
+PostgreSQL es un gestor de bases de datos relacional (SQL). El proyecto no utiliza bases de datos NoSQL.
 
 Las tecnologías indicadas corresponden a decisiones y propuestas actuales. Esto no significa que todos los componentes estén construidos o configurados.
 
@@ -170,36 +174,71 @@ PostgreSQL será la base de datos relacional prevista. La propiedad de los datos
 
 Los servicios no deberán modificar arbitrariamente las tablas internas de otros servicios. La comunicación deberá seguir contratos explícitos.
 
-### 6.1. Estructura propuesta del monorepo
+### 6.1. Estructura del monorepo
 
-La siguiente estructura es orientativa y podrá modificarse cuando se cree el repositorio:
+La siguiente estructura corresponde al estado actual del repositorio y refleja la organización por aplicaciones y por servicios de dominio:
 
 ```text
-GearQuest/
-├── apps/
-│   ├── web/                 # Frontend React
-│   └── game/                # Proyecto Godot
-├── services/
-│   ├── api-gateway/         # Si se confirma como servicio independiente
-│   ├── auth-service/
-│   ├── catalog-service/
-│   ├── game-service/
-│   ├── discount-service/
-│   ├── notification-service/
-│   └── security-service/    # Python; alcance por definir
-├── packages/
-│   └── shared/              # Contratos o utilidades realmente compartidos
-├── infrastructure/
-│   └── docker/
-├── docs/
-├── .env.example
-├── .gitignore
-└── README.md
+Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
+├── backend/                        # Monorepo backend (Node.js + TypeScript, npm workspaces)
+│   ├── services/
+│   │   ├── identity-service/       # Autenticación y usuarios                  (puerto 3001)
+│   │   │   ├── prisma/schema.prisma
+│   │   │   ├── src/{config,db,modules/{auth,health,users}}/
+│   │   │   └── tests/
+│   │   ├── store-service/          # Catálogo, inventario, pedidos y descuentos (3002)
+│   │   │   ├── prisma/schema.prisma
+│   │   │   ├── src/{config,db,shared,modules/{catalog,discounts,health,inventory,orders}}/
+│   │   │   └── tests/
+│   │   ├── economy-service/        # Gacha, monedas, recompensas y transacciones (3003)
+│   │   │   ├── prisma/schema.prisma
+│   │   │   ├── src/{config,db,modules/{gacha,health,player-inventory,rewards,transactions,wallet}}/
+│   │   │   └── src/tests/
+│   │   └── payments-service/       # Pagos y recargas simuladas             (3004)
+│   │       ├── prisma/schema.prisma
+│   │       ├── src/{config,db,shared,modules/{health,payments}}/
+│   │       └── tests/
+│   ├── packages/
+│   │   └── common/                 # Código y utilidades compartidas (@gearquest/common)
+│   ├── infra/docker/               # docker-compose.yml e initdb/ para PostgreSQL local
+│   ├── documentation_Backend/      # Documentación del backend
+│   ├── package.json                # Raíz del workspace (workspaces y tooling)
+│   ├── tsconfig.base.json
+│   └── vitest.config.ts
+├── frontend/                       # Frontend React + TypeScript + Vite + Tailwind CSS
+│   ├── src/
+│   │   ├── app/{providers,router}/ # Configuración de app, providers y rutas
+│   │   ├── assets/                 # Imágenes, íconos y fuentes
+│   │   ├── components/{ui,shared}/ # Componentes reutilizables
+│   │   ├── config/                 # Configuración y constantes
+│   │   ├── features/               # Módulos por dominio
+│   │   │   └── {auth,cart,catalog,discounts,game-integration,orders,profile,wallet}/
+│   │   ├── hooks/                  # Hooks reutilizables
+│   │   ├── layouts/                # Layouts de la aplicación
+│   │   ├── lib/                    # Utilidades, helpers y cliente HTTP
+│   │   ├── pages/                  # Vistas de nivel superior
+│   │   ├── routes/                 # Definición de rutas
+│   │   ├── services/               # Capa de acceso a la API
+│   │   ├── store/                  # Estado global
+│   │   ├── types/                  # Tipos TypeScript compartidos
+│   │   ├── utils/                  # Funciones puras
+│   │   ├── App.tsx
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── documentation/              # Esquema de arquitectura y documentación personal
+│   ├── index.html
+│   ├── package.json
+│   ├── tailwind.config.js
+│   ├── tsconfig*.json
+│   └── vite.config.ts
+├── GAME/                           # Proyecto Godot (C++): gacha y minijuego      (pendiente)
+├── DataBase/                       # Recursos y scripts de base de datos          (pendiente)
+├── documentation/
+│   └── diagramas de flujo/         # Diagramas de los flujos principales (borradores)
+└── README.MD                       # Documentación principal del proyecto
 ```
 
-Esta estructura es una propuesta, no una descripción de archivos que ya existan.
-
-Los servicios opcionales se crearán únicamente cuando el equipo confirme su necesidad. La configuración de Docker Compose, las herramientas del monorepo y los comandos de ejecución se documentarán cuando se hayan seleccionado.
+Las carpetas de estructura y configuración ya existen, pero los módulos de aplicación (`src/modules/*` del backend y `src/features/*` del frontend) están vacíos a propósito: la lógica de negocio todavía no se ha implementado. Por su parte, `GAME/` y `DataBase/` están reservadas para el proyecto de Godot y los recursos de base de datos, respectivamente, y se poblarán durante el desarrollo.
 
 ## 7. Seguridad y buenas prácticas
 
@@ -267,20 +306,32 @@ El orden y la profundidad de las fases se ajustarán al tiempo disponible. Se pr
 
 ## 10. Ejecución y configuración
 
-El proyecto está en planificación y todavía no se ha confirmado la estructura definitiva del repositorio.
+### Frontend (React + Vite + Tailwind)
 
-Por esta razón, este README no incluye comandos de instalación o ejecución que podrían resultar incorrectos.
+**Ubicación:** `frontend/`
 
-Cuando el repositorio y sus herramientas estén configurados, esta sección deberá documentar:
+```bash
+# Instalar dependencias
+cd frontend
+npm install
 
-* Requisitos de software y versiones.
-* Instalación de dependencias.
-* Variables de entorno requeridas.
-* Inicialización de PostgreSQL y migraciones de Prisma.
-* Ejecución local de cada aplicación y servicio.
-* Ejecución de pruebas.
-* Inicio de contenedores con Docker Compose, si se adopta.
-* Procedimiento de despliegue.
+# Desarrollo
+npm run dev
+
+# Build
+npm run build
+
+# Preview
+npm run preview
+```
+
+**Documentación arquitectura frontend:** [frontend/documentation/FRONTEND_ARCHITECTURE.md](frontend/documentation/FRONTEND_ARCHITECTURE.md)
+
+### Backend (Monorepo Node/TS)
+
+Ver [backend/README.md](backend/README.md) para detalles de instalación, migraciones, servicios y Docker.
+
+El proyecto de Godot se ubica en `GAME/` y los recursos de base de datos en `DataBase/`. La estructura interna de ambos componentes y la del servicio Python de análisis se detallarán cuando se implementen.
 
 ## 11. Despliegue
 

@@ -1,0 +1,19 @@
+{
+  "name": "@gearquest/payments-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Servicio de pagos y recargas simuladas de GearQuest (puerto 3004).",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "zod": "^4.6.7"
+  }
+}

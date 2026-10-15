@@ -1,5 +1,13 @@
-// Esquema Prisma del economy-service.
-// Configuración base únicamente: los modelos se definirán cuando se autorice.
+// ============================================================
+// economy-service · esquema Prisma (gearquest_economy)
+// ============================================================
+// Dominio: monedas, gacha, recompensas y transacciones.
+// Reglas de negocio:
+// - El servidor es la fuente de verdad del saldo; el cliente no lo decide.
+// - Monedas ganadas (EARNED) vencen (expiresAt); las compradas (PURCHASED) no.
+// - Los movimientos son un libro mayor append-only: nunca se borra el origen.
+// - El consumo sigue el orden acordado por vencimiento (primero lo que antes expira).
+// - `userId` proviene del identity-service; no hay FK entre bases.
 
 generator client {
   provider = "prisma-client"
@@ -8,5 +16,188 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+enum CoinType {
+  EARNED
+  PURCHASED
+}
+
+enum CoinBatchStatus {
+  ACTIVE
+  DEPLETED
+  EXPIRED
+}
+
+enum CoinTransactionType {
+  CREDIT
+  DEBIT
+  EXPIRE
+  ADJUSTMENT
+}
+
+enum Rarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum GachaRewardType {
+  COIN
+  ITEM
+  NOTHING
+}
+
+enum GameType {
+  GACHA
+  MINIGAME
+}
+
+enum GameSessionStatus {
+  STARTED
+  FINISHED
+  ABANDONED
+  REJECTED
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batches      CoinBatch[]
+  transactions CoinTransaction[]
+  pulls        GachaPull[]
+  items        PlayerItem[]
+  gameSessions GameSession[]
+
+  @@map("wallets")
+}
+
+/// Lote de monedas. Las EARNED caducan; las PURCHASED no (expiresAt = null).
+model CoinBatch {
+  id              String          @id @default(uuid())
+  walletId        String
+  type            CoinType
+  source          String
+  originalAmount  Int
+  remainingAmount Int
+  expiresAt       DateTime?
+  status          CoinBatchStatus @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([expiresAt])
+  @@map("coin_batches")
+}
+
+/// Movimiento del libro mayor (append-only).
+model CoinTransaction {
+  id            String              @id @default(uuid())
+  walletId      String
+  type          CoinTransactionType
+  coinType      CoinType
+  amount        Int
+  balanceAfter  Int
+  referenceType String?
+  referenceId   String?
+  description   String?
+  createdAt     DateTime            @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("coin_transactions")
+}
+
+model GachaBanner {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  costPerPull Int
+  isActive    Boolean   @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  rewards GachaReward[]
+  pulls   GachaPull[]
+
+  @@map("gacha_banners")
+}
+
+model GachaReward {
+  id         String          @id @default(uuid())
+  bannerId   String
+  name       String
+  rarity     Rarity
+  rewardType GachaRewardType
+  coinValue  Int?
+  itemName   String?
+  weight     Int
+  isActive   Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+
+  banner GachaBanner @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+  pulls  GachaPull[]
+
+  @@index([bannerId])
+  @@map("gacha_rewards")
+}
+
+model GachaPull {
+  id        String   @id @default(uuid())
+  bannerId  String
+  walletId  String
+  rewardId  String?
+  costCoins Int
+  isWin     Boolean
+  createdAt DateTime @default(now())
+
+  banner GachaBanner  @relation(fields: [bannerId], references: [id], onDelete: Restrict)
+  wallet Wallet       @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  reward GachaReward? @relation(fields: [rewardId], references: [id], onDelete: SetNull)
+
+  @@index([bannerId])
+  @@index([walletId])
+  @@map("gacha_pulls")
+}
+
+model PlayerItem {
+  id         String   @id @default(uuid())
+  walletId   String
+  name       String
+  rarity     Rarity
+  quantity   Int      @default(1)
+  source     GameType
+  acquiredAt DateTime @default(now())
+  expiresAt  DateTime?
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("player_items")
+}
+
+/// Sesión de juego (gacha o minijuego) usada para validar resultados en el servidor.
+model GameSession {
+  id          String            @id @default(uuid())
+  walletId    String
+  gameType    GameType
+  status      GameSessionStatus @default(STARTED)
+  score       Int?
+  coinsAwarded Int              @default(0)
+  startedAt   DateTime          @default(now())
+  finishedAt  DateTime?
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("game_sessions")
 }

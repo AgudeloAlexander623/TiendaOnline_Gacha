@@ -13,6 +13,9 @@ coverage/
 .env.*
 !.env.example
 
+# Cliente Prisma generado (se regenera con `prisma generate`)
+services/*/src/generated/
+
 # Claves y certificados
 *.pem
 *.key

@@ -1,0 +1,82 @@
+// ============================================================
+// identity-service · esquema Prisma (gearquest_identity)
+// ============================================================
+// Dominio: autenticación, usuarios y sesiones.
+// Reglas de negocio:
+// - El `passwordHash` NUNCA se expone ni se registra en logs.
+// - Los `Session` guardan solo el hash del refresh token (nunca el token en claro).
+// - Un refresh token es revocable (`revokedAt`) y expira (`expiresAt`).
+// - `AuditLog` es un registro de acciones relevantes para trazabilidad.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Rol del usuario dentro del sistema.
+enum UserRole {
+  PLAYER
+  ADMIN
+}
+
+/// Estado de la cuenta.
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+/// Cuenta de usuario. El email es la credencial de acceso única.
+model User {
+  id            String     @id @default(uuid())
+  email         String     @unique
+  passwordHash  String
+  displayName   String
+  role          UserRole   @default(PLAYER)
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  sessions  Session[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+/// Sesión con refresh token (solo se almacena su hash).
+model Session {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+/// Registro auditable de acciones relevantes sobre la cuenta.
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  ipAddress String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("audit_logs")
+}

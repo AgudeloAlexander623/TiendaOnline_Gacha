@@ -1,0 +1,130 @@
+# Documentación de GearQuest
+
+> **Qué es esta carpeta:** toda la documentación técnica y funcional del proyecto
+> GearQuest, organizada para que puedas encontrar la respuesta sin leer el código.
+> **Por dónde empezar:** si es tu primera vez, lee las §1 y §2 de este documento.
+> **Estado del sistema:** la [**Matriz de trazabilidad**](./Trazabilidad.md) es la
+> fuente de verdad de qué está hecho y qué no.
+
+---
+
+## 1. Mapa de la documentación (por dónde entra cada cosa)
+
+Piensa en esta carpeta como un edificio con entradas distintas según lo que necesites:
+
+| Si buscas… | Entra por… |
+| --- | --- |
+| **¿Qué debe hacer el sistema?** | [Especificación de Requisitos (SRS)](./Software-requeriments\(SRS\)/README.md) |
+| **¿Cómo se usa el sistema, paso a paso?** | [Casos de uso](./Casos-de-Uso/README.md) |
+| **¿Qué está hecho, a medias o pendiente?** | [Matriz de trazabilidad](./Trazabilidad.md) |
+| **¿Cómo hablo con el backend (rutas, datos, errores)?** | [Contrato de la API](./API/README.md) |
+| **¿Cómo son las tablas y los campos?** | [Diccionario de datos](./Diccionario-de-Datos.md) |
+| **¿Cómo se ve un flujo o la arquitectura?** | [Diagramas](./diagramas%20de%20flujo/README.md) |
+| **¿Cómo contribuyo o qué reglas sigue el equipo?** | [Cómo contribuir](./CONTRIBUTING.md) |
+| **¿Cómo se prueba lo crítico?** | [Estrategia de pruebas](./Estrategia-de-Pruebas.md) |
+| **¿Qué ha cambiado y en qué versión?** | [Changelog](./CHANGELOG.md) |
+
+---
+
+## 2. Índice completo de documentos
+
+### 2.1 Requisitos y comportamiento
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`Software-requeriments(SRS)/README.md`](./Software-requeriments\(SRS\)/README.md) | Puerta de entrada al SRS: cómo leerlo y alcance |
+| [`Software-requeriments(SRS)/Backend.md`](./Software-requeriments\(SRS\)/Backend.md) | Requisitos funcionales y no funcionales del backend |
+| [`Software-requeriments(SRS)/Business-Rules.md`](./Software-requeriments\(SRS\)/Business-Rules.md) | Reglas de negocio (monedas, vencimientos, descuentos, permisos) |
+| [`Software-requeriments(SRS)/Database.md`](./Software-requeriments\(SRS\)/Database.md) | Modelo de datos y decisiones de persistencia |
+| [`Software-requeriments(SRS)/Frontend.md`](./Software-requeriments\(SRS\)/Frontend.md) | Requisitos de la interfaz web |
+| [`Software-requeriments(SRS)/Game.md`](./Software-requeriments\(SRS\)/Game.md) | Ruta gacha, minijuego e integración con el backend |
+| [`Software-requeriments(SRS)/Infrastructure.md`](./Software-requeriments\(SRS\)/Infrastructure.md) | Entornos, Docker, despliegue |
+| [`Software-requeriments(SRS)/Notifications.md`](./Software-requeriments\(SRS\)/Notifications.md) | Notificaciones y avisos |
+| [`Software-requeriments(SRS)/Security.md`](./Software-requeriments\(SRS\)/Security.md) | Autenticación, autorización y protección de datos |
+| [`Casos-de-Uso/README.md`](./Casos-de-Uso/README.md) | Índice de los 18 casos de uso |
+| [`Casos-de-Uso/01-Identidad-y-Usuarios.md`](./Casos-de-Uso/01-Identidad-y-Usuarios.md) | Registro, sesión, perfil y administración de usuarios |
+| [`Casos-de-Uso/02-Tienda-y-Pedidos.md`](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | Catálogo, carrito, checkout y pedidos |
+| [`Casos-de-Uso/03-Juego-y-Economia.md`](./Casos-de-Uso/03-Juego-y-Economia.md) | Monedero, gacha, minijuego y recompensas |
+| [`Casos-de-Uso/04-Notificaciones.md`](./Casos-de-Uso/04-Notificaciones.md) | Avisos y notificaciones |
+
+### 2.2 Estado real y contrato
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`Trazabilidad.md`](./Trazabilidad.md) | **Matriz requisito → estado → evidencia** para los 141 requisitos y los 18 casos de uso; hallazgos, deuda técnica y contradicciones resueltas |
+| [`API/README.md`](./API/README.md) | Guía del contrato: cómo verlo, autenticación, formato de errores y mapa de servicios |
+| [`API/openapi.yaml`](./API/openapi.yaml) | Contrato OpenAPI 3.1 de los 4 microservicios (fuente de verdad del formato de la API) |
+| [`API/redocly.yaml`](./API/redocly.yaml) | Configuración del validador del contrato |
+| [`Diccionario-de-Datos.md`](./Diccionario-de-Datos.md) | Descripción campo a campo de las 26 entidades Prisma, enums, reglas de integridad y referencias entre servicios |
+
+### 2.3 Diagramas
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`diagramas de flujo/README.md`](./diagramas%20de%20flujo/README.md) | Índice de los 9 diagramas, leyenda y cómo regenerarlos |
+| [`diagramas de flujo/tools/`](./diagramas%20de%20flujo/tools/) | Generador propio (Python, sin dependencias): especificación + layout + QA |
+| `diagramas de flujo/NN_*.svg` | Los 9 diagramas en SVG (flujos, arquitectura, secuencia, estados, modelo de datos) |
+
+### 2.4 Proceso del equipo
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | Ramas, Conventional Commits, flujo de PR y checklist de revisión |
+| [`Estrategia-de-Pruebas.md`](./Estrategia-de-Pruebas.md) | Enfoque de pruebas guiado por riesgo, reglas críticas y deuda priorizada |
+| [`CHANGELOG.md`](./CHANGELOG.md) | Historial de cambios por versión (Keep a Changelog + SemVer) |
+
+---
+
+## 3. Cómo leer los códigos de requisito
+
+En toda la documentación verás códigos con un patrón fijo. Sirven para cruzar
+documentos sin ambigüedad:
+
+| Código | Significado | Ejemplo |
+| --- | --- | --- |
+| `FR-<área>-<nn>` | Requisito **funcional** (algo que el sistema hace) | `FR-BE-12` |
+| `NFR-<área>-<nn>` | Requisito **no funcional** (calidad, seguridad, rendimiento) | `NFR-BE-07` |
+| `FR-BR-<nn>` | Regla de negocio (subconjunto funcional) | `FR-BR-02` |
+| `UC-<nn>` | Caso de uso | `UC-08` |
+
+Los `<área>` habituales son `BE` (backend), `BR` (reglas), `DB` (datos),
+`FE` (frontend), `GA` (juego), `SEC` (seguridad), entre otros.
+
+> **Truco:** si un documento dice que algo está hecho, comprueba el estado en
+> [`Trazabilidad.md`](./Trazabilidad.md). Si algo dice que *no* está hecho, también.
+
+---
+
+## 4. Convenciones de toda la documentación
+
+1. **Idioma:** la documentación se escribe en **español**. Los identificadores de
+   código (nombres de campos, tipos, códigos de error) van en inglés.
+2. **Honestidad:** nunca se documenta como hecho algo que no existe en el código.
+   Lo que falta se marca como **pendiente** o **propuesto**, y se traza.
+3. **Fuente de verdad por tema:** los `schema.prisma` mandan sobre el diccionario
+   de datos; el código manda sobre el contrato de la API; el código manda sobre
+   la matriz. La documentación **describe**, no sustituye.
+4. **Trazabilidad viva:** cuando cambias el estado de un requisito, actualizas
+   [`Trazabilidad.md`](./Trazabilidad.md) en el **mismo PR** (ver
+   [`CONTRIBUTING.md`](./CONTRIBUTING.md)).
+5. **Diagramas generados:** los SVG no se editan a mano; se edita
+   `diagramas de flujo/tools/diagramas.py` y se regenera.
+
+---
+
+## 5. Cómo se mantiene esta carpeta
+
+| Tarea | Acción |
+| --- | --- |
+| Añadir/eliminar un requisito | Editar el SRS correspondiente y actualizar `Trazabilidad.md` |
+| Cambiar la API | Editar `API/openapi.yaml` y validar con Redocly (ver `API/README.md` §7) |
+| Cambiar el modelo de datos | Editar `Diccionario-de-Datos.md`, regenerar el diagrama 09 y validar con `qa.py` |
+| Añadir un diagrama | Añadirlo a `tools/diagramas.py`, regenerar y registrarlo en su `README.md` |
+| Publicar un cambio del producto | Añadirlo a `CHANGELOG.md` |
+| Cambiar una regla del equipo | Editarla en `CONTRIBUTING.md`, no en la memoria de cada quien |
+
+---
+
+*Si algo de esta carpeta no te cuadra con el código, gana el código: corrige el
+documento (o abre un issue) y avísalo. La documentación desactualizada es peor que
+la ausente, porque engaña con seguridad.*

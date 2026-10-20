@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- GENERADO por documentation/diagramas de flujo/tools/generar.py — NO EDITAR A MANO. Editar svgkit.py / diagramas.py y regenerar. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="2214" height="1181.5" viewBox="0 0 2214 1181.5" role="img" aria-labelledby="titulo">
+<title id="titulo">GearQuest · Diagrama 09 — Modelo de datos (entidad-relación)</title>
+<desc>26 entidades repartidas en 4 bases independientes (una por servicio). Sin claves foráneas entre servicios: la integridad la garantiza el backend.</desc>
+<defs>
+<filter id="softshadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0f172a" flood-opacity="0.14"/>
+</filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#475569"/></marker>
+<marker id="arr_ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#059669"/></marker>
+<marker id="arr_err" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#dc2626"/></marker>
+<marker id="arr_soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#94a3b8"/></marker>
+<marker id="arr_accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#4f46e5"/></marker>
+</defs>
+<rect x="0" y="0" width="2214" height="1181.5" fill="#ffffff"/>
+<rect x="24" y="20" width="36" height="36" rx="10" fill="#4f46e5"/>
+<text x="42" y="43" font-size="15" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GQ</text>
+<text x="72" y="42" font-size="19.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" font-weight="700">09 · Modelo de datos (entidad-relación)</text>
+<text x="72" y="63" font-size="12.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif">26 entidades repartidas en 4 bases independientes (una por servicio). Sin claves foráneas entre servicios: la integridad la garantiza el backend.</text>
+<text x="72" y="85" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace">v1.0 · 2026-10-19 · Estado: revisado · Trazabilidad: FR-DB-01 a 05 · Database.md §6 · Diccionario-de-Datos.md · GearQuest</text>
+<line x1="24" y1="106" x2="2190" y2="106" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<rect x="1958" y="12" width="232" height="105" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1972" y="27" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="1.2">LEYENDA</text>
+<rect x="1969" y="34" width="30" height="13" rx="6.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.4"/>
+<text x="2010" y="44.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Inicio / fin del flujo</text>
+<rect x="1969" y="50.5" width="30" height="14" rx="3.5" fill="#ffffff" stroke="#334155" stroke-width="1.4"/>
+<text x="2010" y="61.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Proceso (paso del sistema)</text>
+<polygon points="1984,66.5 2001,74.5 1984,82.5 1967,74.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+<text x="2010" y="78.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Decisión (pregunta)</text>
+<rect x="1968" y="84.5" width="32" height="14" rx="7" fill="#4f46e5"/>
+<text x="1984" y="94.7" font-size="8.5" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">svc</text>
+<text x="2010" y="95.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Responsable (microservicio)</text>
+<line x1="1969" y1="108.5" x2="1996" y2="108.5" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arr_err)"/>
+<text x="2010" y="112.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Ruta de error / excepción</text>
+<line x1="24" y1="1147.5" x2="2190" y2="1147.5" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<text x="24" y="1167.5" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace">Fuente: documentation/diagramas de flujo/09_modelo_de_datos.svg  ·  Regenerar: python3 tools/generar.py</text>
+<text x="2190" y="1167.5" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">Documento vivo: si cambia un requisito del SRS, actualizar y regenerar.</text>
+<rect x="42" y="160" width="700" height="320" rx="14" fill="#f8fafc" stroke="#2563eb" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="56" y="181" font-size="11" fill="#2563eb" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="0.6">gearquest_identity</text>
+<text x="186.8" y="181" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" font-style="italic">identity-service · 3 entidades</text>
+<rect x="42" y="520" width="700" height="430" rx="14" fill="#f8fafc" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="56" y="541" font-size="11" fill="#7c3aed" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="0.6">gearquest_payments</text>
+<text x="186.8" y="541" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" font-style="italic">payments-service · 5 entidades</text>
+<rect x="782" y="160" width="680" height="800" rx="14" fill="#f8fafc" stroke="#0d9488" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="796" y="181" font-size="11" fill="#0d9488" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="0.6">gearquest_store</text>
+<text x="907" y="181" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" font-style="italic">store-service · 10 entidades</text>
+<rect x="1502" y="160" width="680" height="800" rx="14" fill="#f8fafc" stroke="#b45309" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="1516" y="181" font-size="11" fill="#b45309" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="0.6">gearquest_economy</text>
+<text x="1640.2" y="181" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" font-style="italic">economy-service · 8 entidades</text>
+<rect x="107" y="209.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="232" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">User</text>
+<text x="121" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• id · email · passwordHash</text>
+<text x="121" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• role · status · emailVerified</text>
+<text x="346" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">email único</text>
+<rect x="427" y="209.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="552" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Session</text>
+<text x="441" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• tokenHash (solo hash)</text>
+<text x="441" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• expiresAt · revokedAt</text>
+<text x="666" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK userId</text>
+<rect x="427" y="339.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="552" y="363.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">AuditLog</text>
+<text x="441" y="384.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• action · ipAddress</text>
+<text x="441" y="399.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• metadata · append-only</text>
+<text x="666" y="412.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK userId</text>
+<rect x="837" y="209.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="962" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Product</text>
+<text x="851" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• sku · slug · name · price</text>
+<text x="851" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• currency · isActive · categoryId</text>
+<text x="1076" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">sku/slug únicos</text>
+<rect x="837" y="339.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="962" y="363.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Category</text>
+<text x="851" y="384.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• name · slug(único)</text>
+<text x="851" y="399.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• description · isActive</text>
+<text x="1076" y="412.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK —</text>
+<rect x="837" y="469.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="962" y="493.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Cart</text>
+<text x="851" y="514.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• userId · status</text>
+<text x="851" y="529.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• 1–N cart_items</text>
+<text x="1076" y="542.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">userId (lógico)</text>
+<rect x="837" y="599.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="962" y="623.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Order</text>
+<text x="851" y="644.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• userId(lógico) · status</text>
+<text x="851" y="659.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• subtotal · discountAmount · total</text>
+<text x="1076" y="672.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">orderNumber único</text>
+<rect x="837" y="729.5" width="250" height="81" rx="10" fill="#fffbeb" stroke="#ca8a04" stroke-width="1.7" filter="url(#softshadow)"/>
+<text x="962" y="753.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">DiscountLevel</text>
+<text x="851" y="774.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• nivel 1..5 · percentage</text>
+<text x="851" y="789.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• coinsRequired · canje pendiente</text>
+<text x="1076" y="802.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">level único</text>
+<rect x="1157" y="217" width="250" height="66" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1282" y="241" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">ProductImage</text>
+<text x="1171" y="261.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• url · alt · position</text>
+<text x="1396" y="275" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK productId</text>
+<rect x="1157" y="339.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1282" y="363.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">InventoryItem</text>
+<text x="1171" y="384.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• stock · reserved</text>
+<text x="1171" y="399.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• disponible = stock − reserved</text>
+<text x="1396" y="412.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK productId (1–1)</text>
+<rect x="1157" y="469.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1282" y="493.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">InventoryMovement</text>
+<text x="1171" y="514.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• type · quantity · reason</text>
+<text x="1171" y="529.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• append-only</text>
+<text x="1396" y="542.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK productId</text>
+<rect x="1157" y="599.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1282" y="623.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CartItem</text>
+<text x="1171" y="644.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• quantity · unitPrice,</text>
+<text x="1171" y="659.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• congelado al agregar</text>
+<text x="1396" y="672.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">único (cartId,productId)</text>
+<rect x="1157" y="729.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1282" y="753.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">OrderItem</text>
+<text x="1171" y="774.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• nameSnapshot · unitPrice</text>
+<text x="1171" y="789.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• quantity · lineTotal</text>
+<text x="1396" y="802.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK orderId</text>
+<rect x="1557" y="209.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1682" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Wallet</text>
+<text x="1571" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• saldo derivado de los lotes</text>
+<text x="1571" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• 1 Wallet por usuario</text>
+<text x="1796" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">userId único (lógico)</text>
+<rect x="1557" y="339.5" width="250" height="81" rx="10" fill="None" stroke="#b45309" stroke-width="1.7" filter="url(#softshadow)"/>
+<text x="1682" y="363.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CoinBatch</text>
+<text x="1571" y="384.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• type(EARNED/PURCHASED)</text>
+<text x="1571" y="399.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• remaining · expiresAt(null=no caduca)</text>
+<text x="1796" y="412.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK walletId · idx expiresAt</text>
+<rect x="1557" y="469.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1682" y="493.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GachaBanner</text>
+<text x="1571" y="514.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• costPerPull · isActive</text>
+<text x="1571" y="529.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• startsAt · endsAt</text>
+<text x="1796" y="542.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">slug único</text>
+<rect x="1877" y="209.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="2002" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CoinTransaction</text>
+<text x="1891" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• type · coinType · amount</text>
+<text x="1891" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• balanceAfter · reference</text>
+<text x="2116" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK walletId · append-only</text>
+<rect x="1877" y="339.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="2002" y="363.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">PlayerItem</text>
+<text x="1891" y="384.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• name · rarity · quantity</text>
+<text x="1891" y="399.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• source · acquiredAt · expiresAt</text>
+<text x="2116" y="412.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK walletId</text>
+<rect x="1877" y="469.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="2002" y="493.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GameSession</text>
+<text x="1891" y="514.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• gameType · status · score</text>
+<text x="1891" y="529.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• coinsAwarded · valida servidor</text>
+<text x="2116" y="542.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK walletId</text>
+<rect x="1877" y="599.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="2002" y="623.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GachaReward</text>
+<text x="1891" y="644.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• rarity · rewardType · weight</text>
+<text x="1891" y="659.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• coinValue · itemName</text>
+<text x="2116" y="672.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK bannerId</text>
+<rect x="1877" y="729.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="2002" y="753.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GachaPull</text>
+<text x="1891" y="774.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• costCoins · isWin</text>
+<text x="1891" y="789.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• auditoría de cada tirada</text>
+<text x="2116" y="802.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK banner/wallet/reward</text>
+<rect x="107" y="569.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="232" y="593.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CoinPackage</text>
+<text x="121" y="614.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• name · slug · coins · price</text>
+<text x="121" y="629.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• currency · isActive</text>
+<text x="346" y="642.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">slug único</text>
+<rect x="107" y="699.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="232" y="723.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Payment</text>
+<text x="121" y="744.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• amount · provider(MOCK) · status</text>
+<text x="121" y="759.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• externalId · failureReason</text>
+<text x="346" y="772.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">userId lógico</text>
+<rect x="427" y="569.5" width="250" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="552" y="593.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Recharge</text>
+<text x="441" y="614.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• coins · amountPaid · status</text>
+<text x="441" y="629.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• acreditación pendiente</text>
+<text x="666" y="642.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK packageId · paymentId</text>
+<rect x="427" y="707" width="250" height="66" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="552" y="731" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">PaymentEvent</text>
+<text x="441" y="751.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• type · payload(Json)</text>
+<text x="666" y="765" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK paymentId</text>
+<rect x="427" y="837" width="250" height="66" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="552" y="861" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Refund</text>
+<text x="441" y="881.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• amount · reason</text>
+<text x="666" y="895" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FK paymentId</text>
+<rect x="972" y="974.5" width="300" height="111" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="1.7" filter="url(#softshadow)"/>
+<text x="1122" y="998.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Claves entre servicios</text>
+<text x="986" y="1019.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Sin FK entre bases: userId y orderId son</text>
+<text x="986" y="1034.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• referencias lógicas validadas por el backend</text>
+<text x="986" y="1049.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• con el JWT verificado (NFR-BE-07)</text>
+<text x="986" y="1064.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Detalle por campo: Diccionario-de-Datos.md</text>
+<text x="1261" y="1077.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-DB-01</text>
+<path d="M357,250 L374.5,250 Q375,250 375,250 L375,250 Q375,250 375.5,250 L427,250" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="392" y="242" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M331.69,290.5 L393,290.5 Q405,290.5 405,302.5 L405,327.5 Q405,339.5 417,339.5 L452.31,339.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="414" y="296" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M962,339.5 L962,290.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="971" y="309" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M962,550.5 L962,599.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="971" y="569" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M962,729.5 L962,680.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="971" y="699" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">canje</text>
+<path d="M1087,250 L1094.5,250 Q1095,250 1095,250 L1095,250 Q1095,250 1095.5,250 L1157,250" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1122" y="242" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1061.69,290.5 L1095,290.5 Q1107,290.5 1107,302.5 L1107,327.5 Q1107,339.5 1119,339.5 L1182.31,339.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1116" y="324" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–1</text>
+<path d="M1011.85,290.5 L1107,290.5 Q1119,290.5 1119,302.5 L1119,457.5 Q1119,469.5 1131,469.5 L1232.15,469.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1128" y="377" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M995.23,290.5 L1119,290.5 Q1131,290.5 1131,302.5 L1131,587.5 Q1131,599.5 1143,599.5 L1248.77,599.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1140" y="430" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M986.92,290.5 L1131,290.5 Q1143,290.5 1143,302.5 L1143,717.5 Q1143,729.5 1155,729.5 L1257.08,729.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1152" y="483" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1061.69,550.5 L1143,550.5 Q1155,550.5 1155,562.5 L1155,587.5 Q1155,599.5 1167,599.5 L1182.31,599.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1146.5" y="542.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1061.69,680.5 L1067.35,680.5 Q1073,680.5 1073,686.15 L1073,717.5 Q1073,729.5 1085,729.5 L1182.31,729.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1097.5" y="721.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1682,290.5 L1682,339.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1691" y="309" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M2002,680.5 L2002,729.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="2011" y="699" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">premio</text>
+<path d="M1807,250 L1814.5,250 Q1815,250 1815,250 L1815,250 Q1815,250 1815.5,250 L1877,250" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1842" y="242" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1781.69,290.5 L1815,290.5 Q1827,290.5 1827,302.5 L1827,327.5 Q1827,339.5 1839,339.5 L1902.31,339.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1836" y="324" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1731.85,290.5 L1827,290.5 Q1839,290.5 1839,302.5 L1839,457.5 Q1839,469.5 1851,469.5 L1952.15,469.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1848" y="377" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1706.92,290.5 L1839,290.5 Q1851,290.5 1851,302.5 L1851,717.5 Q1851,729.5 1863,729.5 L1977.08,729.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1860" y="495" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">paga</text>
+<path d="M1781.69,339.5 L1851,339.5 Q1863,339.5 1863,327.5 L1863,302.5 Q1863,290.5 1875,290.5 L1902.31,290.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1872" y="330" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">genera</text>
+<path d="M1781.69,550.5 L1792.35,550.5 Q1803,550.5 1803,561.15 L1803,587.5 Q1803,599.5 1815,599.5 L1902.31,599.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1817.5" y="591.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M1731.85,550.5 L1863,550.5 Q1875,550.5 1875,562.5 L1875,717.5 Q1875,729.5 1887,729.5 L1952.15,729.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1884" y="601" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M357,610 L364.5,610 Q365,610 365,610 L365,610 Q365,610 365.5,610 L427,610" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="392" y="602" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M331.69,699.5 L373,699.5 Q385,699.5 385,687.5 L385,662.5 Q385,650.5 397,650.5 L452.31,650.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="394" y="662" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M357,740 L404.5,740 Q405,740 405,740 L405,740 Q405,740 405.5,740 L427,740" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="392" y="732" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+<path d="M331.69,780.5 L403,780.5 Q415,780.5 415,792.5 L415,825 Q415,837 427,837 L470.77,837" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="424" y="788.98" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">1–N</text>
+</svg>

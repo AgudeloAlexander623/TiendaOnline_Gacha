@@ -1,0 +1,1964 @@
+openapi: 3.1.0
+
+info:
+  title: GearQuest API
+  version: 0.1.0
+  summary: Contrato de los 4 microservicios de GearQuest (identidad, tienda, economía y pagos).
+  description: |
+    Contrato de la API HTTP de GearQuest, extraído **directamente del código** de los
+    cuatro servicios de `backend/services/`. Es la fuente de verdad para el frontend, el
+    juego (Godot) y cualquier cliente futuro.
+
+    ### Cómo está organizado
+    - Cada servicio escucha en su propio puerto y expone su propio `/health`.
+    - Todas las rutas de negocio viven bajo `/api/v1/…`.
+    - El **identity-service** es el único que emite tokens; los demás **verifican** el JWT
+      con el mismo secreto compartido (`JWT_SECRET`). No hay llamadas entre servicios.
+
+    ### Autenticación
+    Se usa **JWT Bearer**: el cliente obtiene un `accessToken` en `/auth/register`,
+    `/auth/login` o `/auth/refresh` y lo envía en cada petición protegida:
+
+    ```
+    Authorization: Bearer <accessToken>
+    ```
+
+    Las operaciones con `security: [bearerAuth: []]` exigen token válido. Las marcadas con
+    `authenticate + requireRole("ADMIN")` exigen además que el token tenga `role: ADMIN`
+    (si no, responden `403 FORBIDDEN`).
+
+    ### Formato de respuesta y errores
+    - Éxito: el recurso en JSON, o `{ "data": …, "meta": … }` en listados paginados.
+    - Error: **siempre** `{ "code": "...", "message": "...", "details": [...] }`.
+      - `code` es un **contrato público estable** en inglés y MAYÚSCULAS (no cambia).
+      - `message` es un texto en español pensado para el usuario final.
+      - `details` solo aparece en errores de validación (`VALIDATION_ERROR`).
+    - Códigos transversales: `VALIDATION_ERROR` (400), `MISSING_TOKEN` / `INVALID_TOKEN`
+      / `UNAUTHENTICATED` (401), `FORBIDDEN` (403), `NOT_FOUND` (404), `INTERNAL_ERROR` (500).
+
+    > **Nivel de detalle del contrato:** los esquemas describen los campos que el código
+    > **serializa realmente** (no columnas internas). Para el modelo de datos completo, ver
+    > la sección de cada servicio en `prisma/schema.prisma`. Este documento no sustituye al
+    > esquema: lo resume para el consumidor de la API.
+
+    > **Pendiente (no documentado como disponible):** el canje de descuentos con débito de
+    > monedas y la acreditación de monedas compradas están **pendientes** en el backend
+    > (ver `documentation/Trazabilidad.md`). Este contrato describe lo que hoy responde el
+    > código, no lo que se planea tener.
+
+servers:
+  - url: http://localhost:3001
+    description: identity-service (auth y usuarios)
+  - url: http://localhost:3002
+    description: store-service (catálogo, inventario, carrito, pedidos, descuentos)
+  - url: http://localhost:3003
+    description: economy-service (monedero, movimientos, gacha, minijuego, inventario de jugador)
+  - url: http://localhost:3004
+    description: payments-service (paquetes, pagos, recargas)
+
+tags:
+  - name: Health
+    description: Estado de cada servicio (liveness y readiness).
+  - name: Auth
+    description: Registro, sesión y tokens (identity-service).
+  - name: Users
+    description: Usuarios y perfil (identity-service).
+  - name: Catalog
+    description: Categorías y productos (store-service).
+  - name: Inventory
+    description: Existencias por producto (store-service).
+  - name: Carts
+    description: Carrito del usuario (store-service).
+  - name: Orders
+    description: Pedidos y checkout (store-service).
+  - name: Discounts
+    description: Niveles de descuento canjeables con monedas (store-service).
+  - name: Wallet
+    description: Monedero, saldo y lotes de monedas (economy-service).
+  - name: Transactions
+    description: Historial de movimientos de monedas (economy-service).
+  - name: Gacha
+    description: Ruleta (banners, premios y tiradas) (economy-service).
+  - name: Rewards
+    description: Sesiones del minijuego y acreditación (economy-service).
+  - name: PlayerItems
+    description: Inventario de objetos del jugador (economy-service).
+  - name: Packages
+    description: Paquetes de monedas de la tienda (payments-service).
+  - name: Payments
+    description: Pagos simulados (payments-service).
+  - name: Recharges
+    description: Recargas de monedas (payments-service).
+
+security: []
+
+paths:
+
+  # ==========================================================================
+  # Health — los 4 servicios exponen el mismo contrato
+  # ==========================================================================
+  /health:
+    get:
+      tags: [Health]
+      operationId: healthLiveness
+      summary: Liveness — el proceso responde
+      description: Responde 200 si el proceso está vivo. No toca la base de datos.
+      security: []
+      responses:
+        '200':
+          description: Servicio vivo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthLiveness'
+  /health/ready:
+    get:
+      tags: [Health]
+      operationId: healthReadiness
+      summary: Readiness — la base de datos responde
+      description: Ejecuta `SELECT 1` contra la base de datos. Responde 503 si falla.
+      security: []
+      responses:
+        '200':
+          description: Servicio listo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthReadiness'
+        '503':
+          description: La base de datos no responde.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthReadiness'
+
+  # ==========================================================================
+  # AUTH — identity-service (:3001)
+  # ==========================================================================
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      summary: Registrar un usuario nuevo
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Usuario creado con sus tokens de sesión.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResult'
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '409':
+          description: El correo ya está registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Iniciar sesión
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Sesión iniciada (usuario + tokens).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResult'
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401':
+          description: Credenciales inválidas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      operationId: refreshToken
+      summary: Renovar el par de tokens
+      description: Rota el refresh token (el anterior deja de ser válido).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Par de tokens renovado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResult'
+        '401':
+          description: Refresh token inválido o expirado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: Cerrar sesión (revocar el refresh token)
+      description: 'Es idempotente: un token inválido no se considera error.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Sesión cerrada.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success: { type: boolean, const: true }
+        '400': { $ref: '#/components/responses/ValidationError' }
+  /api/v1/auth/me:
+    get:
+      tags: [Auth]
+      operationId: getAuthMe
+      summary: Perfil del usuario autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos públicos del usuario.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ==========================================================================
+  # USERS — identity-service (:3001)
+  # ==========================================================================
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      operationId: getMyProfile
+      summary: Consultar mi perfil
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil del usuario.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    patch:
+      tags: [Users]
+      operationId: updateMyProfile
+      summary: Actualizar mi perfil
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Perfil actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/users/:
+    get:
+      tags: [Users]
+      operationId: listUsers
+      summary: Listar usuarios (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ACTIVE, SUSPENDED, PENDING]
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        '200':
+          description: Listado paginado de usuarios.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsers'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/users/{id}:
+    get:
+      tags: [Users]
+      operationId: getUserById
+      summary: Consultar un usuario por id (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Usuario solicitado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/users/{id}/status:
+    patch:
+      tags: [Users]
+      operationId: updateUserStatus
+      summary: Cambiar el estado de un usuario (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserStatusRequest'
+      responses:
+        '200':
+          description: Usuario con su nuevo estado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  # ==========================================================================
+  # CATALOG — store-service (:3002)
+  # ==========================================================================
+  /api/v1/categories/:
+    get:
+      tags: [Catalog]
+      operationId: listCategories
+      summary: Listar categorías
+      security: []
+      responses:
+        '200':
+          description: Listado de categorías.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Category' }
+    post:
+      tags: [Catalog]
+      operationId: createCategory
+      summary: Crear una categoría (solo ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateCategoryRequest' }
+      responses:
+        '201':
+          description: Categoría creada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/categories/{id}:
+    get:
+      tags: [Catalog]
+      operationId: getCategory
+      summary: Detalle de una categoría
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '200':
+          description: Categoría solicitada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Catalog]
+      operationId: updateCategory
+      summary: Editar una categoría (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateCategoryRequest' }
+      responses:
+        '200':
+          description: Categoría actualizada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Catalog]
+      operationId: deleteCategory
+      summary: Eliminar una categoría (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '200':
+          description: Categoría desactivada/eliminada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/products/:
+    get:
+      tags: [Catalog]
+      operationId: listProducts
+      summary: Listar el catálogo (paginado y filtrable)
+      security: []
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+        - name: includeInactive
+          in: query
+          required: false
+          schema: { type: string, enum: ['true', 'false'], default: 'false' }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de productos.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedProducts' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+    post:
+      tags: [Catalog]
+      operationId: createProduct
+      summary: Crear un producto (solo ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateProductRequest' }
+      responses:
+        '201':
+          description: Producto creado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/products/slug/{slug}:
+    get:
+      tags: [Catalog]
+      operationId: getProductBySlug
+      summary: Detalle de un producto por su slug
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string, minLength: 2 }
+      responses:
+        '200':
+          description: Producto solicitado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/products/{id}:
+    get:
+      tags: [Catalog]
+      operationId: getProduct
+      summary: Detalle de un producto por id
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: Producto solicitado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Catalog]
+      operationId: updateProduct
+      summary: Editar un producto (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProductRequest' }
+      responses:
+        '200':
+          description: Producto actualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Catalog]
+      operationId: deleteProduct
+      summary: Eliminar un producto (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: Producto eliminado/desactivado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ==========================================================================
+  # INVENTORY — store-service (:3002)
+  # ==========================================================================
+  /api/v1/inventory/{productId}:
+    get:
+      tags: [Inventory]
+      operationId: getInventory
+      summary: Consultar existencias de un producto (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Existencias del producto.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Inventory' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Inventory]
+      operationId: adjustStock
+      summary: Ajustar existencias (entrada, salida o ajuste) (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdjustStockRequest' }
+      responses:
+        '200':
+          description: Existencias tras el ajuste.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Inventory' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  # ==========================================================================
+  # CARTS — store-service (:3002)
+  # ==========================================================================
+  /api/v1/carts/me:
+    get:
+      tags: [Carts]
+      operationId: getMyCart
+      summary: Consultar mi carrito activo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Carrito activo (se crea si no existe).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Carts]
+      operationId: clearCart
+      summary: Vaciar mi carrito
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Carrito vacío.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/carts/items:
+    post:
+      tags: [Carts]
+      operationId: addCartItem
+      summary: Agregar un producto al carrito
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddCartItemRequest' }
+      responses:
+        '201':
+          description: Carrito con el artículo agregado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: El producto no existe o no está disponible (`PRODUCT_NOT_AVAILABLE`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /api/v1/carts/items/{itemId}:
+    patch:
+      tags: [Carts]
+      operationId: updateCartItem
+      summary: Cambiar la cantidad de un artículo
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CartItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateCartItemRequest' }
+      responses:
+        '200':
+          description: Carrito actualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Carts]
+      operationId: removeCartItem
+      summary: Quitar un artículo del carrito
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CartItemId'
+      responses:
+        '200':
+          description: Carrito sin el artículo.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ==========================================================================
+  # ORDERS — store-service (:3002)
+  # ==========================================================================
+  /api/v1/orders/checkout:
+    post:
+      tags: [Orders]
+      operationId: checkout
+      summary: Confirmar el pedido (checkout)
+      description: |
+        Convierte el carrito activo en un pedido dentro de una transacción:
+        valida existencias, descuenta inventario y guarda el snapshot de precios.
+        **Pendiente:** el descuento por monedas (`discountLevelId`) no debita aún.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CheckoutRequest' }
+      responses:
+        '201':
+          description: Pedido creado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/orders/me:
+    get:
+      tags: [Orders]
+      operationId: listMyOrders
+      summary: Consultar mis pedidos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de pedidos del usuario.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedOrders' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/orders/:
+    get:
+      tags: [Orders]
+      operationId: listOrders
+      summary: Listar todos los pedidos (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de pedidos.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedOrders' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/orders/{id}:
+    get:
+      tags: [Orders]
+      operationId: getOrder
+      summary: Detalle de un pedido (dueño o ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Pedido solicitado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/v1/orders/{id}/status:
+    patch:
+      tags: [Orders]
+      operationId: updateOrderStatus
+      summary: Cambiar el estado de un pedido (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateOrderStatusRequest' }
+      responses:
+        '200':
+          description: Pedido con su nuevo estado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ==========================================================================
+  # DISCOUNTS — store-service (:3002)
+  # ==========================================================================
+  /api/v1/discounts/levels:
+    get:
+      tags: [Discounts]
+      operationId: listDiscountLevels
+      summary: Listar los niveles de descuento
+      security: []
+      responses:
+        '200':
+          description: Niveles de descuento.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/DiscountLevel' }
+    post:
+      tags: [Discounts]
+      operationId: createDiscountLevel
+      summary: Crear un nivel de descuento (solo ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DiscountLevelRequest' }
+      responses:
+        '201':
+          description: Nivel creado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DiscountLevel' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/discounts/levels/{id}:
+    patch:
+      tags: [Discounts]
+      operationId: updateDiscountLevel
+      summary: Editar un nivel de descuento (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DiscountLevelId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DiscountLevelRequest' }
+      responses:
+        '200':
+          description: Nivel actualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DiscountLevel' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Discounts]
+      operationId: deleteDiscountLevel
+      summary: Eliminar un nivel de descuento (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DiscountLevelId'
+      responses:
+        '200':
+          description: Nivel eliminado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DiscountLevel' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ==========================================================================
+  # WALLET — economy-service (:3003)
+  # ==========================================================================
+  /api/v1/wallet/me:
+    get:
+      tags: [Wallet]
+      operationId: getWalletBalance
+      summary: Consultar mi saldo de monedas
+      description: Expira los lotes vencidos antes de sumar. El saldo lo calcula el servidor.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Saldo vigente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WalletBalance' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/wallet/me/batches:
+    get:
+      tags: [Wallet]
+      operationId: listWalletBatches
+      summary: Listar los lotes de monedas (vencimientos)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lotes del monedero.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedBatches' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ==========================================================================
+  # TRANSACTIONS — economy-service (:3003)
+  # ==========================================================================
+  /api/v1/transactions/me:
+    get:
+      tags: [Transactions]
+      operationId: listMyTransactions
+      summary: Historial de movimientos de monedas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, enum: [EARN, SPEND, EXPIRE, ADJUSTMENT] }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de movimientos.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedTransactions' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ==========================================================================
+  # GACHA — economy-service (:3003)
+  # ==========================================================================
+  /api/v1/gacha/banners:
+    get:
+      tags: [Gacha]
+      operationId: listGachaBanners
+      summary: Listar los banners de gacha activos
+      security: []
+      responses:
+        '200':
+          description: Banners activos con sus premios.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/GachaBanner' }
+  /api/v1/gacha/banners/{bannerId}/pull:
+    post:
+      tags: [Gacha]
+      operationId: pullGacha
+      summary: Hacer una tirada en un banner
+      description: |
+        Debita el coste y sortea un premio dentro de una transacción. Los errores de
+        negocio usan códigos propios (`BANNER_NOT_FOUND`, `BANNER_NOT_STARTED`,
+        `INSUFFICIENT_BALANCE`, …).
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BannerId'
+      responses:
+        '201':
+          description: Resultado de la tirada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GachaPullResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: El banner no existe o no está activo (`BANNER_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Banner no vigente o saldo insuficiente (`BANNER_NOT_STARTED`, `INSUFFICIENT_BALANCE`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  # ==========================================================================
+  # REWARDS — economy-service (:3003)
+  # ==========================================================================
+  /api/v1/rewards/sessions/me:
+    get:
+      tags: [Rewards]
+      operationId: listMyGameSessions
+      summary: Historial de sesiones del minijuego
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sesiones del usuario.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/GameSession' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/rewards/sessions:
+    post:
+      tags: [Rewards]
+      operationId: startGameSession
+      summary: Iniciar una sesión de minijuego
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StartSessionRequest' }
+      responses:
+        '201':
+          description: Sesión iniciada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GameSession' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/rewards/sessions/{sessionId}/finish:
+    post:
+      tags: [Rewards]
+      operationId: finishGameSession
+      summary: Finalizar una sesión y acreditar monedas
+      description: |
+        **Validación parcial:** hoy aplica una regla simple puntaje→monedas (tope 500).
+        La validación real contra el resultado del juego está pendiente (`FR-BE-17`).
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FinishSessionRequest' }
+      responses:
+        '200':
+          description: Sesión finalizada con las monedas acreditadas.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GameSession' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: La sesión no existe o no es del usuario (`GAME_SESSION_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  # ==========================================================================
+  # PLAYER ITEMS — economy-service (:3003)
+  # ==========================================================================
+  /api/v1/items/me:
+    get:
+      tags: [PlayerItems]
+      operationId: listMyItems
+      summary: Inventario de objetos del jugador
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Objetos del jugador.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/PlayerItem' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ==========================================================================
+  # PACKAGES — payments-service (:3004)
+  # ==========================================================================
+  /api/v1/packages/:
+    get:
+      tags: [Packages]
+      operationId: listPackages
+      summary: Listar los paquetes de monedas
+      security: []
+      responses:
+        '200':
+          description: Paquetes disponibles.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/CoinPackage' }
+    post:
+      tags: [Packages]
+      operationId: createPackage
+      summary: Crear un paquete de monedas (solo ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CoinPackageRequest' }
+      responses:
+        '201':
+          description: Paquete creado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CoinPackage' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/v1/packages/{id}:
+    patch:
+      tags: [Packages]
+      operationId: updatePackage
+      summary: Editar un paquete de monedas (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PackageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CoinPackageRequest' }
+      responses:
+        '200':
+          description: Paquete actualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CoinPackage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Packages]
+      operationId: deletePackage
+      summary: Eliminar un paquete de monedas (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PackageId'
+      responses:
+        '200':
+          description: Paquete eliminado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CoinPackage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ==========================================================================
+  # PAYMENTS — payments-service (:3004)
+  # ==========================================================================
+  /api/v1/payments/:
+    post:
+      tags: [Payments]
+      operationId: createPayment
+      summary: Crear un pago (simulado)
+      description: |
+        Crea un pago. Con el proveedor `MOCK` se simula la pasarela. **Pendiente:** la
+        acreditación de monedas compradas aún no ocurre (ver `Trazabilidad.md` §12.1).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePaymentRequest' }
+      responses:
+        '201':
+          description: Pago creado (estado inicial `PENDING`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Payment' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/payments/me:
+    get:
+      tags: [Payments]
+      operationId: listMyPayments
+      summary: Consultar mis pagos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED, REFUNDED, CANCELLED]
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de pagos del usuario.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedPayments' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/payments/{id}:
+    get:
+      tags: [Payments]
+      operationId: getPayment
+      summary: Detalle de un pago (dueño o ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Pago solicitado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Payment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: El pago no existe (`PAYMENT_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /api/v1/payments/{id}/confirm:
+    post:
+      tags: [Payments]
+      operationId: confirmPayment
+      summary: Confirmar un pago (simula la aprobación de la pasarela)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Pago aprobado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Payment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: El pago no existe (`PAYMENT_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /api/v1/payments/{id}/refund:
+    post:
+      tags: [Payments]
+      operationId: refundPayment
+      summary: Reembolsar un pago (solo ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefundRequest' }
+      responses:
+        '200':
+          description: Pago reembolsado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Payment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ==========================================================================
+  # RECHARGES — payments-service (:3004)
+  # ==========================================================================
+  /api/v1/recharges/:
+    post:
+      tags: [Recharges]
+      operationId: createRecharge
+      summary: Crear una recarga de monedas
+      description: |
+        Asocia una recarga al pago correspondiente. **Pendiente:** la acreditación de
+        monedas en el economy-service aún no está implementada (`FR-BE-21`).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateRechargeRequest' }
+      responses:
+        '201':
+          description: Recarga creada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recharge' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/v1/recharges/me:
+    get:
+      tags: [Recharges]
+      operationId: listMyRecharges
+      summary: Consultar mis recargas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de recargas del usuario.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedRecharges' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # --- fin de rutas ---
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Access token JWT emitido por el identity-service. Payload:
+        `{ sub, role, email }`. Se envía como `Authorization: Bearer <token>`.
+
+  parameters:
+    UserId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ProductId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    CategoryId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    CartItemId:
+      name: itemId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    OrderId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    DiscountLevelId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    BannerId:
+      name: bannerId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PackageId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PaymentId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Page:
+      name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+
+  responses:
+    ValidationError:
+      description: 'Datos de entrada inválidos (`code: VALIDATION_ERROR`).'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: |
+        Falta el token (`MISSING_TOKEN`), es inválido/expirado (`INVALID_TOKEN`) o no
+        hay usuario en la petición (`UNAUTHENTICATED`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: 'El usuario autenticado no tiene el rol requerido (`code: FORBIDDEN`).'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: 'El recurso no existe (`code: NOT_FOUND` o un código específico del dominio).'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+
+    # ---------- Errores y utilidades ----------
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Código público estable, en inglés y MAYÚSCULAS.
+          example: NOT_FOUND
+        message:
+          type: string
+          description: Mensaje en español para el usuario final.
+          example: Ruta no encontrada
+        details:
+          type: array
+          description: 'Solo en errores de validación.'
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              message: { type: string }
+    PaginationMeta:
+      type: object
+      required: [page, pageSize, total, totalPages]
+      properties:
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    HealthLiveness:
+      type: object
+      required: [service, status, timestamp]
+      properties:
+        service: { type: string, example: identity-service }
+        status: { type: string, const: ok }
+        timestamp: { type: string, format: date-time }
+    HealthReadiness:
+      type: object
+      required: [service, status]
+      properties:
+        service: { type: string, example: identity-service }
+        status: { type: string, enum: [ready, not_ready] }
+
+    # ---------- Identidad ----------
+    User:
+      type: object
+      required: [id, email, displayName, role, status, emailVerified, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        displayName: { type: string }
+        role: { type: string, enum: [PLAYER, ADMIN] }
+        status: { type: string, enum: [ACTIVE, SUSPENDED, PENDING] }
+        emailVerified: { type: boolean }
+        lastLoginAt: { type: [string, 'null'], format: date-time }
+        createdAt: { type: string, format: date-time }
+    RegisterRequest:
+      type: object
+      required: [email, password, displayName]
+      properties:
+        email: { type: string, format: email, maxLength: 255 }
+        password: { type: string, minLength: 8, maxLength: 128 }
+        displayName: { type: string, minLength: 2, maxLength: 80 }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, maxLength: 255 }
+        password: { type: string, minLength: 1, maxLength: 128 }
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken: { type: string, minLength: 10 }
+    UpdateProfileRequest:
+      type: object
+      required: [displayName]
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 80 }
+    UpdateUserStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [ACTIVE, SUSPENDED, PENDING] }
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken, accessExpiresIn, refreshExpiresIn]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        accessExpiresIn: { type: string, example: 15m }
+        refreshExpiresIn: { type: string, example: 7d }
+    AuthResult:
+      type: object
+      required: [user, tokens]
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+        tokens: { $ref: '#/components/schemas/AuthTokens' }
+    PaginatedUsers:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/User' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+
+    # ---------- Tienda: catálogo ----------
+    Category:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: [string, 'null'] }
+        isActive: { type: boolean }
+    Product:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        sku: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: [string, 'null'] }
+        price: { type: number, description: 'Precio unitario (calculado en el servidor)' }
+        currency: { type: string, example: COP }
+        isActive: { type: boolean }
+        category: { oneOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] }
+        images: { type: array, items: { type: string, format: uri } }
+        availableStock: { type: integer, description: 'stock - reservado' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    PaginatedProducts:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Product' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    CreateProductRequest:
+      type: object
+      required: [sku, name, slug, price]
+      properties:
+        sku: { type: string, minLength: 2, maxLength: 60 }
+        name: { type: string, minLength: 2, maxLength: 160 }
+        slug: { type: string, pattern: '^[a-z0-9-]+$', maxLength: 180 }
+        description: { type: string, maxLength: 2000 }
+        price: { type: number, exclusiveMinimum: 0 }
+        currency: { type: string, minLength: 3, maxLength: 3, default: COP }
+        categoryId: { type: string, format: uuid }
+        stock: { type: integer, minimum: 0, default: 0 }
+        images:
+          type: array
+          maxItems: 10
+          items: { type: string, format: uri }
+    UpdateProductRequest:
+      description: Todos los campos del producto son opcionales (sin `stock` ni `images`).
+      type: object
+      properties:
+        sku: { type: string, minLength: 2, maxLength: 60 }
+        name: { type: string, minLength: 2, maxLength: 160 }
+        slug: { type: string, pattern: '^[a-z0-9-]+$' }
+        description: { type: string, maxLength: 2000 }
+        price: { type: number, exclusiveMinimum: 0 }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        categoryId: { type: string, format: uuid }
+    CreateCategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        slug: { type: string, pattern: '^[a-z0-9-]+$' }
+        description: { type: string, maxLength: 500 }
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        slug: { type: string, pattern: '^[a-z0-9-]+$' }
+        description: { type: string, maxLength: 500 }
+        isActive: { type: boolean }
+
+    # ---------- Tienda: inventario ----------
+    Inventory:
+      type: object
+      properties:
+        productId: { type: string, format: uuid }
+        stock: { type: integer }
+        reserved: { type: integer }
+        available: { type: integer }
+    AdjustStockRequest:
+      type: object
+      required: [type, quantity]
+      properties:
+        type: { type: string, enum: [IN, OUT, ADJUSTMENT] }
+        quantity: { type: integer }
+        reason: { type: string, maxLength: 300 }
+
+    # ---------- Tienda: carrito y pedidos ----------
+    Cart:
+      type: object
+      required: [cartId, status, items, subtotal, currency, totalItems]
+      properties:
+        cartId: { type: string, format: uuid }
+        status: { type: string, example: ACTIVE }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, format: uuid }
+              productId: { type: string, format: uuid }
+              name: { type: string }
+              unitPrice: { type: number }
+              quantity: { type: integer }
+              lineTotal: { type: number }
+        subtotal: { type: number }
+        currency: { type: string }
+        totalItems: { type: integer }
+    AddCartItemRequest:
+      type: object
+      required: [productId]
+      properties:
+        productId: { type: string, format: uuid }
+        quantity: { type: integer, minimum: 1, maximum: 99, default: 1 }
+    UpdateCartItemRequest:
+      type: object
+      required: [quantity]
+      properties:
+        quantity: { type: integer, minimum: 1, maximum: 99 }
+    CheckoutRequest:
+      type: object
+      properties:
+        discountLevelId:
+          type: string
+          format: uuid
+          description: |
+            Nivel de descuento a canjear. **Pendiente**: el débito de monedas asociado
+            aún no está implementado (ver `Trazabilidad.md` §12.1).
+    Order:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        orderNumber: { type: string }
+        userId: { type: string, format: uuid }
+        status: { type: string, enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED] }
+        subtotal: { type: number }
+        discountAmount: { type: number }
+        total: { type: number }
+        currency: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, format: uuid }
+              productId: { type: string, format: uuid }
+              nameSnapshot: { type: string }
+              unitPrice: { type: number }
+              quantity: { type: integer }
+              lineTotal: { type: number }
+    PaginatedOrders:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Order' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    UpdateOrderStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED] }
+
+    # ---------- Tienda: descuentos ----------
+    DiscountLevel:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        level: { type: integer, description: 'Nivel 1..5' }
+        percentage: { type: number, description: 'Porcentaje de descuento (10..90)' }
+        coinsRequired: { type: integer }
+        description: { type: [string, 'null'] }
+        isActive: { type: boolean }
+    DiscountLevelRequest:
+      type: object
+      required: [level, percentage, coinsRequired]
+      properties:
+        level: { type: integer, minimum: 1, maximum: 5 }
+        percentage: { type: number }
+        coinsRequired: { type: integer, minimum: 0 }
+        description: { type: string, maxLength: 300 }
+
+    # ---------- Economía ----------
+    WalletBalance:
+      type: object
+      required: [walletId, balance]
+      properties:
+        walletId: { type: string, format: uuid }
+        balance: { type: integer, description: 'Saldo total vigente, calculado por el servidor' }
+    CoinBatch:
+      type: object
+      description: Lote de monedas (las ganadas vencen; las compradas no).
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [EARNED, PURCHASED] }
+        source: { type: string }
+        originalAmount: { type: integer }
+        remainingAmount: { type: integer }
+        expiresAt: { type: [string, 'null'], format: date-time }
+        status: { type: string, enum: [ACTIVE, EXHAUSTED, EXPIRED] }
+        createdAt: { type: string, format: date-time }
+    CoinTransaction:
+      type: object
+      description: Movimiento inmutable del libro mayor de monedas.
+      properties:
+        id: { type: string, format: uuid }
+        walletId: { type: string, format: uuid }
+        type: { type: string, enum: [EARN, SPEND, EXPIRE, ADJUSTMENT] }
+        amount: { type: integer }
+        balanceAfter: { type: integer }
+        reason: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+    PaginatedBatches:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/CoinBatch' }
+    PaginatedTransactions:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/CoinTransaction' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    GachaBanner:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        costPerPull: { type: integer }
+        isActive: { type: boolean }
+        startsAt: { type: [string, 'null'], format: date-time }
+        endsAt: { type: [string, 'null'], format: date-time }
+        rewards:
+          type: array
+          items: { $ref: '#/components/schemas/GachaReward' }
+    GachaReward:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        rarity: { type: string, enum: [COMMON, RARE, EPIC, LEGENDARY] }
+        rewardType: { type: string }
+        coinValue: { type: [integer, 'null'] }
+        weight: { type: integer, description: 'Peso del sorteo (mayor peso = más probable)' }
+        isActive: { type: boolean }
+    GachaPullResult:
+      type: object
+      required: [pullId, banner, costCoins, isWin, reward, balance]
+      properties:
+        pullId: { type: string, format: uuid }
+        banner:
+          type: object
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+        costCoins: { type: integer }
+        isWin: { type: boolean }
+        reward:
+          oneOf:
+            - type: object
+              properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                rarity: { type: string }
+                rewardType: { type: string }
+                coinValue: { type: [integer, 'null'] }
+                itemName: { type: [string, 'null'] }
+            - type: 'null'
+        balance: { type: integer, description: 'Saldo tras la tirada' }
+    GameSession:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        gameType: { type: string, enum: [MINIGAME] }
+        status: { type: string }
+        score: { type: [integer, 'null'] }
+        coinsAwarded: { type: [integer, 'null'] }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: [string, 'null'], format: date-time }
+    StartSessionRequest:
+      type: object
+      properties:
+        gameType: { type: string, enum: [MINIGAME], default: MINIGAME }
+    FinishSessionRequest:
+      type: object
+      required: [score]
+      properties:
+        score: { type: integer, minimum: 0, maximum: 1000000 }
+    PlayerItem:
+      type: object
+      description: Objeto del inventario del jugador obtenido (entre otros) en el gacha.
+      properties:
+        id: { type: string, format: uuid }
+        itemName: { type: string }
+        rarity: { type: string }
+        quantity: { type: integer }
+        acquiredAt: { type: string, format: date-time }
+
+    # ---------- Pagos ----------
+    CoinPackage:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        coins: { type: integer }
+        price: { type: number }
+        currency: { type: string }
+        isActive: { type: boolean }
+    CoinPackageRequest:
+      type: object
+      required: [name, slug, coins, price]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        slug: { type: string, pattern: '^[a-z0-9-]+$' }
+        coins: { type: integer, minimum: 1 }
+        price: { type: number, exclusiveMinimum: 0 }
+        currency: { type: string, minLength: 3, maxLength: 3, default: COP }
+    Payment:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        userId: { type: string, format: uuid }
+        orderId: { type: [string, 'null'], format: uuid }
+        amount: { type: number }
+        currency: { type: string }
+        provider: { type: string, enum: [MOCK, STRIPE, MERCADOPAGO] }
+        status: { type: string, enum: [PENDING, APPROVED, REJECTED, REFUNDED, CANCELLED] }
+        externalId: { type: [string, 'null'] }
+        failureReason: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        recharges: { type: array, items: { $ref: '#/components/schemas/Recharge' } }
+    CreatePaymentRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount: { type: number, exclusiveMinimum: 0 }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        orderId: { type: string, format: uuid }
+        provider: { type: string, enum: [MOCK, STRIPE, MERCADOPAGO] }
+    PaginatedPayments:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Payment' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    RefundRequest:
+      type: object
+      properties:
+        reason: { type: string, maxLength: 300 }
+    Recharge:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        packageId: { type: [string, 'null'], format: uuid }
+        coins: { type: integer }
+        status: { type: string, enum: [PENDING, COMPLETED, FAILED, REFUNDED] }
+        createdAt: { type: string, format: date-time }
+    CreateRechargeRequest:
+      type: object
+      required: [packageId]
+      properties:
+        packageId: { type: string, format: uuid }
+    PaginatedRecharges:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Recharge' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }

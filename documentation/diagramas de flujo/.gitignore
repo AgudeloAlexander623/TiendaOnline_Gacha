@@ -1,0 +1,4 @@
+# Artefactos generados por Python — no se versionan.
+# El generador (tools/*.py) es la fuente; el SVG se regenera con `generar.py`.
+__pycache__/
+*.pyc

@@ -1,0 +1,24 @@
+# Reglas de validación del contrato OpenAPI (Redocly CLI).
+#
+# El contrato describe el código real de backend/services/. Los routers están
+# montados con barra final (`app.use("/api/v1/users", usersRouter)` + `router.get("/")`),
+# así que varias colecciones responden en `/recurso/`. Es intencional: no se "arregla"
+# el documento para contentar al validador; se documenta la excepción.
+#
+# Uso:
+#   npx @redocly/cli@latest lint documentation/API/openapi.yaml
+#   npx @redocly/cli@latest preview-docs documentation/API/openapi.yaml
+
+extends:
+  - recommended
+
+rules:
+  # Las rutas con barra final reflejan el montaje real de los routers (ver arriba).
+  no-path-trailing-slash: off
+  # No hay licencia publicada para el proyecto; no se inventa una.
+  info-license: off
+  # Los servidores son locales por diseño (entorno de desarrollo).
+  no-server-example.com: off
+  # Algunos endpoints solo documentan el caso correcto (p. ej. GET /health);
+  # el catálogo de errores transversales está en components/responses.
+  operation-4xx-response: off

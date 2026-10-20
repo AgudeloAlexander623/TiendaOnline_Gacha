@@ -27,9 +27,12 @@ actualiza y luego se implementa.
 | Docentes / evaluadores | Alcance, decisiones técnicas y criterios de aceptación del proyecto |
 | Persona sin perfil técnico | Explicaciones en lenguaje sencillo de cada área del sistema |
 
-> **Nota de honestidad:** GearQuest está en **fase de planificación**. La estructura del
-> repositorio existe, pero la lógica de negocio todavía no está implementada. Por eso estos
-> documentos describen **requisitos previstos**, no funcionalidades terminadas.
+> **Nota de honestidad (actualizada 2026-10-19):** el proyecto **ya tiene lógica de negocio
+> implementada** en backend (identidad, tienda, economía, pagos y seguridad base operan con
+> datos reales), mientras que frontend, juego e infraestructura de despliegue siguen en
+> fases iniciales. Para saber **qué está hecho, qué está a medias y qué no ha empezado
+> requisito a requisito**, consulta la [**Matriz de trazabilidad**](../Trazabilidad.md):
+> es la fuente de verdad del estado real y se actualiza en el mismo PR que toca el código.
 
 ## 3. Cómo leer los requisitos
 
@@ -90,11 +93,14 @@ descuentos y permisos siempre se validan en el servidor).
 ## 6. Alcance y límites actuales
 
 - ✅ Estructura de monorepo creada (frontend, backend, documentación).
-- ⬜ Lógica de negocio, modelos de datos y pruebas: pendientes.
+- ✅ Backend implementado en gran medida: 65 endpoints en 4 servicios con sus migraciones
+  y datos de prueba (ver [Matriz de trazabilidad](../Trazabilidad.md) §3-§5).
+- ⚠️ Frontend: UI base con 9 páginas, **sin conectar al backend** (0 llamadas HTTP).
 - ⬜ Juego (Godot) y servicio Python: pendientes de inicio.
-- ⚠️ Compras y recargas serán **simuladas**: no se procesa dinero real.
+- ⚠️ Compras y recargas son **simuladas**: no se procesa dinero real.
 - ⚠️ Decisiones abiertas (reglas de canje, proveedores, despliegue) se listan en cada
-  documento, en la sección *Decisiones pendientes*.
+  documento, en la sección *Decisiones pendientes*; el estado real de cada requisito,
+  en la [Matriz de trazabilidad](../Trazabilidad.md).
 
 ## 7. Glosario
 

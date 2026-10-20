@@ -12,6 +12,7 @@
 | 1 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
 | 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
 | 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
+| 4 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
 
 > **Nota:** el equipo está formado por **3 integrantes**. Los nombres, roles y contactos se
 > completarán aquí cuando se confirmen.

@@ -25,6 +25,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | **¿Por qué está construido así?** | [Decisiones de arquitectura (ADR)](./Decisiones.md) |
 | **¿Qué significa esta palabra rara?** | [Glosario](./Glosario.md) |
 | **¿Cómo hablo con el backend (rutas, datos, errores)?** | [Contrato de la API](./API/README.md) |
+| **¿Cómo se hablan los servicios entre sí?** | [Contrato entre servicios](./Contrato-entre-servicios.md) |
 | **¿Cómo son las tablas y los campos?** | [Diccionario de datos](./Diccionario-de-Datos.md) |
 | **¿Cómo se ve un flujo o la arquitectura?** | [Diagramas](./diagramas%20de%20flujo/README.md) |
 | **¿Y qué no debo publicar?** | [Política de seguridad documental](./Politica-de-Seguridad-Documental.md) |
@@ -75,6 +76,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | [`API/README.md`](./API/README.md) | Guía del contrato: cómo verlo, autenticación, formato de errores y mapa de servicios |
 | [`API/openapi.yaml`](./API/openapi.yaml) | Contrato OpenAPI 3.1 de los 4 microservicios (fuente de verdad del formato de la API) |
 | [`API/redocly.yaml`](./API/redocly.yaml) | Configuración del validador del contrato |
+| [`Contrato-entre-servicios.md`](./Contrato-entre-servicios.md) | El contrato **interno**: cómo se comunican los 5 flujos entre microservicios (saldo, débito, crédito, validación de partida), autenticación service-to-service y decisiones pendientes |
 | [`Diccionario-de-Datos.md`](./Diccionario-de-Datos.md) | Descripción campo a campo de las 26 entidades Prisma, enums, reglas de integridad y referencias entre servicios |
 
 ### 2.4 Diagramas

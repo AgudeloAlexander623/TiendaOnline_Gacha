@@ -231,14 +231,20 @@ Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
 │   ├── tailwind.config.js
 │   ├── tsconfig*.json
 │   └── vite.config.ts
-├── GAME/                           # Proyecto Godot (C++): gacha y minijuego      (pendiente)
-├── DataBase/                       # Recursos y scripts de base de datos          (pendiente)
-├── documentation/
-│   └── diagramas de flujo/         # 8 diagramas SVG generados (flujos, arquitectura, secuencias, estados)
+├── GAME/                           # Proyecto Godot (C++): gacha y minijuego   (no existe aún — reservada)
+├── DataBase/                       # Recursos y scripts de base de datos       (no existe aún — reservada)
+├── documentation/                  # Documentación del proyecto (ver §14)
+│   ├── README.md                   #   Índice maestro de toda la documentación
+│   ├── Software-requeriments(SRS)/ #   Requisitos funcionales y no funcionales
+│   ├── Casos-de-Uso/               #   Casos de uso (UC-*)
+│   ├── API/                        #   Contrato OpenAPI 3.1 + guía de la API
+│   ├── diagramas de flujo/         #   9 diagramas SVG (flujos, arquitectura, secuencias, estados, modelo de datos)
+│   ├── Trazabilidad.md             #   Estado real de cada requisito
+│   └── ...                         #   Decisiones, glosario, pruebas, despliegue, changelog, etc.
 └── README.MD                       # Documentación principal del proyecto
 ```
 
-Las carpetas de estructura y configuración ya existen, pero los módulos de aplicación (`src/modules/*` del backend y `src/features/*` del frontend) están vacíos a propósito: la lógica de negocio todavía no se ha implementado. Por su parte, `GAME/` y `DataBase/` están reservadas para el proyecto de Godot y los recursos de base de datos, respectivamente, y se poblarán durante el desarrollo.
+Las carpetas de estructura y configuración ya existen, pero los módulos de aplicación (`src/modules/*` del backend y `src/features/*` del frontend) están vacíos a propósito: la lógica de negocio todavía no se ha implementado. Por su parte, `GAME/` y `DataBase/` **todavía no existen en el repositorio**: están reservadas para el proyecto de Godot y los recursos de base de datos, respectivamente, y se crearán y poblarán durante el desarrollo.
 
 ## 7. Seguridad y buenas prácticas
 
@@ -331,6 +337,10 @@ npm run preview
 
 Ver [backend/README.md](backend/README.md) para detalles de instalación, migraciones, servicios y Docker.
 
+### Puesta en marcha completa
+
+Para levantar **todo el sistema** (base de datos, los 4 servicios y el frontend) paso a paso, con la explicación de cada comando y la verificación de que quedó funcionando, ver la [Guía de instalación](documentation/Guia-de-Instalacion.md).
+
 El proyecto de Godot se ubica en `GAME/` y los recursos de base de datos en `DataBase/`. La estructura interna de ambos componentes y la del servicio Python de análisis se detallarán cuando se implementen.
 
 ## 11. Despliegue
@@ -370,6 +380,39 @@ Kubernetes es opcional. Para el desarrollo local, Docker Compose puede ser sufic
 4. Ejecutar las pruebas aplicables antes de solicitar revisión.
 5. Documentar decisiones que afecten a otros servicios o al modelo de datos.
 6. No incluir secretos ni información real sensible en el repositorio.
+
+---
+
+## 14. Documentación
+
+Toda la documentación del proyecto vive en la carpeta [`documentation/`](documentation/), y su punto de entrada es el **índice maestro**: [`documentation/README.md`](documentation/README.md). Ese índice explica en qué orden leer y qué contiene cada documento.
+
+### Documentos principales
+
+| Documento | Para qué sirve |
+| --- | --- |
+| [Índice maestro](documentation/README.md) | Mapa de toda la documentación y por dónde empezar |
+| [Guía de instalación](documentation/Guia-de-Instalacion.md) | Levantar el proyecto completo en local, paso a paso |
+| [SRS (requisitos)](documentation/Software-requeriments(SRS)/README.md) | Qué debe hacer el sistema (requisitos funcionales y no funcionales) |
+| [Casos de uso](documentation/Casos-de-Uso/README.md) | Los flujos de uso desde la perspectiva del usuario (UC-*) |
+| [Contrato de la API](documentation/API/README.md) | Endpoints y esquemas (`openapi.yaml`, fuente de verdad) |
+| [Diccionario de datos](documentation/Diccionario-de-Datos.md) | Modelo de datos por servicio (26 modelos Prisma) |
+| [Trazabilidad](documentation/Trazabilidad.md) | **Estado real** de cada requisito: hecho, parcial o pendiente |
+| [Decisiones (ADR)](documentation/Decisiones.md) | Por qué se tomó cada decisión técnica |
+| [Glosario](documentation/Glosario.md) | Vocabulario del proyecto explicado |
+| [Estrategia de pruebas](documentation/Estrategia-de-Pruebas.md) | Enfoque de pruebas y reglas críticas a cubrir |
+| [Manual de usuario](documentation/Manual-de-Usuario.md) | Cómo se usa el sistema, pantalla por pantalla |
+| [Guía de despliegue](documentation/Despliegue.md) | Cómo se publicaría el proyecto |
+| [Política de seguridad documental](documentation/Politica-de-Seguridad-Documental.md) | Qué se puede publicar y qué no |
+| [Cómo contribuir](documentation/CONTRIBUTING.md) | Ramas, commits, flujo de PR y checklist de revisión |
+| [Changelog](documentation/CHANGELOG.md) | Historial de cambios por versión |
+
+### Regla de oro
+
+> La documentación **refleja el estado real** del proyecto. Lo que todavía no está
+> implementado se marca como *pendiente*; no se documenta como terminado. La
+> [matriz de trazabilidad](documentation/Trazabilidad.md) es la fuente de verdad sobre
+> qué está hecho y qué no.
 
 ---
 

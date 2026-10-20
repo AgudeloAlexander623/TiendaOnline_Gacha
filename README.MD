@@ -7,9 +7,9 @@
 
 ## Integrantes del proyecto
 
-| # | Nombre completo | Rol | Contacto | Codigo |
-| --- | --- | --- | --- |
-| 1 | _Jessid Alexander Agudelo Herrera_ | _Programador Backend_ | _jessid.agudelo@correounivalle.edu.co_ | _2478460_ | 
+| # | Nombre completo | Rol | Contacto | Código |
+| --- | --- | --- | --- | --- |
+| 1 | Jessid Alexander Agudelo Herrera | Programador Backend | jessid.agudelo@correounivalle.edu.co | 2478460 |
 | 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
 | 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
 | 4 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
@@ -80,7 +80,7 @@ reglas, pruebas, datos, documentación, seguridad e integración.
 ### 3.2. Decisiones acordadas
 
 * **Nombre:** GearQuest.
-* **Equipo:** 3 integrantes.
+* **Equipo:** 4 integrantes.
 * **Propósito:** proyecto universitario.
 * **Arquitectura prevista:** microservicios.
 * **Organización del código:** monorepo.

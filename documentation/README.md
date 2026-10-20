@@ -15,6 +15,9 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | Si buscas… | Entra por… |
 | --- | --- |
 | **¿Qué debe hacer el sistema?** | [Especificación de Requisitos (SRS)](./Software-requeriments\(SRS\)/README.md) |
+| **¿Qué objetivos y necesidades hay?** | [Épicas e historias de usuario](./Epicas-e-Historias.md) |
+| **¿Qué trabajo técnico hace falta?** | [Historias técnicas](./Historias-Tecnicas.md) |
+| **¿Cuándo algo está terminado?** | [Definition of Done](./Definition-of-Done.md) |
 | **¿Cómo lo uso, paso a paso?** | [Manual de usuario](./Manual-de-Usuario.md) |
 | **¿Cómo se usa el sistema, caso por caso?** | [Casos de uso](./Casos-de-Uso/README.md) |
 | **¿Cómo levanto el proyecto en mi PC?** | [Guía de instalación](./Guia-de-Instalacion.md) |
@@ -38,6 +41,9 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 
 | Documento | Qué contiene |
 | --- | --- |
+| [`Epicas-e-Historias.md`](./Epicas-e-Historias.md) | Las **4 épicas** y las **18 historias de usuario**, con criterios de aceptación |
+| [`Historias-Tecnicas.md`](./Historias-Tecnicas.md) | Las **18 historias técnicas** que habilitan las historias de usuario (integración, integridad, infra, CI) |
+| [`Definition-of-Done.md`](./Definition-of-Done.md) | Checklist de «terminado» para toda tarea, con 3 niveles (tarea, historia, épica) |
 | [`Software-requeriments(SRS)/README.md`](./Software-requeriments\(SRS\)/README.md) | Puerta de entrada al SRS: cómo leerlo y alcance |
 | [`Software-requeriments(SRS)/Backend.md`](./Software-requeriments\(SRS\)/Backend.md) | Requisitos funcionales y no funcionales del backend |
 | [`Software-requeriments(SRS)/Business-Rules.md`](./Software-requeriments\(SRS\)/Business-Rules.md) | Reglas de negocio (monedas, vencimientos, descuentos, permisos) |
@@ -108,6 +114,9 @@ documentos sin ambigüedad:
 | `NFR-<área>-<nn>` | Requisito **no funcional** (calidad, seguridad, rendimiento) | `NFR-BE-07` |
 | `FR-BR-<nn>` | Regla de negocio (subconjunto funcional) | `FR-BR-02` |
 | `UC-<nn>` | Caso de uso | `UC-08` |
+| `EP-<nn>` | Épica (objetivo grande) | `EP-02` |
+| `US-<nn>` | Historia de usuario | `US-08` |
+| `TS-<nn>` | Historia técnica | `TS-01` |
 
 Los `<área>` habituales son `BE` (backend), `BR` (reglas), `DB` (datos),
 `FE` (frontend), `GA` (juego), `SEC` (seguridad), entre otros.
@@ -139,6 +148,8 @@ Los `<área>` habituales son `BE` (backend), `BR` (reglas), `DB` (datos),
 | Tarea | Acción |
 | --- | --- |
 | Añadir/eliminar un requisito | Editar el SRS correspondiente y actualizar `Trazabilidad.md` |
+| Añadir una historia de usuario | Añadirla a `Epicas-e-Historias.md` (con su caso de uso) |
+| Añadir una historia técnica | Añadirla a `Historias-Tecnicas.md` (con su origen: requisito o `TODO`) |
 | Cambiar la API | Editar `API/openapi.yaml` y validar con Redocly (ver `API/README.md` §7) |
 | Cambiar el modelo de datos | Editar `Diccionario-de-Datos.md`, regenerar el diagrama 09 y validar con `qa.py` |
 | Añadir un diagrama | Añadirlo a `tools/diagramas.py`, regenerar y registrarlo en su `README.md` |

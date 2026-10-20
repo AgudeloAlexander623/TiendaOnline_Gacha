@@ -2,8 +2,19 @@
 
 > **Estado:** Planificación
 > **Tipo:** Proyecto universitario
-> **Equipo:** 3 integrantes
+> **Equipo:** 3 integrantes (ver abajo)
 > **Estructura:** Monorepo
+
+## Integrantes del proyecto
+
+| # | Nombre completo | Rol | Contacto |
+| --- | --- | --- | --- |
+| 1 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
+| 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
+| 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
+
+> **Nota:** el equipo está formado por **3 integrantes**. Los nombres, roles y contactos se
+> completarán aquí cuando se confirmen.
 
 ## 1. Descripción
 
@@ -26,9 +37,29 @@ El proyecto tiene fines académicos. Las funcionalidades descritas son objetivos
 * Evaluar opciones de despliegue web con HTTPS.
 * Explorar la detección de comportamientos sospechosos mediante un servicio complementario desarrollado en Python.
 
-## 3. Estado de las decisiones
+## 3. Equipo, planificación y decisiones
 
-### Decisiones acordadas
+### 3.1. Planificación del trabajo
+
+La documentación organiza el trabajo como lo pediría un cliente. Los cinco niveles son:
+
+| Nivel | Qué responde | Dónde está |
+| --- | --- | --- |
+| **Idea de desarrollo web** | ¿Qué es GearQuest y qué problema resuelve? | §1 de este README |
+| **Épicas** | ¿Cuáles son los grandes objetivos? (4 épicas) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
+| **Historias de usuario** | ¿Qué necesita cada persona y para qué? (18 historias) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
+| **Requisitos funcionales y no funcionales** | ¿Qué debe hacer el sistema y con qué calidad? | [SRS](documentation/Software-requeriments(SRS)/README.md) |
+| **Historias técnicas** | ¿Qué trabajo técnico lo habilita? (18 historias) | [Historias técnicas](documentation/Historias-Tecnicas.md) |
+
+**Cierre de una tarea:** antes de dar algo por terminado, se aplica el
+[Definition of Done](documentation/Definition-of-Done.md): un checklist verificable de código,
+reglas, pruebas, datos, documentación, seguridad e integración.
+
+> **Regla de oro:** lo que no está terminado según el Definition of Done **no está terminado**,
+> aunque el código exista. El estado real de cada requisito vive en la
+> [matriz de trazabilidad](documentation/Trazabilidad.md).
+
+### 3.2. Decisiones acordadas
 
 * **Nombre:** GearQuest.
 * **Equipo:** 3 integrantes.
@@ -50,7 +81,7 @@ El proyecto tiene fines académicos. Las funcionalidades descritas son objetivos
 * **Despliegue:** proveedor gratuito o de bajo costo, por seleccionar.
 * **Kubernetes:** opcional.
 
-### Decisiones pendientes
+### 3.3. Decisiones pendientes
 
 * Cantidad de monedas necesaria para cada descuento.
 * Límites, vigencia y condiciones de uso de los descuentos.
@@ -392,6 +423,9 @@ Toda la documentación del proyecto vive en la carpeta [`documentation/`](docume
 | Documento | Para qué sirve |
 | --- | --- |
 | [Índice maestro](documentation/README.md) | Mapa de toda la documentación y por dónde empezar |
+| [Épicas e historias de usuario](documentation/Epicas-e-Historias.md) | Los 4 grandes objetivos del proyecto y las 18 historias de usuario |
+| [Historias técnicas](documentation/Historias-Tecnicas.md) | El trabajo técnico que habilita las historias (integración, pruebas, infraestructura) |
+| [Definition of Done](documentation/Definition-of-Done.md) | Cuándo una tarea está **realmente** terminada (checklist verificable) |
 | [Guía de instalación](documentation/Guia-de-Instalacion.md) | Levantar el proyecto completo en local, paso a paso |
 | [SRS (requisitos)](documentation/Software-requeriments(SRS)/README.md) | Qué debe hacer el sistema (requisitos funcionales y no funcionales) |
 | [Casos de uso](documentation/Casos-de-Uso/README.md) | Los flujos de uso desde la perspectiva del usuario (UC-*) |

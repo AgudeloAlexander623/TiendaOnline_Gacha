@@ -62,6 +62,12 @@ de una respuesta de la API o el nombre de un `code` de error.
 - **Glosario:** `documentation/Glosario.md`, vocabulario del proyecto explicado para personas sin experiencia (negocio, desarrollo web, bases de datos, juego, proceso).
 - **Índice maestro actualizado:** `documentation/README.md` enlaza y organiza los nuevos documentos por secciones (uso y operación, decisiones y vocabulario).
 
+### Añadido — planificación del trabajo (épicas, historias y DoD)
+- **Épicas e historias de usuario:** `documentation/Epicas-e-Historias.md` con las **4 épicas** del proyecto (Cuenta e identidad, Tienda y compra, Juego y economía, Avisos) y las **18 historias de usuario** (US-01…US-18), cada una enlazada a su caso de uso y a sus requisitos, con ejemplos de criterios de aceptación (Dado/cuando/entonces). Incluye una explicación de qué es una épica y qué una historia, para juniors.
+- **Historias técnicas:** `documentation/Historias-Tecnicas.md` con **18 historias técnicas** (TS-01…TS-18) agrupadas por área (integración entre servicios, integridad de dinero, infraestructura, calidad/CI, frontend, seguridad), cada una nacida de un `TODO` verificado en el código o de un requisito del SRS, con priorización.
+- **Definition of Done:** `documentation/Definition-of-Done.md` con el checklist verificable de «terminado» (código, reglas, pruebas, datos, documentación, seguridad e integración) y 3 niveles (tarea, historia, épica), con un ejemplo aplicado.
+- **README raíz actualizado:** nueva sección §3 (equipo con espacio para integrantes, planificación del trabajo y decisiones) y §14 con enlaces a toda la documentación; el índice maestro y las convenciones de códigos (`EP-`, `US-`, `TS-`) se amplían para reflejar los nuevos documentos.
+
 ### Seguridad
 - **Auditoría de la documentación:** revisión de los 29 documentos por 11 categorías de riesgo (secretos, credenciales, datos personales, direcciones reales, detalles explotables). Sin secretos ni datos críticos comprometidos.
 - **Tono de los límites conocidos:** en `documentation/API/openapi.yaml` se reformularon las notas de «pendiente/no valida» a «límite conocido / pendiente de endurecer», para informar sin dar munición a un atacante.

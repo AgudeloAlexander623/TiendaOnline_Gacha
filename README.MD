@@ -2,20 +2,37 @@
 
 > **Estado:** Planificación
 > **Tipo:** Proyecto universitario
-> **Equipo:** 3 integrantes (ver abajo)
+> **Equipo:** 4 integrantes (ver abajo)
 > **Estructura:** Monorepo
 
 ## Integrantes del proyecto
 
-| # | Nombre completo | Rol | Contacto |
+| # | Nombre completo | Rol | Contacto | Codigo |
 | --- | --- | --- | --- |
-| 1 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
-| 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
-| 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
-| 4 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ |
+| 1 | _(Jessid Alexander Agudelo Herrera)_ | _(Programador Backend)_ | _(jessid.agudelo@correounivalle.edu.co)_ | _(2478460)_ | 
+| 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
+| 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
+| 4 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
 
-> **Nota:** el equipo está formado por **3 integrantes**. Los nombres, roles y contactos se
+> **Nota:** el equipo está formado por **4 integrantes**. Los nombres, roles y contactos se
 > completarán aquí cuando se confirmen.
+
+### Cómo trabajamos: un rol por integrante
+
+Cada integrante se responsabiliza de un **dominio concreto** del sistema, para poder avanzar
+en paralelo sin pisarse (ver [ADR-0001](./documentation/Decisiones.md)). Los roles previstos
+son:
+
+| Rol | Dominio | Responsabilidad principal |
+| --- | --- | --- |
+| **Identidad y usuarios** | `identity-service` | Registro, sesión, perfiles y permisos |
+| **Tienda y pedidos** | `store-service` | Catálogo, inventario, carrito, pedidos y descuentos |
+| **Juego y economía** | `economy-service` | Monedero, monedas, gacha, minijuego y recompensas |
+| **Pagos** | `payments-service` | Paquetes, pagos simulados y recargas |
+
+> **Regla del equipo:** cada quien es **dueño** de su dominio (código, pruebas y
+> documentación), pero **todos revisan** los cambios de los demás. El reparto de roles se
+> asigna a los nombres de la tabla de arriba.
 
 ## 1. Descripción
 

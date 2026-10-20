@@ -31,6 +31,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | **¿Y qué no debo publicar?** | [Política de seguridad documental](./Politica-de-Seguridad-Documental.md) |
 | **¿Cómo se publica el proyecto?** | [Guía de despliegue](./Despliegue.md) |
 | **¿Cómo contribuyo o qué reglas sigue el equipo?** | [Cómo contribuir](./CONTRIBUTING.md) |
+| **¿Cómo se escribe el código aquí?** | [Guía de estilo de código](./Estilo-de-Codigo.md) |
 | **¿Cómo se prueba lo crítico?** | [Estrategia de pruebas](./Estrategia-de-Pruebas.md) |
 | **¿Qué ha cambiado y en qué versión?** | [Changelog](./CHANGELOG.md) |
 
@@ -100,6 +101,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | Documento | Qué contiene |
 | --- | --- |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md) | Ramas, Conventional Commits, flujo de PR y checklist de revisión |
+| [`Estilo-de-Codigo.md`](./Estilo-de-Codigo.md) | Convenciones de código (formato, TypeScript, nomenclatura, estructura de módulo, errores, frontend), **descriptivas** del código real |
 | [`Estrategia-de-Pruebas.md`](./Estrategia-de-Pruebas.md) | Enfoque de pruebas guiado por riesgo, reglas críticas y deuda priorizada |
 | [`CHANGELOG.md`](./CHANGELOG.md) | Historial de cambios por versión (Keep a Changelog + SemVer) |
 

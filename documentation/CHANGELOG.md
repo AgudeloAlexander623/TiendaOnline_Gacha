@@ -39,6 +39,9 @@ de una respuesta de la API o el nombre de un `code` de error.
 
 *(Aquí se añade lo que ya está en `main` pero aún no se ha etiquetado con un número.)*
 
+### Añadido
+- **Guía de estilo de código:** `documentation/Estilo-de-Codigo.md`, convenciones **descriptivas** del código real (formato Prettier/EditorConfig, TypeScript estricto, nomenclatura, estructura router→schemas→service, manejo de errores, convenciones de frontend y pruebas). Enlaza a `CONTRIBUTING.md` y demás documentos en lugar de duplicarlos.
+
 ## [0.1.0] - 2026-10-19
 ### Añadido
 - **Documentación técnica inicial (SRS):** 8 documentos que cubren Backend, Reglas de Negocio, Base de Datos, Frontend, Juego, Infraestructura, Notificaciones y Seguridad (`documentation/Software-requeriments(SRS)/`), con sus *Decisiones pendientes* por área.

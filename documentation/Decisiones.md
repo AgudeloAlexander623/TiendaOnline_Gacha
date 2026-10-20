@@ -63,7 +63,7 @@ algo sin saber por qué estaba así y rompe el sistema.
 ### Contexto
 
 GearQuest tiene áreas claramente distintas: **usuarios**, **tienda**, **economía del
-juego** y **pagos**. Son 3 integrantes y queremos que cada quien pueda avanzar sin
+juego** y **pagos**. Son 4 integrantes y queremos que cada quien pueda avanzar sin
 pisar a los demás.
 
 ### Decisión
@@ -76,7 +76,7 @@ payments) dentro de **un solo repositorio** (*monorepo*), usando *npm workspaces
 - **Un solo backend «monolítico»:** más simple al inicio, pero todos editarían los
   mismos archivos y se estorbarían.
 - **Repositorios separados:** aislamiento total, pero para un proyecto universitario de
-  3 personas el costo de coordinar 4 repos es desproporcionado.
+  4 personas el costo de coordinar 4 repositorios es desproporcionado.
 - **Monorepo con servicios por dominio** ✅: cada dominio es un paquete independiente,
   pero todo se clona, instala y prueba junto. Es el mejor equilibrio.
 
@@ -290,7 +290,7 @@ datos de tarjeta**.
 
 ### Contexto
 
-Necesitábamos una interfaz web moderna y rápida de desarrollar entre 3 personas.
+Necesitábamos una interfaz web moderna y rápida de desarrollar entre 4 personas.
 
 ### Decisión
 
@@ -359,7 +359,7 @@ sesiones (cerrar sesión en todos los dispositivos).
 
 ### Contexto
 
-Con 3 personas trabajando en paralelo, sin reglas el historial de Git se vuelve un caos
+Con 4 personas trabajando en paralelo, sin reglas el historial de Git se vuelve un caos
 y las revisiones, imposibles.
 
 ### Decisión

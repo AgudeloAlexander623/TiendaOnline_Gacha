@@ -136,6 +136,8 @@ Marca cada punto en la descripción del PR:
 - [ ] **Actualicé `documentation/CHANGELOG.md`** (sección *Sin versionar*) si el cambio es
       visible para el usuario.
 - [ ] No he dejado secretos, `console.log` de depuración ni ficheros generados en el commit.
+- [ ] **Si toco documentación**, corrí el checklist anti-secretos de
+      [`Politica-de-Seguridad-Documental.md`](./Politica-de-Seguridad-Documental.md) §7.
 - [ ] El cambio responde a un requisito/caso de uso identificado.
 
 > Si algún control **no** pasa y el PR es un borrador para pedir ayuda, márcalo como
@@ -149,7 +151,8 @@ Marca cada punto en la descripción del PR:
 2. **Reglas de negocio en el servidor:** precios, saldos y permisos **nunca** se aceptan del
    cliente (`FR-BR-16`, `NFR-BR-01`).
 3. **Seguridad:** validación de entradas (Zod), autorización (`authenticate`/`requireRole`),
-   nada de secretos en código ni en logs.
+   nada de secretos en código ni en logs; y, en documentación, se respeta la
+   [`Politica-de-Seguridad-Documental.md`](./Politica-de-Seguridad-Documental.md).
 4. **Trazabilidad:** ¿referencia el requisito? ¿actualizó la matriz?
 5. **Claridad:** nombres, comentarios con el **por qué**, coherencia con el estilo del módulo.
 
@@ -177,3 +180,5 @@ entiende, es que falta un comentario o un nombre mejor.
 3. **Un cambio de estado de requisito se refleja en `Trazabilidad.md` en el mismo PR.**
 4. Los **`code` de error** de la API son contrato público: cambiarlos es una decisión de
    equipo, no un detalle de un PR.
+5. **Nada de secretos en el repositorio**; los límites conocidos se documentan con tono de
+   estado, no de conducta (ver [`Politica-de-Seguridad-Documental.md`](./Politica-de-Seguridad-Documental.md)).

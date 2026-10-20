@@ -15,11 +15,17 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | Si buscas… | Entra por… |
 | --- | --- |
 | **¿Qué debe hacer el sistema?** | [Especificación de Requisitos (SRS)](./Software-requeriments\(SRS\)/README.md) |
-| **¿Cómo se usa el sistema, paso a paso?** | [Casos de uso](./Casos-de-Uso/README.md) |
+| **¿Cómo lo uso, paso a paso?** | [Manual de usuario](./Manual-de-Usuario.md) |
+| **¿Cómo se usa el sistema, caso por caso?** | [Casos de uso](./Casos-de-Uso/README.md) |
+| **¿Cómo levanto el proyecto en mi PC?** | [Guía de instalación](./Guia-de-Instalacion.md) |
 | **¿Qué está hecho, a medias o pendiente?** | [Matriz de trazabilidad](./Trazabilidad.md) |
+| **¿Por qué está construido así?** | [Decisiones de arquitectura (ADR)](./Decisiones.md) |
+| **¿Qué significa esta palabra rara?** | [Glosario](./Glosario.md) |
 | **¿Cómo hablo con el backend (rutas, datos, errores)?** | [Contrato de la API](./API/README.md) |
 | **¿Cómo son las tablas y los campos?** | [Diccionario de datos](./Diccionario-de-Datos.md) |
 | **¿Cómo se ve un flujo o la arquitectura?** | [Diagramas](./diagramas%20de%20flujo/README.md) |
+| **¿Y qué no debo publicar?** | [Política de seguridad documental](./Politica-de-Seguridad-Documental.md) |
+| **¿Cómo se publica el proyecto?** | [Guía de despliegue](./Despliegue.md) |
 | **¿Cómo contribuyo o qué reglas sigue el equipo?** | [Cómo contribuir](./CONTRIBUTING.md) |
 | **¿Cómo se prueba lo crítico?** | [Estrategia de pruebas](./Estrategia-de-Pruebas.md) |
 | **¿Qué ha cambiado y en qué versión?** | [Changelog](./CHANGELOG.md) |
@@ -47,7 +53,15 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | [`Casos-de-Uso/03-Juego-y-Economia.md`](./Casos-de-Uso/03-Juego-y-Economia.md) | Monedero, gacha, minijuego y recompensas |
 | [`Casos-de-Uso/04-Notificaciones.md`](./Casos-de-Uso/04-Notificaciones.md) | Avisos y notificaciones |
 
-### 2.2 Estado real y contrato
+### 2.2 Uso y operación
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`Manual-de-Usuario.md`](./Manual-de-Usuario.md) | Qué puede hacer el usuario, paso a paso, con el **estado real** de cada pantalla (✅/⚠️/⬜) |
+| [`Guia-de-Instalacion.md`](./Guia-de-Instalacion.md) | Cómo levantar frontend y backend desde cero: requisitos, `.env`, base de datos y solución de problemas |
+| [`Despliegue.md`](./Despliegue.md) | Cómo se publicaría el proyecto en un servidor: estados, checklist de seguridad y pasos ilustrativos |
+
+### 2.3 Estado real y contrato
 
 | Documento | Qué contiene |
 | --- | --- |
@@ -57,7 +71,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | [`API/redocly.yaml`](./API/redocly.yaml) | Configuración del validador del contrato |
 | [`Diccionario-de-Datos.md`](./Diccionario-de-Datos.md) | Descripción campo a campo de las 26 entidades Prisma, enums, reglas de integridad y referencias entre servicios |
 
-### 2.3 Diagramas
+### 2.4 Diagramas
 
 | Documento | Qué contiene |
 | --- | --- |
@@ -65,7 +79,15 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | [`diagramas de flujo/tools/`](./diagramas%20de%20flujo/tools/) | Generador propio (Python, sin dependencias): especificación + layout + QA |
 | `diagramas de flujo/NN_*.svg` | Los 9 diagramas en SVG (flujos, arquitectura, secuencia, estados, modelo de datos) |
 
-### 2.4 Proceso del equipo
+### 2.5 Decisiones, vocabulario y seguridad documental
+
+| Documento | Qué contiene |
+| --- | --- |
+| [`Decisiones.md`](./Decisiones.md) | 14 ADR: por qué microservicios, una base por servicio, monedas por lotes, pagos simulados, clasificación de la información, etc. |
+| [`Politica-de-Seguridad-Documental.md`](./Politica-de-Seguridad-Documental.md) | Qué se puede publicar y qué no: las 3 capas de información, manejo de secretos y checklist previo |
+| [`Glosario.md`](./Glosario.md) | Todos los términos del proyecto (gacha, lote, JWT, migración…) explicados para juniors |
+
+### 2.6 Proceso del equipo
 
 | Documento | Qué contiene |
 | --- | --- |
@@ -120,6 +142,12 @@ Los `<área>` habituales son `BE` (backend), `BR` (reglas), `DB` (datos),
 | Cambiar la API | Editar `API/openapi.yaml` y validar con Redocly (ver `API/README.md` §7) |
 | Cambiar el modelo de datos | Editar `Diccionario-de-Datos.md`, regenerar el diagrama 09 y validar con `qa.py` |
 | Añadir un diagrama | Añadirlo a `tools/diagramas.py`, regenerar y registrarlo en su `README.md` |
+| Tomar una decisión de diseño | Crear un ADR en `Decisiones.md` |
+| Añadir una función visible para el usuario | Actualizar `Manual-de-Usuario.md` con su estado |
+| Cambiar cómo se levanta el proyecto | Actualizar `Guia-de-Instalacion.md` |
+| Cambiar algo del despliegue | Actualizar `Despliegue.md` |
+| Aparece un término nuevo | Añadirlo a `Glosario.md` |
+| Vas a documentar algo sensible | Consultar `Politica-de-Seguridad-Documental.md` antes de escribirlo |
 | Publicar un cambio del producto | Añadirlo a `CHANGELOG.md` |
 | Cambiar una regla del equipo | Editarla en `CONTRIBUTING.md`, no en la memoria de cada quien |
 

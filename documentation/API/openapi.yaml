@@ -41,10 +41,11 @@ info:
     > la sección de cada servicio en `prisma/schema.prisma`. Este documento no sustituye al
     > esquema: lo resume para el consumidor de la API.
 
-    > **Pendiente (no documentado como disponible):** el canje de descuentos con débito de
-    > monedas y la acreditación de monedas compradas están **pendientes** en el backend
-    > (ver `documentation/Trazabilidad.md`). Este contrato describe lo que hoy responde el
-    > código, no lo que se planea tener.
+    > **Alcance del contrato:** este documento describe lo que el código responde **hoy**.
+    > Algunas reglas de negocio aún se están **endureciendo** (canje de descuentos con
+    > débito de monedas y acreditación de monedas compradas). Se registran como **límites
+    > conocidos** para no prometer comportamiento que todavía no existe; el detalle se
+    > mantiene en el seguimiento interno del proyecto (`documentation/Trazabilidad.md`).
 
 servers:
   - url: http://localhost:3001
@@ -737,7 +738,8 @@ paths:
       description: |
         Convierte el carrito activo en un pedido dentro de una transacción:
         valida existencias, descuenta inventario y guarda el snapshot de precios.
-        **Pendiente:** el descuento por monedas (`discountLevelId`) no debita aún.
+        **Límite conocido:** la aplicación del descuento por monedas
+        (`discountLevelId`) está pendiente de endurecer en el backend.
       security:
         - bearerAuth: []
       requestBody:
@@ -1079,8 +1081,9 @@ paths:
       operationId: finishGameSession
       summary: Finalizar una sesión y acreditar monedas
       description: |
-        **Validación parcial:** hoy aplica una regla simple puntaje→monedas (tope 500).
-        La validación real contra el resultado del juego está pendiente (`FR-BE-17`).
+        **Validación en curso:** hoy se aplica una regla de conversión puntaje→monedas
+        (tope 500). El endurecimiento contra resultados manipulados está pendiente en el
+        backend (`FR-BE-17`).
       security:
         - bearerAuth: []
       parameters:
@@ -1217,8 +1220,8 @@ paths:
       operationId: createPayment
       summary: Crear un pago (simulado)
       description: |
-        Crea un pago. Con el proveedor `MOCK` se simula la pasarela. **Pendiente:** la
-        acreditación de monedas compradas aún no ocurre (ver `Trazabilidad.md` §12.1).
+        Crea un pago. Con el proveedor `MOCK` se simula la pasarela. **Límite conocido:**
+        la acreditación de monedas compradas en el monedero está pendiente de endurecer.
       security:
         - bearerAuth: []
       requestBody:
@@ -1332,8 +1335,8 @@ paths:
       operationId: createRecharge
       summary: Crear una recarga de monedas
       description: |
-        Asocia una recarga al pago correspondiente. **Pendiente:** la acreditación de
-        monedas en el economy-service aún no está implementada (`FR-BE-21`).
+        Asocia una recarga al pago correspondiente. **Límite conocido:** la acreditación
+        de monedas en el monedero está pendiente de endurecer (`FR-BE-21`).
       security:
         - bearerAuth: []
       requestBody:
@@ -1710,8 +1713,8 @@ components:
           type: string
           format: uuid
           description: |
-            Nivel de descuento a canjear. **Pendiente**: el débito de monedas asociado
-            aún no está implementado (ver `Trazabilidad.md` §12.1).
+            Nivel de descuento a canjear. **Límite conocido:** el débito de monedas
+            asociado está pendiente de endurecer.
     Order:
       type: object
       properties:
@@ -1914,7 +1917,12 @@ components:
         orderId: { type: [string, 'null'], format: uuid }
         amount: { type: number }
         currency: { type: string }
-        provider: { type: string, enum: [MOCK, STRIPE, MERCADOPAGO] }
+        provider:
+          type: string
+          enum: [MOCK, STRIPE, MERCADOPAGO]
+          description: |
+            Proveedor del pago. Hoy solo `MOCK` está operativo (pago simulado); los
+            demás son valores reservados para integraciones futuras, no disponibles.
         status: { type: string, enum: [PENDING, APPROVED, REJECTED, REFUNDED, CANCELLED] }
         externalId: { type: [string, 'null'] }
         failureReason: { type: [string, 'null'] }
@@ -1928,7 +1936,12 @@ components:
         amount: { type: number, exclusiveMinimum: 0 }
         currency: { type: string, minLength: 3, maxLength: 3 }
         orderId: { type: string, format: uuid }
-        provider: { type: string, enum: [MOCK, STRIPE, MERCADOPAGO] }
+        provider:
+          type: string
+          enum: [MOCK, STRIPE, MERCADOPAGO]
+          description: |
+            Proveedor del pago. Hoy solo `MOCK` está operativo (pago simulado); los
+            demás son valores reservados para integraciones futuras, no disponibles.
     PaginatedPayments:
       type: object
       required: [data, meta]

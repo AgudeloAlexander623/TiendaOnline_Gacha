@@ -53,6 +53,20 @@ de una respuesta de la API o el nombre de un `code` de error.
 - **Infraestructura local:** `infra/docker/docker-compose.yml` para levantar PostgreSQL por servicio con sus bases (`gearquest_identity/store/economy/payments`) e `initdb/01-create-databases.sql`.
 - **QA de diagramas:** `documentation/diagramas de flujo/tools/qa.py` para validación geométrica (solapes, cruces, texto dentro de lienzo). `generar.py` admite `--check` para CI (detecta SVG desactualizados).
 
+### Añadido — documentación de uso y operación
+- **Manual de usuario:** `documentation/Manual-de-Usuario.md`, recorrido funcional paso a paso con el **estado real** de cada pantalla (✅ funciona / ⚠️ a medias / ⬜ maqueta).
+- **Guía de instalación:** `documentation/Guia-de-Instalacion.md`, puesta en marcha desde cero (requisitos, `.env`, base de datos con Docker, migraciones, seeds, comandos y solución de problemas).
+- **Guía de despliegue:** `documentation/Despliegue.md`, cómo se publicaría el proyecto (estados honestos, checklist de seguridad, pasos ilustrativos y decisiones pendientes), coherente con el SRS de Infraestructura.
+- **Decisiones de arquitectura (ADR):** `documentation/Decisiones.md` con 14 ADR (microservicios, base por servicio, Prisma, autoridad del servidor, monedas por lotes, pagos simulados, JWT propuesto, clasificación de la información, etc.).
+- **Política de seguridad documental:** `documentation/Politica-de-Seguridad-Documental.md` con las 3 capas de información (pública/interna/restringida), reglas de redacción de límites conocidos, manejo de secretos y checklist de verificación previo a publicar.
+- **Glosario:** `documentation/Glosario.md`, vocabulario del proyecto explicado para personas sin experiencia (negocio, desarrollo web, bases de datos, juego, proceso).
+- **Índice maestro actualizado:** `documentation/README.md` enlaza y organiza los nuevos documentos por secciones (uso y operación, decisiones y vocabulario).
+
+### Seguridad
+- **Auditoría de la documentación:** revisión de los 29 documentos por 11 categorías de riesgo (secretos, credenciales, datos personales, direcciones reales, detalles explotables). Sin secretos ni datos críticos comprometidos.
+- **Tono de los límites conocidos:** en `documentation/API/openapi.yaml` se reformularon las notas de «pendiente/no valida» a «límite conocido / pendiente de endurecer», para informar sin dar munición a un atacante.
+- Toda la documentación nueva **no expone secretos ni datos críticos**: usa valores de ejemplo evidentemente falsos y remite los valores reales a variables de entorno fuera del repositorio (ver ADR-0013 y ADR-0014).
+
 ### Notas
 - El contrato API describe lo **realmente implementado**; no documenta como disponible lo que está pendiente (canje de descuentos con débito de monedas, acreditación de monedas compradas). Esto se deja explícito en `documentation/API/README.md` y se traza en `documentation/Trazabilidad.md` §12.1.
 - Se corrige la contradicción histórica del SRS ("lógica de negocio todavía no está implementada"): la matriz de trazabilidad refleja el estado real. El `README.md` del SRS se actualiza con un enlace a `../Trazabilidad.md`.

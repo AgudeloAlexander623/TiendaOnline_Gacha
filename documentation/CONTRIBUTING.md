@@ -44,7 +44,7 @@
 
 Formato:
 
-```
+```text
 <tipo>(<ámbito>): <descripción en imperativo, minúscula, sin punto final>
 
 [cuerpo opcional: el por qué, no el qué]
@@ -71,7 +71,7 @@ Formato:
 
 ### Ejemplos
 
-```
+```text
 feat(economy): acreditar monedas compradas al aprobar el pago
 
 Cierra el TODO(economia) de payments.service.ts. Se acredita un lote
@@ -80,14 +80,14 @@ PURCHASED (sin vencimiento) en una transacción única.
 Refs FR-BE-21 · UC-16
 ```
 
-```
+```text
 fix(store): congelar el precio del carrito al agregar el producto
 
 Sin este cambio, un cambio de precio alteraba carritos ya armados.
 Refs FR-BR-12
 ```
 
-```
+```text
 docs(api): documentar el endpoint de reembolsos en openapi.yaml
 ```
 
@@ -101,7 +101,7 @@ docs(api): documentar el endpoint de reembolsos en openapi.yaml
 
 ## 4. Flujo de trabajo
 
-```
+```text
 main ──► crea rama ──► commits ──► PR ──► revisión ──► merge a main
 ```
 

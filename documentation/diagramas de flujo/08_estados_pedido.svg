@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- GENERADO por documentation/diagramas de flujo/tools/generar.py — NO EDITAR A MANO. Editar svgkit.py / diagramas.py y regenerar. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1121" viewBox="0 0 1200 1121" role="img" aria-labelledby="titulo">
+<title id="titulo">GearQuest · Diagrama 08 — Ciclo de vida del pedido (estados propuestos)</title>
+<desc>Máquina de estados con transiciones etiquetadas por evento; el estado solo lo cambia el backend, con registro auditable.</desc>
+<defs>
+<filter id="softshadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0f172a" flood-opacity="0.14"/>
+</filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#475569"/></marker>
+<marker id="arr_ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#059669"/></marker>
+<marker id="arr_err" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#dc2626"/></marker>
+<marker id="arr_soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#94a3b8"/></marker>
+<marker id="arr_accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#4f46e5"/></marker>
+</defs>
+<rect x="0" y="0" width="1200" height="1121" fill="#ffffff"/>
+<rect x="24" y="20" width="36" height="36" rx="10" fill="#4f46e5"/>
+<text x="42" y="43" font-size="15" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GQ</text>
+<text x="72" y="42" font-size="19.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" font-weight="700">08 · Ciclo de vida del pedido (estados propuestos)</text>
+<text x="72" y="63" font-size="12.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif">Máquina de estados con transiciones etiquetadas por evento; el estado solo lo cambia el backend, con registro auditable.</text>
+<text x="72" y="85" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace">v1.0 · 2026-10-19 · Estado: propuesto (pendiente de aprobación) · Trazabilidad: UC-08, UC-09 · FR-BE-12, FR-BE-15 · GearQuest</text>
+<line x1="24" y1="106" x2="1176" y2="106" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<rect x="944" y="12" width="232" height="105" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="27" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="1.2">LEYENDA</text>
+<rect x="955" y="34" width="30" height="13" rx="6.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.4"/>
+<text x="996" y="44.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Inicio / fin del flujo</text>
+<rect x="955" y="50.5" width="30" height="14" rx="3.5" fill="#ffffff" stroke="#334155" stroke-width="1.4"/>
+<text x="996" y="61.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Proceso (paso del sistema)</text>
+<polygon points="970,66.5 987,74.5 970,82.5 953,74.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+<text x="996" y="78.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Decisión (pregunta)</text>
+<rect x="954" y="84.5" width="32" height="14" rx="7" fill="#4f46e5"/>
+<text x="970" y="94.7" font-size="8.5" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">svc</text>
+<text x="996" y="95.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Responsable (microservicio)</text>
+<line x1="955" y1="108.5" x2="982" y2="108.5" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arr_err)"/>
+<text x="996" y="112.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Ruta de error / excepción</text>
+<line x1="24" y1="1087" x2="1176" y2="1087" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<text x="24" y="1107" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace">Fuente: documentation/diagramas de flujo/08_estados_pedido.svg  ·  Regenerar: python3 tools/generar.py</text>
+<text x="1176" y="1107" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">Documento vivo: si cambia un requisito del SRS, actualizar y regenerar.</text>
+<circle cx="575" cy="175" r="12" fill="#0f172a"/>
+<rect x="450" y="241" width="250" height="78" rx="14" fill="None" filter="url(#softshadow)"/>
+<text x="575" y="265" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">PENDIENTE</text>
+<text x="575" y="283.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Pedido creado y stock reservado</text>
+<text x="689" y="311" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">UC-08</text>
+<rect x="450" y="398.5" width="250" height="93" rx="14" fill="None" filter="url(#softshadow)"/>
+<text x="575" y="422.5" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CONFIRMADO</text>
+<text x="575" y="440.65" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Pago simulado aprobado y stock</text>
+<text x="575" y="454.65" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">descontado</text>
+<text x="689" y="483.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BR-13</text>
+<rect x="840" y="406" width="250" height="78" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="965" y="430" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">FALLIDO</text>
+<text x="965" y="448.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Pago rechazado o stock insuficiente</text>
+<text x="1079" y="476" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-12</text>
+<rect x="60" y="406" width="250" height="78" rx="14" fill="#f8fafc" stroke="#64748b" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="185" y="430" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">CANCELADO</text>
+<text x="185" y="448.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Anulado por el cliente o por el sistema</text>
+<text x="299" y="476" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-15</text>
+<rect x="450" y="566" width="250" height="78" rx="14" fill="None" filter="url(#softshadow)"/>
+<text x="575" y="590" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">EN PREPARACIÓN</text>
+<text x="575" y="608.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Empaque y verificación del pedido</text>
+<text x="689" y="636" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">UC-09</text>
+<rect x="450" y="711" width="250" height="78" rx="14" fill="None" filter="url(#softshadow)"/>
+<text x="575" y="735" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">ENVIADO</text>
+<text x="575" y="753.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Despachado al transporte</text>
+<text x="689" y="781" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">UC-09</text>
+<rect x="450" y="856" width="250" height="78" rx="14" fill="None" filter="url(#softshadow)"/>
+<text x="575" y="880" font-size="12.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">ENTREGADO</text>
+<text x="575" y="898.15" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">• Entrega confirmada por el cliente</text>
+<text x="689" y="926" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">UC-09</text>
+<circle cx="575" cy="1010" r="14" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+<circle cx="575" cy="1010" r="7" fill="#0f172a"/>
+<circle cx="965" cy="575" r="14" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+<circle cx="965" cy="575" r="7" fill="#0f172a"/>
+<circle cx="185" cy="575" r="14" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+<circle cx="185" cy="575" r="7" fill="#0f172a"/>
+<rect x="850" y="732" width="300" height="126" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="1.7" filter="url(#softshadow)"/>
+<text x="1000" y="756" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Notas de diseño</text>
+<text x="864" y="776.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Estados propuestos: faltan por aprobar en</text>
+<text x="864" y="791.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Database.md §8 y Backend.md §8</text>
+<text x="864" y="806.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Todo cambio de estado deja movimiento auditable</text>
+<text x="864" y="821.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• El cliente solo puede cancelar PENDIENTE o</text>
+<text x="864" y="836.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">CONFIRMADO antes del envío</text>
+<text x="1139" y="850" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-15</text>
+<path d="M575,190 L575,241" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="209.5" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">confirmación (Flujo 01)</text>
+<path d="M575,319 L575,398.5" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="352.75" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">pago simulado aprobado</text>
+<path d="M667.18,319 L872.82,406" fill="none" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_err)"/>
+<text x="811.13" y="371.9" font-size="11" fill="#dc2626" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">pago rechazado / sin stock</text>
+<path d="M482.82,319 L277.18,406" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="380" y="354.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">cliente cancela</text>
+<path d="M872.82,406 L667.18,319" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="687.75" y="319.7" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">reintento</text>
+<path d="M965,484 L965,560" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="974" y="523.6" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">cierre</text>
+<path d="M185,484 L185,560" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="194" y="523.6" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">cierre</text>
+<path d="M450,445 L310,445" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="380" y="437" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">anulación en plazo</text>
+<path d="M575,491.5 L575,566" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="522.75" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">aceptado</text>
+<path d="M575,644 L575,711" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="671.5" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">despacho</text>
+<path d="M575,789 L575,856" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="816.5" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">entrega</text>
+<path d="M575,934 L575,995" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="584" y="958.5" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">fin del ciclo</text>
+</svg>

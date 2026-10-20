@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- GENERADO por documentation/diagramas de flujo/tools/generar.py — NO EDITAR A MANO. Editar svgkit.py / diagramas.py y regenerar. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1494" height="1253" viewBox="0 0 1494 1253" role="img" aria-labelledby="titulo">
+<title id="titulo">GearQuest · Diagrama 07 — Secuencia juego ↔ backend (validación de partidas)</title>
+<desc>Protocolo propuesto: el juego reporta y el servidor decide. Sin validación no hay monedas; los resultados manipulados generan alerta.</desc>
+<defs>
+<filter id="softshadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0f172a" flood-opacity="0.14"/>
+</filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#475569"/></marker>
+<marker id="arr_ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#059669"/></marker>
+<marker id="arr_err" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#dc2626"/></marker>
+<marker id="arr_soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#94a3b8"/></marker>
+<marker id="arr_accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#4f46e5"/></marker>
+</defs>
+<rect x="0" y="0" width="1494" height="1253" fill="#ffffff"/>
+<rect x="24" y="20" width="36" height="36" rx="10" fill="#4f46e5"/>
+<text x="42" y="43" font-size="15" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GQ</text>
+<text x="72" y="42" font-size="19.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" font-weight="700">07 · Secuencia juego ↔ backend (validación de partidas)</text>
+<text x="72" y="63" font-size="12.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif">Protocolo propuesto: el juego reporta y el servidor decide. Sin validación no hay monedas; los resultados manipulados generan alerta.</text>
+<text x="72" y="85" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace">v1.0 · 2026-10-19 · Estado: revisado · Trazabilidad: UC-12, UC-13 · FR-BE-17, FR-GA-19, FR-GA-20, NFR-GA-02 (protocolo: Game.md §8.6 pendiente) · GearQuest</text>
+<line x1="24" y1="106" x2="1470" y2="106" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<rect x="1238" y="12" width="232" height="105" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1252" y="27" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="1.2">LEYENDA</text>
+<rect x="1249" y="34" width="30" height="13" rx="6.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.4"/>
+<text x="1290" y="44.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Inicio / fin del flujo</text>
+<rect x="1249" y="50.5" width="30" height="14" rx="3.5" fill="#ffffff" stroke="#334155" stroke-width="1.4"/>
+<text x="1290" y="61.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Proceso (paso del sistema)</text>
+<polygon points="1264,66.5 1281,74.5 1264,82.5 1247,74.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+<text x="1290" y="78.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Decisión (pregunta)</text>
+<rect x="1248" y="84.5" width="32" height="14" rx="7" fill="#4f46e5"/>
+<text x="1264" y="94.7" font-size="8.5" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">svc</text>
+<text x="1290" y="95.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Responsable (microservicio)</text>
+<line x1="1249" y1="108.5" x2="1276" y2="108.5" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arr_err)"/>
+<text x="1290" y="112.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Ruta de error / excepción</text>
+<line x1="24" y1="1219" x2="1470" y2="1219" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<text x="24" y="1239" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace">Fuente: documentation/diagramas de flujo/07_secuencia_juego_backend.svg  ·  Regenerar: python3 tools/generar.py</text>
+<text x="1470" y="1239" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">Documento vivo: si cambia un requisito del SRS, actualizar y regenerar.</text>
+<rect x="32" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#334155" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="107" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Jugador</text>
+<text x="107" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">persona que juega</text>
+<line x1="107" y1="194" x2="107" y2="1213" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="352" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#4f46e5" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="427" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Juego (Godot)</text>
+<text x="427" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">cliente C++ · JWT</text>
+<line x1="427" y1="194" x2="427" y2="1213" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="672" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#ea580c" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="747" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">economy-service</text>
+<text x="747" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">:3003 · monedas</text>
+<line x1="747" y1="194" x2="747" y2="1213" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="992" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#1d4ed8" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="1067" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">PostgreSQL</text>
+<text x="1067" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">bd_economy</text>
+<line x1="1067" y1="194" x2="1067" y2="1213" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="1312" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="1387" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">servicio Python</text>
+<text x="1387" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">análisis de riesgo</text>
+<line x1="1387" y1="194" x2="1387" y2="1213" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="397" y="650" width="380" height="402" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.75"/>
+<rect x="397" y="650" width="62" height="18" fill="#94a3b8" stroke="#94a3b8" stroke-width="1.3"/>
+<text x="428" y="663" font-size="10" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">alt</text>
+<rect x="422" y="222" width="10" height="846" rx="2" fill="#4f46e5" stroke="#4f46e5" stroke-width="1.1" opacity="0.22"/>
+<rect x="422" y="487" width="10" height="52" rx="2" fill="#4f46e5" stroke="#4f46e5" stroke-width="1.1" opacity="0.22"/>
+<rect x="742" y="284" width="10" height="722" rx="2" fill="#ea580c" stroke="#ea580c" stroke-width="1.1" opacity="0.22"/>
+<rect x="742" y="344" width="10" height="52" rx="2" fill="#ea580c" stroke="#ea580c" stroke-width="1.1" opacity="0.22"/>
+<rect x="1062" y="685" width="10" height="74" rx="2" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="1.1" opacity="0.22"/>
+<line x1="114" y1="228" x2="418" y2="228" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="267" y="214.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Selecciona «continuar aventura» con su cuenta</text>
+<line x1="434" y1="290" x2="738" y2="290" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="587" y="276.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">POST /sessions/start — Bearer JWT (FR-GA-18)</text>
+<path d="M754,352 L793,352 Q801,352 801,361 L801,376 Q801,385 793,385 L756,385" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="811" y="363.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Verifica el token y crea la partida con clave de</text>
+<text x="811" y="378.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">idempotencia</text>
+<line x1="740" y1="418" x2="436" y2="418" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="587" y="389.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">202 · sessionId y reglas del servidor (costes,</text>
+<text x="587" y="404.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">probabilidades)</text>
+<path d="M434,495 L473,495 Q481,495 481,504 L481,519 Q481,528 473,528 L436,528" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="491" y="506.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Partida local: el cliente solo representa, no</text>
+<text x="491" y="521.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">calcula saldos (FR-GA-20)</text>
+<line x1="434" y1="561" x2="738" y2="561" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="587" y="547.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">POST /sessions/{id}/result — resultado de la partida</text>
+<rect x="717" y="623" width="380" height="42" rx="5" fill="#fefce8" stroke="#ca8a04" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="729" y="640.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">«resultado válido» → el servidor recalcula las monedas con su</text>
+<text x="729" y="655.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">propia tabla (FR-BE-17).</text>
+<line x1="754" y1="691" x2="1058" y2="691" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="907" y="677.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">BEGIN · INSERT movimiento · UPDATE saldo</text>
+<line x1="1060" y1="753" x2="756" y2="753" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="907" y="739.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">COMMIT</text>
+<line x1="740" y1="815" x2="436" y2="815" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="587" y="801.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">200 · monedas acreditadas y saldo total</text>
+<rect x="397" y="877" width="380" height="27" rx="5" fill="#fefce8" stroke="#ca8a04" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="409" y="894.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">«resultado inválido o manipulado» → sin acreditación (NFR-GA-02).</text>
+<line x1="740" y1="930" x2="436" y2="930" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="587" y="916.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">422 · rechazo con mensaje genérico</text>
+<line x1="754" y1="992" x2="1378" y2="992" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1067" y="978.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">evento sospechoso (complementario · FR-SEC-10)</text>
+<line x1="420" y1="1054" x2="116" y2="1054" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="267" y="1025.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Aviso en pantalla: monedero actualizado (fuente de</text>
+<text x="267" y="1040.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">verdad: backend)</text>
+<rect x="77" y="1131" width="700" height="42" rx="5" fill="#fefce8" stroke="#ca8a04" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="89" y="1148.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Sin conexión con el servidor el juego lo informa y no otorga</text>
+<text x="89" y="1163.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">monedas ni tiradas (FR-GA-22).</text>
+</svg>

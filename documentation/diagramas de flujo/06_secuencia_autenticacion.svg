@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- GENERADO por documentation/diagramas de flujo/tools/generar.py — NO EDITAR A MANO. Editar svgkit.py / diagramas.py y regenerar. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1198" viewBox="0 0 1240 1198" role="img" aria-labelledby="titulo">
+<title id="titulo">GearQuest · Diagrama 06 — Secuencia de autenticación y autorización</title>
+<desc>Registro/login con hash en el servidor, JWT firmado y middleware que verifica identidad y rol en cada petición.</desc>
+<defs>
+<filter id="softshadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0f172a" flood-opacity="0.14"/>
+</filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#475569"/></marker>
+<marker id="arr_ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#059669"/></marker>
+<marker id="arr_err" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#dc2626"/></marker>
+<marker id="arr_soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#94a3b8"/></marker>
+<marker id="arr_accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#4f46e5"/></marker>
+</defs>
+<rect x="0" y="0" width="1240" height="1198" fill="#ffffff"/>
+<rect x="24" y="20" width="36" height="36" rx="10" fill="#4f46e5"/>
+<text x="42" y="43" font-size="15" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GQ</text>
+<text x="72" y="42" font-size="19.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" font-weight="700">06 · Secuencia de autenticación y autorización</text>
+<text x="72" y="63" font-size="12.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif">Registro/login con hash en el servidor, JWT firmado y middleware que verifica identidad y rol en cada petición.</text>
+<text x="72" y="85" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace">v1.0 · 2026-10-19 · Estado: revisado · Trazabilidad: UC-01, UC-02, UC-03 · FR-BE-05, FR-BE-06, FR-SEC-01, FR-SEC-02 · GearQuest</text>
+<line x1="24" y1="106" x2="1216" y2="106" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<rect x="984" y="12" width="232" height="105" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="998" y="27" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="1.2">LEYENDA</text>
+<rect x="995" y="34" width="30" height="13" rx="6.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.4"/>
+<text x="1036" y="44.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Inicio / fin del flujo</text>
+<rect x="995" y="50.5" width="30" height="14" rx="3.5" fill="#ffffff" stroke="#334155" stroke-width="1.4"/>
+<text x="1036" y="61.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Proceso (paso del sistema)</text>
+<polygon points="1010,66.5 1027,74.5 1010,82.5 993,74.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+<text x="1036" y="78.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Decisión (pregunta)</text>
+<rect x="994" y="84.5" width="32" height="14" rx="7" fill="#4f46e5"/>
+<text x="1010" y="94.7" font-size="8.5" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">svc</text>
+<text x="1036" y="95.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Responsable (microservicio)</text>
+<line x1="995" y1="108.5" x2="1022" y2="108.5" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arr_err)"/>
+<text x="1036" y="112.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Ruta de error / excepción</text>
+<line x1="24" y1="1164" x2="1216" y2="1164" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<text x="24" y="1184" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace">Fuente: documentation/diagramas de flujo/06_secuencia_autenticacion.svg  ·  Regenerar: python3 tools/generar.py</text>
+<text x="1216" y="1184" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">Documento vivo: si cambia un requisito del SRS, actualizar y regenerar.</text>
+<rect x="51.5" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#334155" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="126.5" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Cliente</text>
+<text x="126.5" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">navegador</text>
+<line x1="126.5" y1="194" x2="126.5" y2="1158" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="376.5" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#2563eb" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="451.5" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Frontend</text>
+<text x="451.5" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">React · services/</text>
+<line x1="451.5" y1="194" x2="451.5" y2="1158" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="701.5" y="138" width="162" height="56" rx="9" fill="#f8fafc" stroke="#7c3aed" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="782.5" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">identity-service</text>
+<text x="782.5" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">:3001 · Express + Zod</text>
+<line x1="782.5" y1="194" x2="782.5" y2="1158" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="1038.5" y="138" width="150" height="56" rx="9" fill="#f8fafc" stroke="#1d4ed8" stroke-width="1.8" filter="url(#softshadow)"/>
+<text x="1113.5" y="163" font-size="13.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">PostgreSQL</text>
+<text x="1113.5" y="181" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">bd_identity</text>
+<line x1="1113.5" y1="194" x2="1113.5" y2="1158" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="6 6"/>
+<rect x="421.5" y="520" width="391" height="231" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.75"/>
+<rect x="421.5" y="520" width="62" height="18" fill="#94a3b8" stroke="#94a3b8" stroke-width="1.3"/>
+<text x="452.5" y="533" font-size="10" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">alt</text>
+<rect x="446.5" y="222" width="10" height="537" rx="2" fill="#2563eb" stroke="#2563eb" stroke-width="1.1" opacity="0.22"/>
+<rect x="777.5" y="284" width="10" height="750" rx="2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1.1" opacity="0.22"/>
+<rect x="777.5" y="344" width="10" height="52" rx="2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1.1" opacity="0.22"/>
+<rect x="777.5" y="534" width="10" height="52" rx="2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1.1" opacity="0.22"/>
+<rect x="777.5" y="946" width="10" height="52" rx="2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1.1" opacity="0.22"/>
+<rect x="1108.5" y="412" width="10" height="74" rx="2" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="1.1" opacity="0.22"/>
+<line x1="133.5" y1="228" x2="442.5" y2="228" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="289" y="214.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Envía el formulario de inicio de sesión (/login)</text>
+<line x1="458.5" y1="290" x2="773.5" y2="290" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="617" y="276.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">POST /auth/login { email, password }</text>
+<path d="M789.5,352 L828.5,352 Q836.5,352 836.5,361 L836.5,376 Q836.5,385 828.5,385 L791.5,385" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="846.5" y="363.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Valida el esquema con Zod y aplica rate limit</text>
+<text x="846.5" y="378.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">(FR-SEC-04)</text>
+<line x1="789.5" y1="418" x2="1104.5" y2="418" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="948" y="404.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">SELECT usuario por correo</text>
+<line x1="1106.5" y1="480" x2="791.5" y2="480" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="948" y="466.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Registro con hash Argon2id/bcrypt y rol</text>
+<path d="M789.5,542 L828.5,542 Q836.5,542 836.5,551 L836.5,566 Q836.5,575 828.5,575 L791.5,575" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="846.5" y="553.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Compara el hash sin exponer la contraseña</text>
+<text x="846.5" y="568.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">(FR-SEC-01)</text>
+<line x1="775.5" y1="608" x2="460.5" y2="608" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="617" y="594.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">200 · access token (JWT) + refresh en cookie httpOnly</text>
+<rect x="421.5" y="670" width="391" height="57" rx="5" fill="#fefce8" stroke="#ca8a04" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="433.5" y="687.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Rama alternativa: credenciales inválidas → 401 con mensaje</text>
+<text x="433.5" y="702.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">genérico, sin distinguir usuario inexistente de contraseña incorrecta</text>
+<text x="433.5" y="717.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">(FR-SEC-08).</text>
+<line x1="444.5" y1="753" x2="135.5" y2="753" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="289" y="724.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Sesión iniciada; el token no se expone en el código</text>
+<text x="289" y="739.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">(NFR-FE-03)</text>
+<line x1="133.5" y1="830" x2="442.5" y2="830" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="289" y="816.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Navega a una ruta protegida (/perfil)</text>
+<line x1="458.5" y1="892" x2="773.5" y2="892" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="617" y="878.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">GET /users/me — Authorization: Bearer &lt;jwt&gt;</text>
+<path d="M789.5,954 L828.5,954 Q836.5,954 836.5,963 L836.5,978 Q836.5,987 828.5,987 L791.5,987" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="846.5" y="965.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Middleware: firma, expiración y rol (cliente/admin)</text>
+<line x1="775.5" y1="1020" x2="460.5" y2="1020" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="617" y="1006.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">200 · perfil, o 401 si el token venció</text>
+<line x1="444.5" y1="1082" x2="135.5" y2="1082" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="289" y="1068.95" font-size="11.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Perfil visible; sin datos de otros usuarios (FR-BE-07)</text>
+</svg>

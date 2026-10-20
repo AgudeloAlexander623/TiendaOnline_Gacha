@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- GENERADO por documentation/diagramas de flujo/tools/generar.py — NO EDITAR A MANO. Editar svgkit.py / diagramas.py y regenerar. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="936" viewBox="0 0 1600 936" role="img" aria-labelledby="titulo">
+<title id="titulo">GearQuest · Diagrama 05 — Arquitectura general (contenedores)</title>
+<desc>Monorepo con frontend React, cuatro microservicios Node, una base PostgreSQL por servicio, juego Godot y análisis en Python.</desc>
+<defs>
+<filter id="softshadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0f172a" flood-opacity="0.14"/>
+</filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#475569"/></marker>
+<marker id="arr_ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#059669"/></marker>
+<marker id="arr_err" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#dc2626"/></marker>
+<marker id="arr_soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#94a3b8"/></marker>
+<marker id="arr_accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 L2.4,5 Z" fill="#4f46e5"/></marker>
+</defs>
+<rect x="0" y="0" width="1600" height="936" fill="#ffffff"/>
+<rect x="24" y="20" width="36" height="36" rx="10" fill="#4f46e5"/>
+<text x="42" y="43" font-size="15" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">GQ</text>
+<text x="72" y="42" font-size="19.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" font-weight="700">05 · Arquitectura general (contenedores)</text>
+<text x="72" y="63" font-size="12.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif">Monorepo con frontend React, cuatro microservicios Node, una base PostgreSQL por servicio, juego Godot y análisis en Python.</text>
+<text x="72" y="85" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace">v1.0 · 2026-10-19 · Estado: revisado · Trazabilidad: README §6 · FR-DB-01 · NFR-BE-07 · NFR-BE-08 · GearQuest</text>
+<line x1="24" y1="106" x2="1576" y2="106" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<rect x="1344" y="12" width="232" height="105" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1358" y="27" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="1.2">LEYENDA</text>
+<rect x="1355" y="34" width="30" height="13" rx="6.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.4"/>
+<text x="1396" y="44.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Inicio / fin del flujo</text>
+<rect x="1355" y="50.5" width="30" height="14" rx="3.5" fill="#ffffff" stroke="#334155" stroke-width="1.4"/>
+<text x="1396" y="61.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Proceso (paso del sistema)</text>
+<polygon points="1370,66.5 1387,74.5 1370,82.5 1353,74.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+<text x="1396" y="78.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Decisión (pregunta)</text>
+<rect x="1354" y="84.5" width="32" height="14" rx="7" fill="#4f46e5"/>
+<text x="1370" y="94.7" font-size="8.5" fill="#ffffff" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle" font-weight="700">svc</text>
+<text x="1396" y="95.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Responsable (microservicio)</text>
+<line x1="1355" y1="108.5" x2="1382" y2="108.5" stroke="#dc2626" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arr_err)"/>
+<text x="1396" y="112.3" font-size="10.5" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">Ruta de error / excepción</text>
+<line x1="24" y1="902" x2="1576" y2="902" stroke="#e2e8f0" stroke-width="1.2" stroke-linecap="butt"/>
+<text x="24" y="922" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace">Fuente: documentation/diagramas de flujo/05_arquitectura_general.svg  ·  Regenerar: python3 tools/generar.py</text>
+<text x="1576" y="922" font-size="9.5" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">Documento vivo: si cambia un requisito del SRS, actualizar y regenerar.</text>
+<rect x="636.6" y="160" width="630" height="680" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+<text x="650.6" y="181" font-size="11" fill="#94a3b8" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-weight="700" letter-spacing="0.6">docker-compose · backend/infra/docker</text>
+<text x="906.8" y="181" font-size="10.5" fill="#64748b" font-family="Arial, Helvetica, sans-serif" font-style="italic">entorno reproducible (NFR-BE-08)</text>
+<circle cx="111.6" cy="216" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<line x1="111.6" y1="227" x2="111.6" y2="256" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="96.6" y1="237" x2="126.6" y2="237" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="111.6" y1="256" x2="98.6" y2="278" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="111.6" y1="256" x2="124.6" y2="278" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<text x="111.6" y="292" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Cliente</text>
+<text x="111.6" y="308" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">navegador</text>
+<circle cx="111.6" cy="406" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<line x1="111.6" y1="417" x2="111.6" y2="446" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="96.6" y1="427" x2="126.6" y2="427" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="111.6" y1="446" x2="98.6" y2="468" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="111.6" y1="446" x2="124.6" y2="468" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+<text x="111.6" y="482" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Administrador</text>
+<text x="111.6" y="498" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">rol admin</text>
+<rect x="241.6" y="217" width="260" height="96" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="371.6" y="241" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Frontend web</text>
+<text x="255.6" y="261.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• React 18 + TypeScript + Vite + Tailwind</text>
+<text x="255.6" y="276.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• src/features/* · services/ (única capa HTTP)</text>
+<text x="255.6" y="291.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Precios, saldos y permisos: solo del backend</text>
+<text x="490.6" y="305" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-FE-10 · NFR-FE-03</text>
+<rect x="241.6" y="489.5" width="260" height="111" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="371.6" y="513.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Juego (GAME/ · pendiente)</text>
+<text x="255.6" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Godot 2D + C++ · aventura, gacha y</text>
+<text x="255.6" y="549.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">minijuego</text>
+<text x="255.6" y="564.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Reporta resultados; nunca fija saldos</text>
+<text x="255.6" y="579.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Sesión válida obligatoria (FR-GA-18)</text>
+<text x="490.6" y="592.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-GA-19 · FR-GA-20</text>
+<rect x="679.1" y="209.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="786.6" y="233.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">identity-service :3001</text>
+<text x="693.1" y="254.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Registro, login, JWT y roles</text>
+<text x="693.1" y="269.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Módulos: auth · users · health</text>
+<text x="883.1" y="282.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-05 · FR-BE-08</text>
+<rect x="679.1" y="349.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="786.6" y="373.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">store-service :3002</text>
+<text x="693.1" y="394.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Catálogo, carrito, pedidos</text>
+<text x="693.1" y="409.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Inventario y niveles de descuento</text>
+<text x="883.1" y="422.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-12 · FR-BE-13</text>
+<rect x="679.1" y="489.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="786.6" y="513.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">economy-service :3003</text>
+<text x="693.1" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Monedero, gacha y recompensas</text>
+<text x="693.1" y="549.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Movimientos, vencimientos y reglas</text>
+<text x="883.1" y="562.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-16 · FR-BE-18</text>
+<rect x="679.1" y="629.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="786.6" y="653.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">payments-service :3004</text>
+<text x="693.1" y="674.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Recargas simuladas</text>
+<text x="693.1" y="689.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Sin datos bancarios ni dinero real</text>
+<text x="883.1" y="702.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-20 · FR-BE-21</text>
+<path d="M1037.6,241 L1037.6,259 A84,9 0 0 0 1205.6,259 L1205.6,241 Z" fill="None" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1037.6,259 A84,9 0 0 0 1205.6,259" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="1121.6" cy="241" rx="84" ry="9" fill="None" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="1121.6" y="284" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">base propia (FR-DB-01)</text>
+<path d="M1037.6,381 L1037.6,399 A84,9 0 0 0 1205.6,399 L1205.6,381 Z" fill="None" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1037.6,399 A84,9 0 0 0 1205.6,399" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="1121.6" cy="381" rx="84" ry="9" fill="None" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="1121.6" y="424" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">base propia (FR-DB-01)</text>
+<path d="M1037.6,521 L1037.6,539 A84,9 0 0 0 1205.6,539 L1205.6,521 Z" fill="None" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1037.6,539 A84,9 0 0 0 1205.6,539" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="1121.6" cy="521" rx="84" ry="9" fill="None" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="1121.6" y="564" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">base propia (FR-DB-01)</text>
+<path d="M1037.6,661 L1037.6,679 A84,9 0 0 0 1205.6,679 L1205.6,661 Z" fill="None" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1037.6,679 A84,9 0 0 0 1205.6,679" fill="none" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="1121.6" cy="661" rx="84" ry="9" fill="None" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="1121.6" y="704" font-size="10" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="middle">base propia (FR-DB-01)</text>
+<rect x="644.1" y="739.5" width="285" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="786.6" y="763.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Notificaciones</text>
+<text x="658.1" y="784.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Internas siempre; correo y SMS opcionales</text>
+<text x="658.1" y="799.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Se activan solo con proveedor configurado</text>
+<text x="918.1" y="812.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-NO-01 · FR-NO-07</text>
+<rect x="1319.1" y="482" width="235" height="96" rx="10" fill="None" filter="url(#softshadow)"/>
+<text x="1436.6" y="506" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Análisis de fraude (Python)</text>
+<text x="1333.1" y="526.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• FastAPI: recibe eventos y puntúa riesgo</text>
+<text x="1333.1" y="541.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Complementario: no valida reglas</text>
+<text x="1333.1" y="556.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">críticas</text>
+<text x="1543.1" y="570" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-SEC-10</text>
+<rect x="221.6" y="742" width="300" height="96" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="1.7" filter="url(#softshadow)"/>
+<text x="371.6" y="766" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Regla transversal</text>
+<text x="235.6" y="786.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• El backend es la fuente de verdad: ningún cliente</text>
+<text x="235.6" y="801.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">envía saldos o precios que se acepten sin validar</text>
+<text x="235.6" y="816.8" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Kubernetes opcional (Infrastructure.md §7)</text>
+<text x="510.6" y="830" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BR-16</text>
+<path d="M148.6,252.13 L241.6,257.5" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="195.1" y="246.82" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">HTTPS · SPA</text>
+<path d="M167.3,402.51 L300.29,313" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="233.79" y="349.75" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">gestión (FR-BE-08)</text>
+<path d="M501.6,260.3 L679.1,253.89" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="599.23" y="248.77" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">REST/JSON · JWT</text>
+<path d="M501.6,304.16 L679.1,357.62" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="611.65" y="329.3" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">catálogo y pedidos</text>
+<path d="M446.77,313 L723.18,489.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="584.97" y="393.25" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">monedero y descuentos</text>
+<path d="M420.79,313 L745.1,629.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="615.37" y="494.9" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">recargas simuladas</text>
+<path d="M501.6,540.3 L679.1,533.89" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr_ok)"/>
+<text x="599.23" y="528.77" font-size="11" fill="#059669" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">sesión, tiradas y resultados</text>
+<path d="M371.6,489.5 L371.6,489.5 Q371.6,489.5 371.6,489 L371.6,313.5 Q371.6,313 371.6,313 L371.6,313" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="380.6" y="430.55" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">integración en la tienda (pendiente)</text>
+<path d="M894.1,250 L1037.6,250" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<path d="M894.1,390 L1037.6,390" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<path d="M894.1,530 L1037.6,530" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<path d="M894.1,670 L1037.6,670" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<path d="M786.6,430.5 L973,430.5 Q985,430.5 985,442.5 L985,727.5 Q985,739.5 973,739.5 L786.6,739.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="963.05" y="731.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">evento</text>
+<path d="M786.6,570.5 L948,570.5 Q960,570.5 960,582.5 L960,727.5 Q960,739.5 948,739.5 L786.6,739.5" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="915.55" y="731.5" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">evento</text>
+<path d="M753.96,739.5 L567,739.5 Q555,739.5 555,727.5 L555,325 Q555,313 543,313 L410.28,313" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="564" y="662.9" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">avisos internos</text>
+<path d="M894.1,530 L894.1,497 Q894.1,485 906.1,485 L1307.1,485 Q1319.1,485 1319.1,497 L1319.1,530" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1132.35" y="477" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">eventos de riesgo</text>
+<path d="M1319.1,504.69 L894.1,413.15" fill="none" stroke="#94a3b8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arr_soft)"/>
+<text x="1170.35" y="464.65" font-size="11" fill="#94a3b8" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700" stroke="#ffffff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">alerta para revisión</text>
+</svg>

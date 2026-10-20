@@ -234,7 +234,7 @@ Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
 ├── GAME/                           # Proyecto Godot (C++): gacha y minijuego      (pendiente)
 ├── DataBase/                       # Recursos y scripts de base de datos          (pendiente)
 ├── documentation/
-│   └── diagramas de flujo/         # Diagramas de los flujos principales (borradores)
+│   └── diagramas de flujo/         # 8 diagramas SVG generados (flujos, arquitectura, secuencias, estados)
 └── README.MD                       # Documentación principal del proyecto
 ```
 

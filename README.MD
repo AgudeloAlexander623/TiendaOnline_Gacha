@@ -9,7 +9,7 @@
 
 | # | Nombre completo | Rol | Contacto | Codigo |
 | --- | --- | --- | --- |
-| 1 | _(Jessid Alexander Agudelo Herrera)_ | _(Programador Backend)_ | _(jessid.agudelo@correounivalle.edu.co)_ | _(2478460)_ | 
+| 1 | _Jessid Alexander Agudelo Herrera_ | _Programador Backend_ | _jessid.agudelo@correounivalle.edu.co_ | _2478460_ | 
 | 2 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
 | 3 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |
 | 4 | _(pendiente: añadir nombre)_ | _(pendiente: definir rol)_ | _(pendiente)_ | _(pendiente)_ |

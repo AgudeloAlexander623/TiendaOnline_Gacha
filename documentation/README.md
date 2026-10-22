@@ -27,6 +27,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | **¿Cómo hablo con el backend (rutas, datos, errores)?** | [Contrato de la API](./API/README.md) |
 | **¿Cómo se hablan los servicios entre sí?** | [Contrato entre servicios](./Contrato-entre-servicios.md) |
 | **¿Cómo son las tablas y los campos?** | [Diccionario de datos](./Diccionario-de-Datos.md) |
+| **¿Qué vende la tienda y cómo se compra?** | [Catálogo por familias](./Catalogo-por-Familias.md) |
 | **¿Cómo se ve un flujo o la arquitectura?** | [Diagramas](./diagramas%20de%20flujo/README.md) |
 | **¿Y qué no debo publicar?** | [Política de seguridad documental](./Politica-de-Seguridad-Documental.md) |
 | **¿Cómo se publica el proyecto?** | [Guía de despliegue](./Despliegue.md) |
@@ -43,8 +44,9 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 
 | Documento | Qué contiene |
 | --- | --- |
-| [`Epicas-e-Historias.md`](./Epicas-e-Historias.md) | Las **4 épicas** y las **19 historias de usuario**, con criterios de aceptación |
-| [`Historias-Tecnicas.md`](./Historias-Tecnicas.md) | Las **24 historias técnicas** que habilitan las historias de usuario (integración, integridad, infra, CI, juego, avisos) |
+| [`Epicas-e-Historias.md`](./Epicas-e-Historias.md) | Las **4 épicas** y las **20 historias de usuario**, con criterios de aceptación |
+| [`Historias-Tecnicas.md`](./Historias-Tecnicas.md) | Las **29 historias técnicas** que habilitan las historias de usuario (integración, integridad, infra, CI, juego, avisos, catálogo por familias) |
+| [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) | La **página de ventas** en tres familias (periféricos, licencias y juegos) con **un solo carrito y un solo pago**: alcance, recorrido de compra, reglas, fases y riesgos |
 | [`Definition-of-Done.md`](./Definition-of-Done.md) | Checklist de «terminado» para toda tarea, con 3 niveles (tarea, historia, épica) |
 | [`Software-requeriments(SRS)/README.md`](./Software-requeriments\(SRS\)/README.md) | Puerta de entrada al SRS: cómo leerlo y alcance |
 | [`Software-requeriments(SRS)/Backend.md`](./Software-requeriments\(SRS\)/Backend.md) | Requisitos funcionales y no funcionales del backend |
@@ -55,7 +57,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 | [`Software-requeriments(SRS)/Infrastructure.md`](./Software-requeriments\(SRS\)/Infrastructure.md) | Entornos, Docker, despliegue |
 | [`Software-requeriments(SRS)/Notifications.md`](./Software-requeriments\(SRS\)/Notifications.md) | Notificaciones y avisos |
 | [`Software-requeriments(SRS)/Security.md`](./Software-requeriments\(SRS\)/Security.md) | Autenticación, autorización y protección de datos |
-| [`Casos-de-Uso/README.md`](./Casos-de-Uso/README.md) | Índice de los 19 casos de uso |
+| [`Casos-de-Uso/README.md`](./Casos-de-Uso/README.md) | Índice de los 22 casos de uso |
 | [`Casos-de-Uso/01-Identidad-y-Usuarios.md`](./Casos-de-Uso/01-Identidad-y-Usuarios.md) | Registro, sesión, perfil y administración de usuarios |
 | [`Casos-de-Uso/02-Tienda-y-Pedidos.md`](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | Catálogo, carrito, checkout y pedidos |
 | [`Casos-de-Uso/03-Juego-y-Economia.md`](./Casos-de-Uso/03-Juego-y-Economia.md) | Monedero, aventura, mercader, ruleta y recompensas |
@@ -73,7 +75,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 
 | Documento | Qué contiene |
 | --- | --- |
-| [`Trazabilidad.md`](./Trazabilidad.md) | **Matriz requisito → estado → evidencia** para los 154 requisitos y los 19 casos de uso; hallazgos, deuda técnica y contradicciones resueltas |
+| [`Trazabilidad.md`](./Trazabilidad.md) | **Matriz requisito → estado → evidencia** para los 164 requisitos y los 22 casos de uso; hallazgos, deuda técnica y contradicciones resueltas |
 | [`API/README.md`](./API/README.md) | Guía del contrato: cómo verlo, autenticación, formato de errores y mapa de servicios |
 | [`API/openapi.yaml`](./API/openapi.yaml) | Contrato OpenAPI 3.1 de los 4 microservicios (fuente de verdad del formato de la API) |
 | [`API/redocly.yaml`](./API/redocly.yaml) | Configuración del validador del contrato |
@@ -92,7 +94,7 @@ Piensa en esta carpeta como un edificio con entradas distintas según lo que nec
 
 | Documento | Qué contiene |
 | --- | --- |
-| [`Decisiones.md`](./Decisiones.md) | 16 ADR: por qué microservicios, una base por servicio, monedas por lotes, pagos simulados, ruta base única con proxy inverso, clasificación de la información, etc. |
+| [`Decisiones.md`](./Decisiones.md) | 17 ADR: por qué microservicios, una base por servicio, monedas por lotes, pagos simulados, ruta base única con proxy inverso, catálogo por familias con carrito único, clasificación de la información, etc. |
 | [`Politica-de-Seguridad-Documental.md`](./Politica-de-Seguridad-Documental.md) | Qué se puede publicar y qué no: las 3 capas de información, manejo de secretos y checklist previo |
 | [`Glosario.md`](./Glosario.md) | Todos los términos del proyecto (ruleta, lote, JWT, migración…) explicados para juniors |
 

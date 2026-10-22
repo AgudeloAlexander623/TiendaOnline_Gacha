@@ -1,7 +1,7 @@
 # Casos de Uso — GearQuest
 
 > **Proyecto:** GearQuest — tienda de periféricos con aventura, mercader y ruleta
-> **Estado:** Borrador para revisión · **Versión:** 1.0 — 2026-10-18
+> **Estado:** Borrador para revisión · **Versión:** 1.1 — 2026-10-22
 > **Complementa a:** [Especificación de Requisitos (SRS)](../Software-requeriments\(SRS\)/README.md)
 
 ---
@@ -76,6 +76,9 @@ Algunos casos se conectan entre sí; en el texto aparecen con estas etiquetas:
 | UC-09 | Consultar el historial de pedidos | Cliente | Must |
 | UC-10 | Canjear un descuento | Cliente | Must |
 | UC-11 | Administrar productos e inventario | Administrador | Must |
+| UC-20 | Comprar un periférico | Cliente | Must |
+| UC-21 | Comprar una licencia y recibir su clave | Cliente | Must |
+| UC-22 | Comprar un juego | Cliente | Must |
 
 ### Juego y economía — [`03-Juego-y-Economia.md`](./03-Juego-y-Economia.md)
 
@@ -101,7 +104,7 @@ Algunos casos se conectan entre sí; en el texto aparecen con estas etiquetas:
 Casos-de-Uso/
 ├── README.md                        # Este índice
 ├── 01-Identidad-y-Usuarios.md       # UC-01 a UC-04
-├── 02-Tienda-y-Pedidos.md           # UC-05 a UC-11
+├── 02-Tienda-y-Pedidos.md           # UC-05 a UC-11, UC-20, UC-21 y UC-22
 ├── 03-Juego-y-Economia.md           # UC-12 a UC-16 y UC-19
 └── 04-Notificaciones.md             # UC-17 y UC-18
 ```

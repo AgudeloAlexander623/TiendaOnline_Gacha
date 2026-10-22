@@ -53,7 +53,7 @@ objetivo.
 | Épica | Nombre | Objetivo | Historias de usuario | Casos de uso | Prioridad |
 | --- | --- | --- | --- | --- | --- |
 | **EP-01** | Cuenta e identidad | Que una persona pueda entrar y gestionar su cuenta | US-01 … US-04 | UC-01 … UC-04 | Must |
-| **EP-02** | Tienda y compra | Que se pueda explorar el catálogo y comprar | US-05 … US-11 | UC-05 … UC-11 | Must |
+| **EP-02** | Tienda y compra | Que se pueda explorar el catálogo y comprar | US-05 … US-11, US-20 | UC-05 … UC-11, UC-20 … UC-22 | Must |
 | **EP-03** | Juego y economía | Que se ganen monedas en la aventura y se gasten en la ruleta y el mercader | US-12 … US-16, US-19 | UC-12 … UC-16, UC-19 | Must |
 | **EP-04** | Avisos al usuario | Que la persona se entere de lo que pasa con sus monedas | US-17 … US-18 | UC-17 … UC-18 | Should / Could |
 
@@ -68,6 +68,7 @@ objetivo.
    │   identidad   │    compra     │   economía         │    usuario      │
    ├───────────────┼───────────────┼────────────────────┼─────────────────┤
    │ UC-01…UC-04   │ UC-05…UC-11   │ UC-12…UC-16, UC-19 │ UC-17, UC-18    │
+   │               │ UC-20…UC-22   │                    │                 │
    └───────────────┴───────────────┴────────────────────┴─────────────────┘
         (entrar)        (comprar)        (jugar y monedas)     (enterarse)
 ```
@@ -100,6 +101,7 @@ objetivo.
 | **US-09** | Como cliente quiero **ver mis pedidos anteriores** para comprobar su estado | [UC-09](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | FR-BE-13 | Must |
 | **US-10** | Como cliente quiero **canjear monedas por un descuento** para pagar menos en mi pedido | [UC-10](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | FR-BR-07, FR-BR-08 | Must |
 | **US-11** | Como administrador quiero **gestionar el catálogo y el inventario** para mantener la tienda al día | [UC-11](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | FR-BE-08, FR-BE-14 | Must |
+| **US-20** | Como cliente quiero **comprar periféricos, licencias y juegos en un solo carrito y pagar una vez** para no hacer tres compras separadas | [UC-20](./Casos-de-Uso/02-Tienda-y-Pedidos.md), [UC-21](./Casos-de-Uso/02-Tienda-y-Pedidos.md), [UC-22](./Casos-de-Uso/02-Tienda-y-Pedidos.md) | FR-BE-24, FR-BE-25, FR-BE-26, FR-BE-27, FR-BE-28 | Must |
 
 ### EP-03 · Juego y economía
 
@@ -154,6 +156,18 @@ Un criterio de aceptación responde a: *«¿cómo sé que esta historia está li
 
 - Regla que lo respalda: `FR-BR-01` (distinguir tipos) y `FR-BR-04` (el saldo lo calcula el
   servidor).
+
+### US-20 · Comprar en un solo carrito
+
+> **Dado** que tengo un periférico, una licencia y un juego en el carrito,
+> **cuando** confirmo la compra,
+> **entonces** se crea **un** pedido con los tres, se cobra **una** vez y, si compré una
+> licencia, su clave aparece en el detalle de ese pedido.
+
+- Reglas que lo respaldan: `FR-BE-27` (carrito y checkout únicos), `FR-BE-28` (el servidor
+  revalida precio y stock) y `FR-SEC-12` (la clave solo la ve quien la compró).
+- El recorrido completo está en
+  [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) §4.
 
 > **Convención del equipo:** los criterios se escriben con **Dado / cuando / entonces**
 > (en inglés, *Given/When/Then*) porque obliga a ser concreto y se traduce directo a una

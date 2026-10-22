@@ -18,11 +18,24 @@
 | **SRS del backend** | `FR-BE-*` y `NFR-BE-*`: qué debe cumplir cada servicio | [`documentation/Software-requeriments(SRS)/Backend.md`](../../documentation/Software-requeriments(SRS)/Backend.md) |
 | **Reglas de negocio** | `FR-BR-*`: monedas, descuentos, vencimientos | [`documentation/Software-requeriments(SRS)/Business-Rules.md`](../../documentation/Software-requeriments(SRS)/Business-Rules.md) |
 | **Modelo de datos** | Los 26 modelos Prisma, explicados campo a campo | [`documentation/Diccionario-de-Datos.md`](../../documentation/Diccionario-de-Datos.md) |
-| **Trazabilidad** | El estado real de los 154 requisitos (`✅` / `⚠️` / `⬜`) | [`documentation/Trazabilidad.md`](../../documentation/Trazabilidad.md) |
+| **Trazabilidad** | El estado real de los 164 requisitos (`✅` / `⚠️` / `⬜`) | [`documentation/Trazabilidad.md`](../../documentation/Trazabilidad.md) |
 | **Guía del backend** | Convenciones de código, nombres, estilo | [`../README.md`](../README.md) |
+| **Catálogo por familias** | Diseño técnico del catálogo de periféricos, licencias y juegos (rutas, modelo de datos, seguridad de las claves) | [`./Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) |
 
-> Este directorio **no duplica** el SRS: apunta a él. La documentación vive una sola vez,
-> en `documentation/`, para que no haya dos verdades que se contradigan.
+> **Cómo se reparte la documentación entre las dos carpetas:** los **requisitos** (qué debe
+> hacer el sistema) viven una sola vez, en `documentation/`; este directorio **apunta** a
+> ellos en vez de copiarlos, para que no haya dos verdades que se contradigan.
+>
+> Lo que **sí** vive en este directorio es el **detalle de implementación** de cada
+> módulo: rutas, capas, variables, migraciones y pruebas. Ese detalle cambia con el
+> código y no interesa fuera del backend.
+>
+> La única excepción a esa regla es una funcionalidad que se documenta **entera** en los
+> dos sitios porque se lee desde los dos lados: [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md)
+> (detalle técnico, aquí) y
+> [`documentation/Catalogo-por-Familias.md`](../../documentation/Catalogo-por-Familias.md)
+> (alcance y negocio, a nivel de proyecto). Cada uno tiene su propio índice y su propio
+> público; ninguno es copia literal del otro.
 
 ---
 
@@ -32,6 +45,12 @@
 | --- | ---: | --- | --- | --- |
 | `identity-service` | 3001 | `gearquest_identity` | `auth`, `users`, `health` | Registro, sesión (JWT), roles, perfil |
 | `store-service` | 3002 | `gearquest_store` | `catalog`, `inventory`, `orders`, `discounts`, `health` | Productos, categorías, carrito, pedidos, niveles de descuento |
+
+> **Próximo cambio en `store-service`:** el módulo `catalog` se partirá en **tres
+> dominios** (periféricos, licencias, juegos) dentro del mismo servicio, con **un solo
+> carrito y un solo pago**. El diseño está en
+> [`./Catalogo-por-Familias.md`](./Catalogo-por-Familias.md); **todavía no está en el
+> código** (ver la matriz de trazabilidad).
 | `economy-service` | 3003 | `gearquest_economy` | `wallet`, `transactions`, `gacha`, `rewards`, `player-inventory`, `health` | Monedero, lotes, movimientos, ruleta, sesiones de aventura, objetos |
 | `payments-service` | 3004 | `gearquest_payments` | `packages`, `payments`, `recharges`, `health` | Paquetes de monedas, pagos simulados, recargas |
 
@@ -91,8 +110,11 @@ src/modules/<dominio>/
 
 ## 6. Documentos relacionados
 
+- [`./Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) — diseño técnico del catálogo
+  por familias (periféricos, licencias, juegos) con carrito único.
 - [`README.md`](../README.md) — guía de puesta en marcha y comandos del backend.
 - [`../../documentation/Trazabilidad.md`](../../documentation/Trazabilidad.md) — qué está
   hecho y qué no, requisito por requisito.
 - [`../../documentation/Historias-Tecnicas.md`](../../documentation/Historias-Tecnicas.md) —
-  TS-01…TS-12: las tareas técnicas que implementan la integración entre servicios.
+  las tareas técnicas que implementan la integración entre servicios y el catálogo por
+  familias.

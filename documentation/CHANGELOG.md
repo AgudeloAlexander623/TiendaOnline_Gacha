@@ -39,6 +39,77 @@ de una respuesta de la API o el nombre de un `code` de error.
 
 *(Aquí se añade lo que ya está en `main` pero aún no se ha etiquetado con un número.)*
 
+### Añadido — catálogo por familias (documentación, 2026-10-22)
+
+> **Fase 0 del catálogo por familias:** solo **documentos**. No hay ni una línea de código
+> nueva todavía; las 10 filas nuevas de la matriz de trazabilidad están en ⬜.
+
+- **2 documentos nuevos sobre el catálogo por familias**, uno por cada capa de la
+  documentación: [`documentation/Catalogo-por-Familias.md`](./Catalogo-por-Familias.md)
+  (alcance, recorrido de compra, reglas por familia, fases y riesgos) y
+  [`backend/documentation_Backend/Catalogo-por-Familias.md`](../backend/documentation_Backend/Catalogo-por-Familias.md)
+  (rutas, modelo de datos, capas de archivos, cifrado de claves, migración y pruebas).
+  No son copia uno del otro: cada uno tiene su público y su índice.
+- **10 requisitos nuevos en el SRS** (de 154 a **164**), **sin renumerar ninguno** de los
+  anteriores: `FR-BE-24`…`FR-BE-28` (catálogo de periféricos, de licencias y de juegos;
+  carrito y checkout únicos; revalidación de precio y stock), `FR-DB-10` (producto con tipo
+  y tablas de atributos por familia), `FR-BR-17`…`FR-BR-19` (`sku` único, la clave de
+  licencia como secreto, licencia digital sin reembolso) y `FR-SEC-12` (la clave solo se
+  entrega a quien la compró).
+- **3 casos de uso nuevos** en [`Casos-de-Uso/02-Tienda-y-Pedidos.md`](./Casos-de-Uso/02-Tienda-y-Pedidos.md):
+  `UC-20` (comprar un periférico), `UC-21` (comprar una licencia y recibir su clave) y
+  `UC-22` (comprar un juego).
+- **1 historia de usuario nueva:** `US-20` «comprar periféricos, licencias y juegos en un
+  solo carrito y pagar una vez», en `EP-02`.
+- **5 historias técnicas nuevas** (`TS-25`…`TS-29`): modelo con tipo y atributos por
+  familia, catálogo *kind-aware* con tres routers, cifrado y entrega de claves de licencia,
+  carrito y checkout multi-familia con revalidación, y contrato + proxy con los prefijos por
+  familia. El documento pasa de 24 a **29 historias técnicas**.
+- **1 decisión de arquitectura nueva:** **ADR-0017** «Catálogo por familias dentro de
+  `store-service`, con un solo carrito y un solo pago». El documento pasa de 16 a **17 ADR**.
+- **6 términos nuevos en el glosario:** *familia de producto*, *periférico*, *licencia*,
+  *clave de licencia*, *juego en catálogo* y *SKU*, con la distinción explícita entre
+  *juego en catálogo* y *aventura*.
+
+### Cambiado — catálogo por familias
+
+- **Matriz de trazabilidad v1.2** (`documentation/Trazabilidad.md`): **164 requisitos**
+  (antes 154) con el recuento real **59 ✅ / 36 ⚠️ / 69 ⬜**; 10 filas nuevas, §12.1 ampliado
+  a 23 ítems de deuda, tres contradicciones más resueltas en §12.2, §11 a 22 casos de uso y
+  §12.4 con **48 decisiones** pendientes del SRS.
+- **El catálogo deja de ser de un solo tipo de producto.** El SRS (`Backend.md`,
+  `Database.md`, `Business-Rules.md` y `Security.md` pasan a **v1.1**) describe ahora tres
+  familias —periféricos, licencias y juegos— dentro del mismo `store-service`, con **un solo
+  carrito y un solo pago**. La estructura de la tienda, el carrito, el pedido, el inventario
+  y los descuentos **no cambian**.
+- **`/api/v1/products` desaparece del contrato público** y se sustituye por
+  `/api/v1/peripherals`, `/api/v1/licenses` y `/api/v1/games`; `/api/v1/categories` se
+  mantiene, con un filtro opcional `?kind=`. El contrato pasa de **59 operaciones en 45
+  rutas** a **74 operaciones en 53 rutas**. Es un **cambio rompedor**, permitido porque el
+  frontend todavía no hace llamadas HTTP (`FR-FE-10` ⬜).
+- **`backend/documentation_Backend/README.md`:** se añadió el documento del catálogo al
+  índice, se pasó el recuento de requisitos a 164 y se explicó **cómo se reparte la
+  documentación entre las dos carpetas** (requisitos en `documentation/`, detalle de
+  implementación en `backend/documentation_Backend/`).
+
+### Seguridad — catálogo por familias
+
+- **La clave de licencia se trata como un secreto:** cifrada en reposo, nunca en listados ni
+  en logs, y solo se entrega a quien compró el pedido que la contiene (`FR-BR-18`,
+  `FR-SEC-12`). La nueva variable `LICENSE_KEY_ENCRYPTION_KEY` se documenta **solo** como
+  valor de ejemplo evidentemente falso.
+- **Decisión pendiente anotada, no ocultada:** el procedimiento de **re-cifrado** al rotar
+  la clave de cifrado todavía no existe; mientras tanto, la clave no se rota.
+
+### Notas — catálogo por familias
+
+- **Verificación de esta fase:** `164 IDs del SRS ↔ 164 filas de la matriz` (0 huérfanos, 0
+  duplicados), recuento del documento coherente con el conteo real y **0 enlaces rotos**.
+- **Nada de esto está implementado.** El estado real, requisito por requisito, sigue siendo
+  la [matriz de trazabilidad](./Trazabilidad.md): las 10 filas nuevas están en ⬜ (salvo
+  `FR-BE-28`, en ⚠️ porque el checkout actual ya revalida para la única familia existente, y
+  `FR-BR-17`, en ✅ porque `Product.sku` ya es `@unique`).
+
 ### Añadido
 - **Guía de estilo de código:** `documentation/Estilo-de-Codigo.md`, convenciones **descriptivas** del código real (formato Prettier/EditorConfig, TypeScript estricto, nomenclatura, estructura router→schemas→service, manejo de errores, convenciones de frontend y pruebas). Enlaza a `CONTRIBUTING.md` y demás documentos en lugar de duplicarlos.
 - **13 requisitos nuevos en el SRS** (de 141 a 154), **sin renumerar ninguno** de los anteriores: `FR-BE-22` (canje del mercader), `FR-BE-23` (compensación de débitos), `FR-FE-11` (bandeja de avisos), `FR-FE-12` (panel de administración), `FR-FE-13` (ruta base única), `NFR-FE-08` (token seguro en el navegador), `FR-DB-09` (idempotencia persistida), `FR-SEC-11` (autenticación service-to-service), `FR-INF-07` (comando global de arranque), `FR-INF-08` (CI en cada PR), `NFR-INF-05` (observabilidad), `FR-NO-09` (marcar aviso como leído) y `FR-NO-10` (aviso generado por el servicio productor).

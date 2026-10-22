@@ -106,7 +106,7 @@ main ──► crea rama ──► commits ──► PR ──► revisión ─�
 ```
 
 1. **Sincroniza** antes de empezar: `git checkout main && git pull`.
-2. **Crea la rama**: `git checkout -b feature/UC-13-gacha-ui`.
+2. **Crea la rama**: `git checkout -b feature/UC-13-ruleta-ui`.
 3. **Commits pequeños y frecuentes** (cada uno con sentido propio).
 4. **Antes de abrir el PR**, pasa los controles locales (ver §5).
 5. **Abre un Pull Request** hacia `main` con:

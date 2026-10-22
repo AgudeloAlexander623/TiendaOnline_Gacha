@@ -36,6 +36,8 @@ saldo sin enterarse. Por eso el sistema prevé avisarle a tiempo. Hay tres canal
 | FR-NO-06 | Confirmar operaciones relevantes (pedido, canje, recarga simulada) | Must | Toda operación importante deja constancia visible para el usuario |
 | FR-NO-07 | Los canales de correo y SMS solo se activan con proveedor configurado | Must | Sin proveedor, el sistema funciona igualmente usando notificaciones internas |
 | FR-NO-08 | Identificar claramente al remitente de los mensajes | Must | Los mensajes indican que provienen de GearQuest y no parecen spam |
+| FR-NO-09 | El usuario puede marcar un aviso como leído | Must | Un aviso leído desaparece de la lista de pendientes sin perderse del historial |
+| FR-NO-10 | Los avisos los genera el servicio que produce el hecho, mediante un contrato interno explícito | Must | `economy-service`, `payments-service` y `store-service` emiten el evento de aviso por la operación interna documentada; ningún servicio escribe en la base de datos de otro |
 
 ## 4. Requisitos no funcionales
 
@@ -49,10 +51,17 @@ saldo sin enterarse. Por eso el sistema prevé avisarle a tiempo. Hay tres canal
 ## 5. Dependencias e integraciones
 
 - **economy-service y payments-service:** generan los eventos (monedas, vencimientos,
-  recargas) que originan los avisos.
+  recargas) que originan los avisos, a través del contrato interno
+  ([`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) §9,
+  `POST /internal/notifications`).
+- **store-service:** genera el evento de aviso al confirmar un pedido o canjear un
+  descuento.
+- **Servicio de notificaciones:** servicio propio que recibe esos eventos, los guarda y los
+  expone. *Su ubicación exacta es una decisión pendiente (§7).*
 - **Proveedores de correo y SMS:** pendientes de selección; su integración condiciona los
   canales externos (ver [`Infrastructure.md`](./Infrastructure.md)).
-- **Frontend:** muestra las notificaciones internas (ver [`Frontend.md`](./Frontend.md)).
+- **Frontend:** muestra las notificaciones internas en la bandeja de avisos de la cuenta
+  (ver [`Frontend.md`](./Frontend.md), requisito `FR-FE-11`).
 
 ## 6. Criterios de aceptación del área
 
@@ -63,11 +72,23 @@ saldo sin enterarse. Por eso el sistema prevé avisarle a tiempo. Hay tres canal
 
 ## 7. Decisiones pendientes
 
-1. Proveedores de correo electrónico y SMS (y sus costos).
-2. Días exactos del aviso previo de vencimiento.
-3. Plantillas y redacción de los mensajes.
-4. Frecuencia máxima de avisos para no incomodar al usuario.
+1. **En qué servicio vive el módulo de notificaciones** (servicio propio o módulo dentro de
+   uno de los cuatro existentes) y qué base de datos y tablas necesita.
+2. **Tipos de aviso** (`type`) que admite el contrato interno y su equivalencia con los
+   canales. *La operación en sí ya está definida* en
+   [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) §9; queda por cerrar el
+   catálogo cerrado de tipos.
+3. Proveedores de correo electrónico y SMS (y sus costos).
+4. Días exactos del aviso previo de vencimiento.
+5. Plantillas y redacción de los mensajes.
+6. Frecuencia máxima de avisos para no incomodar al usuario.
+7. Periodo de conservación de los avisos leídos.
 
 ## 8. Referencias
 
 - `README.MD` (raíz): §4.5 (notificaciones), §5 (tecnologías), §11 (costos de SMS).
+- [`Frontend.md`](./Frontend.md): `FR-FE-11` (bandeja de avisos en la interfaz).
+- [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): contrato interno (§9,
+  operación de aviso).
+- [`Casos-de-Uso/04-Notificaciones.md`](../Casos-de-Uso/04-Notificaciones.md): `UC-17` y `UC-18`.
+- [`Trazabilidad.md`](../Trazabilidad.md): estado real de cada requisito de este documento.

@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — GearQuest
 
 > **Proyecto:** GearQuest — tienda de periféricos con sistema de recompensas gamificado
-> **Versión:** 1.0 · **Fecha:** 2026-10-19
+> **Versión:** 1.1 · **Fecha:** 2026-10-22
 > **Fuente de verdad:** auditoría directa del código del repositorio (no de intenciones)
 > **Complementa a:** [SRS](./Software-requeriments\(SRS\)/README.md) · [Casos de Uso](./Casos-de-Uso/README.md)
 
@@ -30,7 +30,17 @@ producto: cada requisito del SRS (`FR-*`, `NFR-*`) queda aquí con su **estado r
 **Notación de rutas:** `identity/…`, `store/…`, `economy/…`, `payments/…` son relativas a
 `backend/services/`; `frontend/…` es relativa a la raíz del repositorio.
 
-**Resumen de estados:** 57 ✅ · 35 ⚠️ · 49 ⬜ de 141 requisitos (recuento en §13)
+**Resumen de estados:** 58 ✅ · 35 ⚠️ · 61 ⬜ de 154 requisitos (recuento en §13)
+
+> **Cambios en esta versión (1.1):** el SRS creció de 141 a 154 requisitos al añadir 13
+> requisitos que faltaban (canje del mercader, compensación entre servicios, bandeja de
+> avisos, panel de administración, ruta base única, token seguro en el navegador,
+> idempotencia persistida, autenticación entre servicios, comando global, CI/CD,
+> observabilidad, marcar aviso como leído y contrato interno de avisos). Además, el
+> alcance del juego se alineó con
+> [`Game.md`](./Software-requeriments\(SRS\)/Game.md): **la aventura es el juego**, y la
+> ruleta (gacha) y el mercader son sus componentes. Ningún requisito se renumeró: los 141
+> anteriores conservan su ID.
 
 ---
 
@@ -38,15 +48,15 @@ producto: cada requisito del SRS (`FR-*`, `NFR-*`) queda aquí con su **estado r
 
 | Área (documento SRS) | Total | ✅ | ⚠️ | ⬜ |
 | --- | ---: | ---: | ---: | ---: |
-| Backend | 29 | 22 | 7 | 0 |
+| Backend | 31 | 22 | 7 | 2 |
 | Reglas de negocio | 18 | 13 | 5 | 0 |
-| Base de datos | 13 | 10 | 2 | 1 |
-| Frontend | 17 | 3 | 10 | 4 |
+| Base de datos | 14 | 9 | 3 | 2 |
+| Frontend | 21 | 4 | 10 | 7 |
 | Juego (Godot) | 28 | 0 | 6 | 22 |
-| Infraestructura | 10 | 1 | 3 | 6 |
-| Notificaciones | 12 | 0 | 0 | 12 |
-| Seguridad | 14 | 8 | 2 | 4 |
-| **Total** | **141** | **57** | **35** | **49** |
+| Infraestructura | 13 | 2 | 2 | 9 |
+| Notificaciones | 14 | 0 | 0 | 14 |
+| Seguridad | 15 | 8 | 2 | 5 |
+| **Total** | **154** | **58** | **35** | **61** |
 
 **Lectura en una frase:** el **backend es el área más madura** (identidad, tienda, economía,
 pagos y seguridad base operan con datos reales), el **frontend es UI estática sin conectar**
@@ -55,7 +65,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 
 ---
 
-## 3. Backend — `Software-requeriments(SRS)/Backend.md` (29)
+## 3. Backend — `Software-requeriments(SRS)/Backend.md` (31)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -74,12 +84,14 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-BE-13 | Descuentos: elegibilidad, saldo y límites | Must | ⚠️ | CRUD de niveles completo; **débito de monedas pendiente**: `TODO(economia)` en `orders.service.ts:91` |
 | FR-BE-14 | Monedero desglosado por tipo y vencimiento | Must | ✅ | `economy/modules/wallet/wallet.service.ts:101-220` (expira lotes vencidos antes de sumar) |
 | FR-BE-15 | Historial auditable de movimientos | Must | ✅ | `CoinTransaction` append-only con `balanceAfter`; `transactions/transactions.router.ts:15` |
-| FR-BE-16 | Tiradas de gacha con débito y recompensa | Must | ✅ | `economy/modules/gacha/gacha.service.ts:68-168` (sorteo ponderado en transacción) |
-| FR-BE-17 | Validar resultados del minijuego en servidor | Must | ⚠️ | `economy/modules/rewards/rewards.service.ts:8-9`: regla simple puntaje→monedas (tope 500); validación real pendiente |
+| FR-BE-16 | Tiradas de la ruleta (gacha) con débito y recompensa | Must | ✅ | `economy/modules/gacha/gacha.service.ts:68-168` (sorteo ponderado en transacción) |
+| FR-BE-17 | Validar resultados de la partida de aventura en el servidor | Must | ⚠️ | `economy/modules/rewards/rewards.service.ts:8-9`: regla simple puntaje→monedas (tope 500); validación real pendiente |
 | FR-BE-18 | Vencimiento de monedas ganadas a 30 días | Must | ✅ | `economy/.env.example` (`EARNED_COINS_TTL_DAYS=30`) + `CoinBatch.expiresAt` + expiración en `wallet.service.ts` |
 | FR-BE-19 | Operaciones de saldo ante repetición/concurrencia | Must | ⚠️ | Transacciones Prisma en checkout/tirada/débito; **sin clave de idempotencia** (una misma petición repetida puede duplicarse) |
 | FR-BE-20 | Recargas claramente simuladas | Must | ✅ | `payments/modules/payments/payments.service.ts:166` (`provider: "MOCK"`, `externalId: mock_…`) |
 | FR-BE-21 | Acreditar monedas compradas sin vencimiento | Must | ⚠️ | **Pendiente**: `TODO(economia)` en `payments.service.ts:176` (acreditar `PURCHASED` en economy) |
+| FR-BE-22 | Canjear monedas por objetos en el mercader | Must | ⬜ | **Nuevo en v1.1.** Sin endpoint de canje; existe `POST /gacha/banners/:id/pull` (FR-BE-16) pero no su equivalente en el mercader |
+| FR-BE-23 | Revertir un débito si la operación posterior falla | Must | ⬜ | **Nuevo en v1.1.** Sin compensación entre servicios: los `TODO(economia)` (§12.1) débitos y no acreditan |
 | NFR-BE-01 | TypeScript estricto | Must | ✅ | `backend/tsconfig.base.json` (`"strict": true`) + script `typecheck` por workspace |
 | NFR-BE-02 | Pruebas automatizadas sobre reglas críticas | Must | ⚠️ | Vitest + Supertest operativos, pero **8 ficheros / 180 líneas**: solo esquemas, salud y autorización; ningún test toca BD |
 | NFR-BE-03 | ESLint + Prettier | Must | ✅ | `backend/eslint.config.mjs`, `.prettierrc.json`, scripts `lint`/`format` |
@@ -112,11 +124,11 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | NFR-BR-01 | Las reglas viven en el backend, no en la interfaz | Must | ✅ | Cálculos exclusivamente en `*.service.ts`; frontend sin lógica de negocio |
 | NFR-BR-02 | Toda regla crítica con prueba automatizada | Must | ⚠️ | Cubiertas: sorteo ponderado y `scoreToCoins` (`gacha.service.test.ts`); **faltan**: wallet/vencimientos, checkout, pagos, permisos |
 
-## 5. Base de datos — `Database.md` (13)
+## 5. Base de datos — `Database.md` (14)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
-| FR-DB-01 | Una base por servicio con credenciales propias | Must | ✅ | `infra/docker/initdb/01-create-databases.sql` crea `gearquest_identity/store/economy/payments` |
+| FR-DB-01 | Una base por servicio con credenciales propias | Must | ⚠️ | `infra/docker/initdb/01-create-databases.sql` crea `gearquest_identity/store/economy/payments`, pero **las cuatro usan el mismo rol `postgres:postgres`**: solo difieren en el nombre de la base |
 | FR-DB-02 | Modelo en `prisma/schema.prisma` por servicio | Must | ✅ | 4 esquemas · **26 modelos** (3 + 10 + 8 + 5) |
 | FR-DB-03 | Migraciones versionadas | Must | ✅ | 4 migraciones `*_init` (2026-10-15) + scripts `prisma:migrate/deploy` |
 | FR-DB-04 | Historial de monedas inmutable | Must | ✅ | `CoinTransaction` solo-insert con `balanceAfter` |
@@ -124,16 +136,19 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-DB-06 | Cliente Prisma generado no versionado | Must | ✅ | `src/generated/prisma/` ausente de `git ls-files` |
 | FR-DB-07 | Script de creación reproducible | Must | ✅ | `npm run db:up` (compose) + `initdb` SQL al primer arranque |
 | FR-DB-08 | Datos de prueba ficticios, nunca reales | Must | ✅ | `prisma/seed.ts` idempotente en los 4 servicios |
+| FR-DB-09 | Persistir la clave de idempotencia | Must | ⬜ | **Nuevo en v1.1.** No hay tabla ni columna de idempotencia; ver FR-BE-19 |
 | NFR-DB-01 | Rendimiento en consultas frecuentes | Should | ⚠️ | Índices creados (`@@index([userId])`, `[walletId]`, `[expiresAt]`…); **sin mediciones** de latencia |
 | NFR-DB-02 | Copias de seguridad antes de despliegue real | Should | ⬜ | Sin procedimiento definido (decisión pendiente en Database.md) |
 | NFR-DB-03 | Mínima exposición de datos personales | Must | ⚠️ | Esquema mínimo (email, displayName); **falta política formal** de retención/borrado |
 | NFR-DB-04 | Codificación y zona horaria homogéneas | Must | ✅ | UTF-8 por compose; Prisma almacena `DateTime` en UTC |
 | NFR-DB-05 | Consultas siempre parametrizadas | Must | ✅ | Todo el acceso via Prisma ORM; SQL crudo solo en `initdb` (sin entradas de usuario) |
 
-## 6. Frontend — `Frontend.md` (17)
+## 6. Frontend — `Frontend.md` (21)
 
 > **Estado global:** UI base con 9 páginas y routing; **0 llamadas HTTP**, carpetas
 > `src/features/*` vacías (solo `.gitkeep`), sin estado global ni capa `services/`.
+> En v1.1 se añadió Prettier (con `format`/`format:check` en verde) y el proxy inverso de
+> Vite que da al navegador una **única URL base** (`/api/v1`).
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -143,22 +158,28 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-FE-04 | Monedero con saldo, vencimientos e historial | Must | ⚠️ | Solo texto descriptivo en `ProfilePage.tsx:21-27`; sin datos |
 | FR-FE-05 | Cinco niveles de descuento y elegibilidad | Must | ⚠️ | Textos estáticos en `ProfilePage.tsx:29-34` y `HomePage.tsx:84-89` |
 | FR-FE-06 | Consultar y editar el perfil | Must | ⚠️ | `ProfilePage.tsx` estática ("esta es una vista previa") |
-| FR-FE-07 | Integrar acceso al juego y resultados | Should | ⬜ | Sin componente ni página; solo mención textual en `HomePage.tsx:71-77` |
+| FR-FE-07 | Integrar acceso al juego (aventura y ruleta) y resultados | Should | ⬜ | Sin componente ni página; solo mención textual en `HomePage.tsx:71-77` |
 | FR-FE-08 | Estados de carga, vacío y error claros | Must | ⚠️ | Existen estados vacíos ("Tu carrito está vacío"); **faltan** estados de carga y error |
 | FR-FE-09 | Identificar que las recargas son simuladas | Must | ⬜ | Sin interfaz de recarga |
 | FR-FE-10 | Centralizar la API en `services/` | Must | ⬜ | `frontend/src/services/` y `src/lib/` vacíos; **0 llamadas** `fetch`/`axios` en el código |
+| FR-FE-11 | Bandeja de avisos internos del usuario | Must | ⬜ | **Nuevo en v1.1.** Sin módulo de notificaciones (FR-NO-01) ni pantalla de avisos |
+| FR-FE-12 | Panel de administración de catálogo e inventario | Must | ⬜ | **Nuevo en v1.1.** El backend ya expone el CRUD con rol ADMIN (FR-BE-10); falta la interfaz |
+| FR-FE-13 | Ruta base única y documentada hacia el backend | Must | ⚠️ | **Nuevo en v1.1.** Proxy inverso de Vite por prefijo (`frontend/vite.config.ts`) + `VITE_API_BASE_URL=/api/v1` en `.env.example`; **falta** la capa `services/` que lo use y el proxy equivalente en producción |
 | NFR-FE-01 | Diseño adaptable (móvil/tablet/escritorio) | Must | ⚠️ | Tailwind activo; **sin revisión** de breakpoints reales |
 | NFR-FE-02 | TypeScript estricto | Must | ✅ | `frontend/tsconfig.app.json` (`strict: true`, `noUnusedLocals`…) |
 | NFR-FE-03 | Sin secretos en el navegador | Must | ✅ | Solo `VITE_API_BASE_URL` y `VITE_APP_NAME` (públicas por diseño); ninguna clave |
 | NFR-FE-04 | Accesibilidad básica | Should | ⬜ | No evaluada |
 | NFR-FE-05 | Rendimiento razonable de carga inicial | Should | ⚠️ | Build de Vite OK; **sin métricas** (LCP/CLS) ni presupuesto definido |
-| NFR-FE-06 | Consistencia visual y de código | Must | ⚠️ | ESLint (flat) sí; **Prettier no instalado**; queda un `eslintrc.cjs` muerto |
-| NFR-FE-07 | Lenguaje de negocio en la interfaz | Must | ✅ | Textos en español de negocio en las 9 páginas (monedero, niveles, gacha, pedidos) |
+| NFR-FE-06 | Consistencia visual y de código | Must | ✅ | **Nuevo en v1.1.** Prettier instalado (`.prettierrc.json` que respeta el estilo del proyecto) con `format`/`format:check` en verde; `npm run lint` sin incidencias; se eliminó el `eslintrc.cjs` muerto |
+| NFR-FE-07 | Lenguaje de negocio en la interfaz | Must | ✅ | Textos en español de negocio en las 9 páginas (monedero, niveles, ruleta, pedidos) |
+| NFR-FE-08 | Token de sesión almacenado de forma segura | Must | ⬜ | **Nuevo en v1.1.** No hay cliente HTTP ni almacenamiento de token todavía (depende de FR-FE-10) |
 
 ## 7. Juego — `Game.md` (28)
 
 > **Estado global:** no existe el proyecto Godot (carpeta `GAME/` no creada). Donde el
 > **backend ya cubre la parte servidora**, se marca ⚠️ en lugar de ⬜.
+> En v1.1 el alcance se alineó con [`Game.md`](./Software-requeriments\(SRS\)/Game.md):
+> **la aventura es el juego**; la ruleta (gacha) y el mercader son sus componentes.
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -171,7 +192,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-GA-07 | Al morir: pierde items, conserva monedas | Must | ⬜ | Sin proyecto Godot |
 | FR-GA-08 | Anti-farming por enemigo | Should | ⬜ | Sin proyecto Godot |
 | FR-GA-09 | Zona de mercader fija por mapa | Must | ⬜ | Sin proyecto Godot |
-| FR-GA-10 | Mercader: canjear monedas por objetos | Must | ⬜ | Sin proyecto Godot |
+| FR-GA-10 | Mercader: canjear monedas por objetos | Must | ⬜ | Sin proyecto Godot; falta además la operación de canje en el backend (FR-BE-22) |
 | FR-GA-11 | Ruleta con tiradas que cuestan monedas | Must | ⚠️ | Backend listo (`POST /gacha/banners/:id/pull`); sin interfaz de juego |
 | FR-GA-12 | Probabilidades a favor de la casa | Must | ⚠️ | Sorteo ponderado por `weight` implementado; **balance concreto sin definir** (decisión pendiente) |
 | FR-GA-13 | Descuento aplicable a un solo producto del carrito | Must | ⬜ | Sin regla de aplicabilidad por producto (además de FR-BR-08 pendiente) |
@@ -179,7 +200,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-GA-15 | Mostrar coste de tirada y saldo antes de jugar | Must | ⬜ | Sin interfaz (backend expone `costPerPull` y `/wallet/me`) |
 | FR-GA-16 | Zonas de descanso con cofre | Must | ⬜ | Sin proyecto Godot |
 | FR-GA-17 | Cofre que almacena armas/armaduras/items | Must | ⬜ | Sin proyecto Godot |
-| FR-GA-18 | Identificar al usuario antes de registrar partida | Must | ⚠️ | `POST /rewards/sessions` exige JWT; el cliente juego no existe (protocolo: Game.md §8.6 pendiente) |
+| FR-GA-18 | Identificar al usuario antes de registrar partida | Must | ⚠️ | `POST /rewards/sessions` exige JWT; el cliente juego no existe (protocolo definido en `Contrato-entre-servicios.md` §7) |
 | FR-GA-19 | Enviar resultado al backend para validación | Must | ⚠️ | Endpoints `rewards/sessions/:id/finish` operativos; validación real pendiente (FR-BE-17) |
 | FR-GA-20 | El juego no modifica saldos por su cuenta | Must | ⚠️ | Garantizado por diseño (solo economy escribe monederos); se verificará cuando exista el juego |
 | FR-GA-21 | Historial de tiradas visible en la cuenta | Must | ⬜ | Backend lo expone (`/transactions/me`, `/rewards/sessions/me`); sin UI |
@@ -191,22 +212,25 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | NFR-GA-05 | Dificultad exigente tipo *Dark Souls* | Should | ⬜ | Sin diseño de juego |
 | NFR-GA-06 | Experiencia comprensible sin tutorial largo | Should | ⬜ | Sin diseño de juego |
 
-## 8. Infraestructura — `Infrastructure.md` (10)
+## 8. Infraestructura — `Infrastructure.md` (13)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
-| FR-INF-01 | Entorno de desarrollo reproducible con un comando | Must | ⚠️ | `npm run db:up` levanta PostgreSQL; las apps aún se arrancan una a una (sin comando global) |
+| FR-INF-01 | Entorno de datos reproducible con un comando | Must | ✅ | `npm run db:up` levanta PostgreSQL y crea las cuatro bases (`infra/docker/initdb/01-create-databases.sql`). *En v1.1 se acotó a este alcance: el arranque global de las aplicaciones pasó a ser FR-INF-07.* |
 | FR-INF-02 | Variables de entorno con plantilla por servicio | Must | ✅ | `backend/.env.example` + 4 `.env.example` de servicio + `frontend/.env.example` |
 | FR-INF-03 | HTTPS en el entorno demo | Must | ⬜ | Sin despliegue ni proveedor elegido |
 | FR-INF-04 | Verificación del proveedor antes de elegirlo | Must | ⬜ | Proveedor pendiente (decisión abierta) |
 | FR-INF-05 | Documentación de ejecución actualizada | Must | ⚠️ | READMEs existen; **`backend/README.md` §"Próximos pasos" desactualizado** (ver §12) |
 | FR-INF-06 | Kubernetes solo con justificación | Could | ⬜ | Correcto: no aplica todavía (opcional por diseño) |
+| FR-INF-07 | Un comando global levanta todo el sistema | Must | ⬜ | **Nuevo en v1.1.** Hoy cada servicio se arranca por separado (`npm run dev:identity`, `dev:store`, `dev:economy`, `dev:payments`) |
+| FR-INF-08 | CI en cada PR (lint, tipado, pruebas y build) | Must | ⬜ | **Nuevo en v1.1.** Sin `.github/workflows/` en el repositorio |
 | NFR-INF-01 | Demo disponible 1-2 meses | Must | ⬜ | Sin publicar |
 | NFR-INF-02 | Costos controlados y conocidos | Must | ⬜ | Sin proveedor ni cálculo |
 | NFR-INF-03 | Entornos separados (dev ≠ producción) | Must | ⬜ | Solo existe entorno de desarrollo local |
 | NFR-INF-04 | Arranque limpio desde cero | Should | ⚠️ | `db:up` + `initdb` + `seed` idempotente funcionan desde cero; el arranque de las apps no está orquestado |
+| NFR-INF-05 | Observabilidad en el entorno publicado | Should | ⬜ | **Nuevo en v1.1.** Cada servicio tiene `pino-http` (FR-BE-03) pero sin centralización de registros ni métricas |
 
-## 9. Notificaciones — `Notifications.md` (12)
+## 9. Notificaciones — `Notifications.md` (14)
 
 > **Estado global:** sin módulo de notificaciones en ningún servicio (no existe carpeta
 > `notifications` ni tabla asociada). Todo pendiente.
@@ -221,12 +245,14 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-NO-06 | Confirmación de operaciones (pedido, canje, recarga) | Must | ⬜ | Sin módulo |
 | FR-NO-07 | Correo/SMS solo con proveedor configurado | Must | ⬜ | Sin integración de proveedores |
 | FR-NO-08 | Identificación clara del remitente | Must | ⬜ | Sin mensajes |
+| FR-NO-09 | Marcar un aviso como leído | Must | ⬜ | **Nuevo en v1.1.** Sin módulo de notificaciones; depende de FR-NO-01 |
+| FR-NO-10 | Avisos generados por el servicio productor, con contrato interno | Must | ⬜ | **Nuevo en v1.1.** El contrato ya define la operación de aviso ([`Contrato-entre-servicios.md`](./Contrato-entre-servicios.md) §9, `POST /internal/notifications`); **falta implementarla** y decidir el tipo de aviso (decisión pendiente en el SRS de notificaciones) |
 | NFR-NO-01 | Nunca enviar datos sensibles por correo/SMS | Must | ⬜ | Sin canal definido (requisito a aplicar al implementar) |
 | NFR-NO-02 | Costo de SMS aprobado antes de habilitarse | Must | ⬜ | Proveedor pendiente |
 | NFR-NO-03 | Registro de envíos | Should | ⬜ | Sin envíos |
 | NFR-NO-04 | Respetar preferencias del usuario | Could | ⬜ | Sin módulo de preferencias |
 
-## 10. Seguridad — `Security.md` (14)
+## 10. Seguridad — `Security.md` (15)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -240,12 +266,13 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-SEC-08 | Errores sin información interna | Must | ✅ 🧪 | `shared/errors.ts`: `isOperational=false` no expone mensaje ni stack; tests verifican `code` genérico |
 | FR-SEC-09 | No registrar contraseñas/tokens/datos sensibles | Must | ✅ | `AppError` prohíbe secretos en `context`; logger pino con campos controlados |
 | FR-SEC-10 | Análisis antifraude (Python) complementario | Should | ⬜ | Servicio Python no creado (por diseño: nunca sustituye reglas críticas) |
+| FR-SEC-11 | Autenticación service-to-service con token interno | Must | ⬜ | **Nuevo en v1.1.** Hoy los servicios **no se llaman entre sí** (no hay llamada interna que autenticar); el token interno está descrito en `Contrato-entre-servicios.md` §10 pero no implementado |
 | NFR-SEC-01 | Pruebas de seguridad básicas antes de desplegar | Must | ⬜ | Sin CI ni checklist de despliegue (lo define `CONTRIBUTING.md` en revisión de PR) |
 | NFR-SEC-02 | Revisión de dependencias antes de publicar | Should | ⬜ | Sin proceso (`npm audit` manual) |
 | NFR-SEC-03 | Mínimo dato personal | Must | ✅ | Solo `email` y `displayName` en `User`; sin datos bancarios (recargas simuladas) |
 | NFR-SEC-04 | Cultura de seguridad en el equipo | Must | ⚠️ | Se establece con `CONTRIBUTING.md` + reglas del SRS; sin revisión recurrente aún |
 
-## 11. Casos de uso — `Casos-de-Uso/` (18)
+## 11. Casos de uso — `Casos-de-Uso/` (19)
 
 El estado de un caso de uso es el de **su flujo completo** (backend + interfaz). Un backend
 listo con la interfaz sin conectar queda en ⚠️.
@@ -263,13 +290,14 @@ listo con la interfaz sin conectar queda en ⚠️.
 | UC-09 | Consultar historial de pedidos | ⚠️ | Backend ✅ (`/orders/me`); sin UI |
 | UC-10 | Canjear un descuento | ⚠️ | Niveles CRUD ✅; **débito de monedas pendiente** |
 | UC-11 | Administrar productos e inventario | ⚠️ | Backend ✅ con rol ADMIN; **sin panel de administración** |
-| UC-12 | Jugar una partida (minijuego) | ⚠️ | Sesiones y acreditación ✅ con regla simple; juego Godot y validación real pendientes |
-| UC-13 | Hacer una tirada en el gacha | ⚠️ | Backend ✅; sin interfaz de gacha |
+| UC-12 | Explorar y jugar la aventura | ⚠️ | Sesiones y acreditación ✅ con regla simple; juego Godot y validación real pendientes |
+| UC-13 | Hacer una tirada en la ruleta | ⚠️ | Backend ✅; sin interfaz de ruleta |
 | UC-14 | Consultar el monedero | ⚠️ | Backend ✅; frontend solo texto |
 | UC-15 | Consultar historial de monedas | ⚠️ | Backend ✅; sin UI |
 | UC-16 | Realizar una recarga simulada | ⚠️ | Pagos ✅; **acreditación de monedas compradas pendiente** (FR-BE-21) |
 | UC-17 | Consultar avisos internos | ⬜ | Sin módulo de notificaciones |
 | UC-18 | Configurar preferencias de aviso | ⬜ | Sin módulo de notificaciones |
+| UC-19 | Canjear monedas por objetos en el mercader | ⬜ | **Nuevo en v1.1.** Sin operación de canje en el backend (FR-BE-22) ni zona de mercader (FR-GA-09) |
 
 ---
 
@@ -292,27 +320,57 @@ mismo tipo: **integración entre microservicios** (ningún servicio llama a otro
 idempotencia por petición en operaciones de saldo (FR-BE-19, FR-BR-15) y
 Dockerfiles de las aplicaciones (NFR-BE-08, FR-INF-01).
 
+**Trabajo nuevo que abrió el SRS en v1.1 y que aún no existe en el código:**
+
+| # | Qué falta | Requisitos |
+| --- | --- | --- |
+| 5 | Operación de canje de monedas por objetos en el mercader | FR-BE-22, FR-GA-09, FR-GA-10, UC-19 |
+| 6 | Compensación: revertir un débito si la operación posterior falla | FR-BE-23 |
+| 7 | Clave de idempotencia persistida en base de datos | FR-DB-09, FR-BE-19, FR-BR-15 |
+| 8 | Token interno service-to-service con alcance | FR-SEC-11 |
+| 9 | Módulo de notificaciones, operación interna de aviso y bandeja de avisos | FR-NO-09, FR-NO-10, FR-NO-01, FR-FE-11 |
+| 10 | Panel de administración en el frontend (el backend ya está) | FR-FE-12 |
+| 11 | Capa `services/` del frontend con ruta base única y almacenamiento seguro del token | FR-FE-10, FR-FE-13, NFR-FE-08 |
+| 12 | Comando global que levante base de datos + 4 servicios + frontend | FR-INF-07, NFR-INF-04 |
+| 13 | Pipeline de CI (lint, tipado, pruebas y build en cada PR) | FR-INF-08, NFR-SEC-01, NFR-SEC-02 |
+| 14 | Observabilidad centralizada en el entorno publicado | NFR-INF-05 |
+| 15 | Rol de PostgreSQL propio por servicio (hoy las cuatro comparten `postgres:postgres`) | FR-DB-01 |
+
 ### 12.2 Contradicciones detectadas y corregidas
 
 | Contradicción | Acción |
 | --- | --- |
-| El SRS decía *"la lógica de negocio todavía no está implementada"* con 65 endpoints operativos | §2 y §6 del [README del SRS](./Software-requeriments\(SRS\)/README.md) actualizados para enlazar esta matriz |
-| Frontend declara `VITE_API_BASE_URL=http://localhost:3000` y ningún servicio escucha en el 3000 | Registrado en [`API/README.md`](./API/README.md) con los puertos reales (3001-3004) |
+| El SRS decía *"la lógica de negocio todavía no está implementada"* con 65 endpoints operativos | §6.1 del [README del SRS](./Software-requeriments\(SRS\)/README.md) y §6.1 del README raíz actualizados para enlazar esta matriz |
+| Frontend declaraba `VITE_API_BASE_URL=http://localhost:3000` y ningún servicio escucha en el 3000 | **Corregido en v1.1**: proxy inverso por prefijo en `frontend/vite.config.ts` y `VITE_API_BASE_URL=/api/v1` en `.env.example` (FR-FE-13) |
+| El SRS pedía *"credenciales propias"* por base de datos, pero las cuatro usan `postgres:postgres` | FR-DB-01 pasa a ⚠️ con el motivo explícito; el rol por servicio queda como decisión pendiente |
+| El SRS de juego describía *"minijuego"* y *"ruta gacha"* como dos componentes, pero `Game.md` define una **aventura metroidvania** con mercader y ruleta | `Game.md` queda como **fuente de verdad**; README raíz, casos de uso (`UC-12`, `UC-13`, `UC-19`), épicas (`US-12`, `US-13`, `US-19`), glosario, manual y diagramas alineados |
+| Los casos de uso enlazaban a requisitos inexistentes (`FR-GA-04`, `FR-GA-08` en UC-12/13) | Enlaces corregidos y ampliados: cada caso enlaza solo con IDs que existen en el SRS |
+| El README raíz decía *"el equipo de tres integrantes"* y *"etapa de planificación"* | Corregido a cuatro integrantes y etapa de desarrollo (coherente con el estado real de la matriz) |
+| El README raíz describía los módulos de aplicación como *"vacíos a propósito"* | Corregido: el backend ya tiene sus módulos implementados y el frontend sus 9 páginas |
+| `backend/README.md` decía *"todavía no hay código de aplicación"* con 138 ficheros implementados y 57 endpoints operativos | **Corregido en v1.1**: §"Estado", §"Stack", árbol de directorios y §"Qué falta" actualizados |
+| `backend/documentation_Backend/Documentation01.md` estaba vacío (0 bytes) | **Corregido en v1.1**: renombrado a `README.md` y redactado como índice de la documentación del backend |
+| `frontend/eslintrc.cjs` era una configuración muerta (ESLint 10 no la lee) | **Corregido en v1.1**: archivo eliminado y referencia quitada de `eslint.config.js` |
+| El frontend no tenía Prettier, a diferencia del backend | **Corregido en v1.1**: Prettier añadido con `format`/`format:check` en verde, configurado para respetar el estilo ya existente |
+| `Notifications.md` enlazaba al frontend sin nombrar ningún requisito | Enlazado a `FR-FE-11` y con la operación interna de aviso (FR-NO-10) |
+| `API/README.md` no enlazaba el contrato entre servicios | Enlazado a [`Contrato-entre-servicios.md`](./Contrato-entre-servicios.md) |
 
-### 12.3 Detectado fuera de `documentation/` (requiere autorización para tocarlo)
+### 12.3 Detectado fuera de `documentation/`
 
-| Hallazgo | Ubicación |
-| --- | --- |
-| §"Próximos pasos" lista como pendientes cosas ya implementadas | `backend/README.md:151` |
-| Estructura describe módulos como vacíos; ya existen 138 ficheros en backend | `README.MD` §6.1 y §12 |
-| `frontend/eslintrc.cjs` es una configuración muerta (ESLint 10 no la lee) | `frontend/eslintrc.cjs` |
-| Sin script `format` ni Prettier en frontend (el backend sí) | `frontend/package.json` |
+| Hallazgo | Ubicación | Estado |
+| --- | --- | --- |
+| §"Próximos pasos" lista como pendientes cosas ya implementadas | `backend/README.md` | **Corregido en v1.1** |
+| Estructura describe módulos como vacíos; ya existen 138 ficheros en backend | `README.MD` §6.1 y §12 | **Corregido en v1.1** |
+| `frontend/eslintrc.cjs` es una configuración muerta (ESLint 10 no la lee) | `frontend/eslintrc.cjs` | **Corregido en v1.1** (eliminado) |
+| Sin script `format` ni Prettier en frontend (el backend sí) | `frontend/package.json` | **Corregido en v1.1** |
+| `Documentation01.md` vacío (0 bytes) | `backend/documentation_Backend/` | **Corregido en v1.1**: renombrado a `README.md` y redactado como índice de la documentación del backend |
 
 ### 12.4 Decisiones pendientes del SRS
 
-El SRS acumula **41 decisiones pendientes** listadas por documento (§8 de cada uno). Las que
-bloquean más trabajo: orden de consumo de monedas, coste/probabilidades del gacha, estrategia
-de idempotencia, proveedor de despliegue y proveedor de correo/SMS.
+El SRS acumula **44 decisiones pendientes** listadas por documento (§8 de cada uno): 8 del
+juego, 7 de notificaciones, 6 de frontend, 6 de reglas de negocio, 5 de base de datos y 4
+de cada uno de backend, seguridad e infraestructura. Las que bloquean más trabajo: orden de
+consumo de monedas, coste/probabilidades de la ruleta, contenido y precios del mercader,
+estrategia de idempotencia, proveedor de despliegue y proveedor de correo/SMS.
 
 ---
 
@@ -322,15 +380,15 @@ de idempotencia, proveedor de despliegue y proveedor de correo/SMS.
 
 | Área | ✅ | ⚠️ | ⬜ | Total |
 | --- | ---: | ---: | ---: | ---: |
-| Backend | 22 | 7 | 0 | 29 |
+| Backend | 22 | 7 | 2 | 31 |
 | Reglas de negocio | 13 | 5 | 0 | 18 |
-| Base de datos | 10 | 2 | 1 | 13 |
-| Frontend | 3 | 10 | 4 | 17 |
+| Base de datos | 9 | 3 | 2 | 14 |
+| Frontend | 4 | 10 | 7 | 21 |
 | Juego | 0 | 6 | 22 | 28 |
-| Infraestructura | 1 | 3 | 6 | 10 |
-| Notificaciones | 0 | 0 | 12 | 12 |
-| Seguridad | 8 | 2 | 4 | 14 |
-| **Total** | **57** | **35** | **49** | **141** |
+| Infraestructura | 2 | 2 | 9 | 13 |
+| Notificaciones | 0 | 0 | 14 | 14 |
+| Seguridad | 8 | 2 | 5 | 15 |
+| **Total** | **58** | **35** | **61** | **154** |
 
 ---
 

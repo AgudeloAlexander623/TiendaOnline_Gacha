@@ -9,88 +9,111 @@
 
 ## 1. Introducción
 
-Este documento describe la **experiencia gamificada** de GearQuest: jugar para ganar
-monedas, gastarlas en el gacha, ver el saldo y simular recargas. Es el dominio más
-peculiar del proyecto y también el que exige más cuidado: **el juego nunca decide cuántas
-monedas recibe alguien; eso siempre lo valida el servidor.**
+Este documento describe la **experiencia gamificada** de GearQuest: explorar la aventura
+para ganar monedas, gastarlas en la ruleta, canjearlas en el mercader del mapa, ver el
+saldo y simular recargas. Es el dominio más peculiar del proyecto y también el que exige
+más cuidado: **el juego nunca decide cuántas monedas recibe alguien; eso siempre lo valida
+el servidor.**
+
+El juego tiene **tres componentes** que comparten la misma moneda:
+
+| Componente | Qué es | Qué da |
+| --- | --- | --- |
+| **Aventura** | Metroidvania 2D: 5 mapas tipo laberinto con jefe, combate, cofres y zonas de descanso | Monedas (al derrotar enemigos) e items |
+| **Mercader** | Zona fija dentro de cada mapa donde el personaje canjea monedas | Objetos (pociones, armas, armaduras) |
+| **Ruleta** | Máquina de tiradas con probabilidades a favor de la casa | Descuentos, personajes, armas e items raros |
+
+El alcance detallado del juego está en [`SRS · Game.md`](../Software-requeriments\(SRS\)/Game.md),
+que es su **fuente de verdad**.
 
 ## 2. Actores
 
 | Actor | Descripción en este dominio |
 | --- | --- |
-| **Cliente** | A la vez jugador y comprador: juega, tira en el gacha, consulta su monedero y recarga (en modo simulado) |
+| **Cliente** | A la vez jugador y comprador: explora la aventura, tira en la ruleta, canjea en el mercader, consulta su monedero y recarga (en modo simulado) |
 
 ## 3. Mapa de casos de uso
 
 | Caso | Nombre | Prioridad |
 | --- | --- | --- |
-| UC-12 | Jugar una partida (minijuego) | Must |
-| UC-13 | Hacer una tirada en el gacha | Must |
+| UC-12 | Explorar y jugar la aventura | Must |
+| UC-13 | Hacer una tirada en la ruleta | Must |
 | UC-14 | Consultar el monedero | Must |
 | UC-15 | Consultar el historial de monedas | Must |
 | UC-16 | Realizar una recarga simulada | Must |
+| UC-19 | Canjear monedas por objetos en el mercader | Must |
 
 ## 4. Detalle de los casos de uso
 
-### UC-12 · Jugar una partida (minijuego)
+### UC-12 · Explorar y jugar la aventura
 
 | Campo | Contenido |
 | --- | --- |
-| Historia de usuario | Como jugador quiero jugar partidas para ganar monedas |
+| Historia de usuario | Como jugador quiero explorar la aventura para ganar monedas y guardar mis objetos |
 | Actor | Cliente |
-| Precondiciones | Sesión iniciada (UC-02); el minijuego está disponible |
+| Precondiciones | Sesión iniciada (UC-02); la aventura está disponible |
 | Disparador | Pulsa "Jugar" en la sección del juego |
 | Prioridad | Must |
 
 **Flujo principal**
 
-1. El jugador entra al minijuego desde su cuenta.
-2. Comienza una partida con duración definida.
-3. Juega hasta que la partida termina y produce un resultado.
-4. El juego envía ese resultado al servidor («include»).
-5. El servidor lo valida y, si es válido, acredita las monedas correspondientes.
-6. El monedero refleja las monedas recién ganadas.
+1. El jugador entra a la aventura desde su cuenta; el juego confirma su sesión.
+2. Explora el mapa: hay **5 mapas tipo laberinto**, cada uno con su **jefe final**.
+3. combate cuerpo a cuerpo o a distancia, según el arma equipada, y ve su **barra de vida**.
+4. Al derrotar enemigos, **sueltan monedas**; los objetos del entorno se pueden destruir y
+   sueltan items.
+5. En una **zona de descanso** puede abrir el **cofre** y guardar armas, partes de armaduras
+   y pociones: el inventario queda a salvo aunque muera.
+6. Cuando la partida termina, el juego envía el resultado al servidor («include»).
+7. El servidor lo valida y, si es válido, acredita las monedas correspondientes.
+8. El monedero refleja las monedas recién ganadas.
 
 **Flujos alternativos y de excepción**
 
+- *Muerte:* el personaje **pierde todos los items** obtenidos en la aventura, pero
+  **conserva las monedas**; la partida queda registrada como abandonada.
 - *Sin conexión:* el juego lo avisa y no se otorgan monedas hasta que se recupere el enlace.
 - *Resultado rechazado:* el servidor no acepta el resultado y el jugador es informado; nada
   se acredita por su cuenta.
 
 **Resultado:** las monedas ganadas aparecen en el monedero con su fecha de vencimiento
-(30 días).
+(30 días), y el inventario guardado en el cofre sigue disponible para la siguiente partida.
 
-**Requisitos asociados (SRS):** FR-GA-01 · FR-GA-02 · FR-GA-03 · FR-BE-17 · FR-BR-02
+**Requisitos asociados (SRS):** FR-GA-01 · FR-GA-02 · FR-GA-03 · FR-GA-04 · FR-GA-05 ·
+FR-GA-07 · FR-GA-16 · FR-GA-17 · FR-GA-19 · FR-GA-22 · FR-BE-17 · FR-BR-02
 
 ---
 
-### UC-13 · Hacer una tirada en el gacha
+### UC-13 · Hacer una tirada en la ruleta
 
 | Campo | Contenido |
 | --- | --- |
 | Historia de usuario | Como jugador quiero gastar mis monedas en tiradas para obtener recompensas |
 | Actor | Cliente |
 | Precondiciones | Sesión iniciada (UC-02); saldo suficiente en el monedero (UC-14) |
-| Disparador | Confirma una tirada en la ruta gacha |
+| Disparador | Confirma una tirada en la ruleta |
 | Prioridad | Must |
 
 **Flujo principal**
 
-1. El jugador abre la ruta gacha.
+1. El jugador abre la ruleta.
 2. La interfaz muestra el costo de la tirada y su saldo actual (ambos, datos del servidor).
 3. Confirma la tirada.
 4. El servidor valida el saldo y lo descuenta («include»).
-5. Se entrega la recompensa y queda registrada en su cuenta.
+5. Se entrega la recompensa —un descuento de **un solo producto**, un personaje, un arma o un
+   item raro— y queda registrada en su cuenta.
 
 **Flujos alternativos y de excepción**
 
 - *Saldo insuficiente:* no se permite tirar; se indica cuánto falta.
 - *Fallo de comunicación:* la tirada no se ejecuta a medias; o se hace, o no se hace.
+- *Repetición de la petición:* la misma tirada nunca cobra dos veces.
 
 **Resultado:** el jugador tiene una recompensa nueva y su monedero refleja el gasto,
 exactamente una vez.
 
-**Requisitos asociados (SRS):** FR-GA-04 · FR-GA-08 · FR-BE-16 · FR-BE-19
+**Requisitos asociados (SRS):** FR-GA-11 · FR-GA-12 · FR-GA-13 · FR-GA-14 · FR-GA-15 ·
+FR-BE-16 · FR-BE-19
 
 ---
 
@@ -178,3 +201,35 @@ registro, ni siquiera lo que ya venció.
 constancia de que la recarga fue simulada.
 
 **Requisitos asociados (SRS):** FR-BE-20 · FR-BE-21 · FR-BR-10 · FR-BR-11 · FR-BR-15
+
+---
+
+### UC-19 · Canjear monedas por objetos en el mercader
+
+| Campo | Contenido |
+| --- | --- |
+| Historia de usuario | Como jugador quiero canjear mis monedas por objetos en el mercader para mejorar mi equipo |
+| Actor | Cliente |
+| Precondiciones | Sesión iniciada (UC-02); la aventura está en curso y el jugador alcanzó una **zona de mercader** |
+| Disparador | Entra en la zona del mercader y elige un objeto del catálogo |
+| Prioridad | Must |
+
+**Flujo principal**
+
+1. El jugador entra en la **zona fija del mercader** dentro del mapa.
+2. Ve el catálogo del mercader: pociones, armas y armaduras, con su **precio en monedas** y
+   su rareza.
+3. Elige un objeto y confirma el canje.
+4. El servidor valida el saldo y descuenta el precio («include»).
+5. El objeto entra en el inventario del jugador y el canje queda registrado.
+
+**Flujos alternativos y de excepción**
+
+- *Saldo insuficiente:* no se permite el canje; se indica cuánto falta.
+- *Objeto ya en el inventario con tope:* el canje se rechaza con un motivo claro.
+- *Fallo de comunicación:* el canje no se ejecuta a medias; o se hace, o no se hace.
+
+**Resultado:** el jugador tiene el objeto en su inventario y su monedero refleja el gasto,
+exactamente una vez.
+
+**Requisitos asociados (SRS):** FR-GA-09 · FR-GA-10 · FR-BE-22 · FR-BR-01 · FR-BR-04

@@ -66,7 +66,7 @@ FR-BE-01          NFR-DB-02
 | [`Backend.md`](./Backend.md) | Servidor | Servicios, API, reglas de negocio del servidor y calidad del código |
 | [`Frontend.md`](./Frontend.md) | Interfaz web | Pantallas, experiencia de uso y comunicación con la API |
 | [`Database.md`](./Database.md) | Bases de datos | PostgreSQL, Prisma, modelos, migraciones e integridad de datos |
-| [`Game.md`](./Game.md) | Juego (Godot) | Minijuego, ruta gacha e integración con la cuenta de usuario |
+| [`Game.md`](./Game.md) | Juego (Godot) | **Fuente de verdad del juego:** aventura tipo *metroidvania*, tienda del mercader, ruleta e integración con la cuenta de usuario |
 | [`Business-Rules.md`](./Business-Rules.md) | Reglas de negocio | Monedas, vencimientos, descuentos, recargas y pedidos |
 | [`Security.md`](./Security.md) | Seguridad | Autenticación, protección de datos e integridad de monedas |
 | [`Infrastructure.md`](./Infrastructure.md) | Infraestructura | Docker, entornos, despliegue y publicación con HTTPS |
@@ -107,9 +107,11 @@ descuentos y permisos siempre se validan en el servidor).
 | Término | Significado sencillo |
 | --- | --- |
 | **API** | Conjunto de reglas que permiten que dos programas se comuniquen (aquí, por HTTP) |
+| **Aventura** | Componente principal del juego: un *metroidvania* 2D de laberintos, combate y jefes, del que se obtienen monedas |
 | **Backend** | El "cerebro" del sistema: vive en el servidor y valida todas las reglas |
 | **Frontend** | Lo que la persona ve y usa en el navegador |
-| **Gacha** | Modalidad de juego estilo maquinita: se gastan monedas en tiradas para obtener recompensas |
+| **Gacha (ruleta)** | Modalidad del juego estilo maquinita: se gastan monedas en tiradas para obtener recompensas |
+| **Mercader** | Zona fija del mapa donde el personaje canjea monedas por objetos |
 | **Microservicio** | Aplicación pequeña e independiente con una responsabilidad clara |
 | **Moneda ganada** | Moneda obtenida jugando; vence a los 30 días |
 | **Moneda comprada** | Moneda adquirida por recarga simulada; no vence |

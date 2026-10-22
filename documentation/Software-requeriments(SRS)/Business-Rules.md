@@ -25,11 +25,11 @@ GearQuest tiene una **moneda virtual interna** con dos orígenes distintos:
   └─────────────────────────┘      └──────────────────────────────┘
 ```
 
-- **Ganadas:** se obtienen jugando el minijuego y **vencen a los 30 días**.
+- **Ganadas:** se obtienen jugando la **aventura** y **vencen a los 30 días**.
 - **Compradas:** provienen de una **recarga simulada** (sin dinero real) y **no vencen**.
 
-Con esas monedas se juega al **gacha** (tiradas con recompensas) y se accede a
-**descuentos** en la tienda.
+Con esas monedas se gasta en la **ruleta** (tiradas con recompensas), se **canjea en la
+tienda del mercader** del mapa y se accede a **descuentos** en la tienda.
 
 ## 3. Tabla de descuentos
 
@@ -97,9 +97,10 @@ Con esas monedas se juega al **gacha** (tiradas con recompensas) y se accede a
 ## 6. Historial y trazabilidad (visión general)
 
 ```text
-  Monedero ──▶ movimientos:  +150 (ganada, minijuego, hoy)
+  Monedero ──▶ movimientos:  +150 (ganada, aventura, hoy)
                               +500 (comprada, recarga simulada, hoy)
-                              −100 (consumida, tirada gacha, hoy)
+                              −100 (consumida, tirada en la ruleta, hoy)
+                              −80  (consumida, canje en el mercader, hoy)
                               −150 (vencida, 30 días después)
 ```
 
@@ -112,10 +113,12 @@ siempre la pregunta "¿qué pasó con mis monedas?".
 2. **Vigencia y límites** de los descuentos (un descuento ¿se usa una vez? ¿por tiempo?).
 3. **Orden de consumo** de monedas: ¿se gastan primero las ganadas (que vencen) o las
    compradas?
-4. **Coste, probabilidades y recompensas** de las tiradas de gacha.
-5. **Aviso previo** de vencimiento: ¿con cuántos días de anticipación se avisa?
+4. **Coste, probabilidades y recompensas** de las tiradas de la ruleta.
+5. **Contenido del mercader y precios de canje** en monedas.
+6. **Aviso previo** de vencimiento: ¿con cuántos días de anticipación se avisa?
 
 ## 8. Referencias
 
 - `README.MD` (raíz): §4 (funcionalidades previstas), §7.1 (integridad de monedas).
+- [`Game.md`](./Game.md): alcance del juego (aventura, mercader y ruleta) del que salen estas reglas.
 - `frontend/ReadmeFrontEnd.md`: descripción del monedero y los niveles de descuento.

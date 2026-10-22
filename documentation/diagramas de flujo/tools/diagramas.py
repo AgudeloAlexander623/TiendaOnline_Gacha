@@ -137,15 +137,15 @@ DIAGRAMAS.append({
 DIAGRAMAS.append({
     "kind": "flow",
     "id": "02",
-    "file": "02_apertura_gacha.svg",
-    "title": "Apertura de gacha (tirada)",
+    "file": "02_apertura_ruleta.svg",
+    "title": "Apertura de la ruleta (tirada)",
     "subtitle": "El servidor valida sesión y saldo, consume los lotes de "
                 "monedas y entrega la recompensa en una única transacción.",
     "meta": meta("2.0", "UC-13, UC-14 · FR-BE-16, FR-BR-04, FR-GA-11, FR-GA-12"),
     "width": 1120,
     "nodes": [
         {"id": "g1", "kind": "terminal", "owner": "godot",
-         "text": "El jugador abre la ruta gacha y elige una tirada",
+         "text": "El jugador abre la ruleta y elige una tirada",
          "refs": "UC-13 · FR-GA-15"},
         {"id": "g2", "kind": "process", "owner": "frontend",
          "text": "Muestra el costo de la tirada y el saldo actual, ambos "
@@ -163,7 +163,7 @@ DIAGRAMAS.append({
         {"id": "g5", "kind": "decision",
          "text": "¿Saldo vigente ≥ costo de la tirada?", "refs": "FR-BE-16"},
         {"id": "ge3", "kind": "error",
-         "text": "Saldo insuficiente: sugiere el minijuego (ganar monedas) o "
+         "text": "Saldo insuficiente: sugiere la aventura (ganar monedas) o "
                  "una recarga simulada", "refs": "FR-BR-04 · UC-16"},
         {"id": "ge4", "kind": "terminal", "fill": "#fef2f2", "stroke": "#dc2626",
          "text": "Fin (error): no se descuenta nada", "refs": "FR-BR-15"},
@@ -173,7 +173,7 @@ DIAGRAMAS.append({
          "refs": "FR-BR-04 · FR-DB-04"},
         {"id": "nota2", "kind": "note", "w": 258,
          "text": "Pendiente (Business-Rules §7.3 y §7.4): orden de consumo y "
-                 "tabla de coste, probabilidades y recompensas del gacha. La "
+                 "tabla de coste, probabilidades y recompensas de la ruleta. La "
                  "casa siempre gana (FR-GA-12)."},
         {"id": "g7", "kind": "process", "owner": "economy-service",
          "text": "Descuenta el costo y elige la recompensa con la tabla de "
@@ -478,7 +478,7 @@ DIAGRAMAS.append({
         {"id": "game", "kind": "box", "cx": 355, "cy": 445, "w": 260,
          "owner": "godot", "refs": "FR-GA-19 · FR-GA-20",
          "title": "Juego (GAME/ · pendiente)",
-         "bullets": ["Godot 2D + C++ · aventura, gacha y minijuego",
+         "bullets": ["Godot 2D + C++ · aventura, ruleta y mercader",
                      "Reporta resultados; nunca fija saldos",
                      "Sesión válida obligatoria (FR-GA-18)"]},
         {"id": "ident", "kind": "box", "cx": 770, "cy": 150, "w": 215,
@@ -494,7 +494,7 @@ DIAGRAMAS.append({
         {"id": "econ", "kind": "box", "cx": 770, "cy": 430, "w": 215,
          "owner": "economy-service", "refs": "FR-BE-16 · FR-BE-18",
          "title": "economy-service :3003",
-         "bullets": ["Monedero, gacha y recompensas",
+         "bullets": ["Monedero, ruleta y recompensas",
                      "Movimientos, vencimientos y reglas"]},
         {"id": "pay", "kind": "box", "cx": 770, "cy": 570, "w": 215,
          "owner": "payments-service", "refs": "FR-BE-20 · FR-BE-21",

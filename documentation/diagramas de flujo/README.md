@@ -11,7 +11,7 @@ especificación y se regenera.
 | # | Archivo | Tipo | Trazabilidad principal |
 |---|---------|------|------------------------|
 | 01 | `01_compra_producto.svg` | Flujo | UC-07, UC-08, UC-10 · FR-BE-12, FR-BR-12 a 15 |
-| 02 | `02_apertura_gacha.svg` | Flujo | UC-13, UC-14 · FR-BE-16, FR-BR-04, FR-GA-11/12 |
+| 02 | `02_apertura_ruleta.svg` | Flujo | UC-13, UC-14 · FR-BE-16, FR-BR-04, FR-GA-11/12 |
 | 03 | `03_monedas_y_vencimiento.svg` | Flujo | UC-10, UC-14 a 16 · FR-BR-01 a 08 |
 | 04 | `04_revision_comportamiento_sospechoso.svg` | Flujo | FR-SEC-04, FR-SEC-10, NFR-SEC-01 · UC-02, UC-13 |
 | 05 | `05_arquitectura_general.svg` | Contenedores | README §6 · FR-DB-01 · NFR-BE-07/08 |
@@ -24,7 +24,7 @@ Resumen de contenido:
 
 - **01 · Compra de producto** — del carrito confirmado a la notificación:
   validación en el servidor, reserva de inventario, pago simulado y auditoría.
-- **02 · Apertura de gacha** — el servidor valida sesión y saldo, consume los
+- **02 · Apertura de la ruleta** — el servidor valida sesión y saldo, consume los
   lotes de monedas y entrega la recompensa en una única transacción.
 - **03 · Monedas, vencimiento y descuentos** — tres disparadores en un ciclo:
   acreditación, tarea programada de vencimiento y canje de niveles.
@@ -36,9 +36,9 @@ Resumen de contenido:
   Python (`docker-compose`).
 - **06 · Autenticación** — registro/login con hash en el servidor, JWT firmado
   y middleware que verifica identidad y rol en cada petición (fragmento `alt`).
-- **07 · Juego ↔ backend** — protocolo propuesto: el juego reporta y el
+- **07 · Juego ↔ backend** — protocolo definido: el juego reporta y el
   servidor decide; sin validación no hay monedas y los resultados manipulados
-  generan alerta.
+  generan alerta. Contrato en `Contrato-entre-servicios.md` §7.
 - **08 · Ciclo de vida del pedido** — máquina de estados; solo el backend
   cambia el estado, con registro auditable.
 - **09 · Modelo de datos** — 26 entidades en cuatro bases independientes (una
@@ -73,7 +73,7 @@ llevan anotaciones explícitas:
 - **Diagrama 08** — los estados del pedido se presentan como
   *«propuesto · pendiente de aprobación»* (Database.md §8 y Backend.md §8).
 - **Diagrama 01** — orden de consumo de monedas pendiente (Business-Rules §7).
-- **Diagrama 02/03** — tablas de gacha y regla de uso único de descuentos
+- **Diagrama 02/03** — tablas de la ruleta y regla de uso único de descuentos
   marcadas como *pendiente*.
 
 ## 4. Regenerar los SVG

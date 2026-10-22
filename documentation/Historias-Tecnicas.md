@@ -100,7 +100,7 @@ al backend de «funcionar por partes» a «funcionar como sistema».
 
 | ID | Historia técnica | Origen | Requisitos | Habilita |
 | --- | --- | --- | --- | --- |
-| **TS-11** | Como equipo queremos **pruebas de integración con base de datos real** para el monedero, checkout y gacha, para convertir en demostrable lo que hoy es deuda | Estrategia de pruebas §8 | NFR-BR-02 | Done de épica |
+| **TS-11** | Como equipo queremos **pruebas de integración con base de datos real** para el monedero, checkout y ruleta, para convertir en demostrable lo que hoy es deuda | Estrategia de pruebas §8 | NFR-BR-02 | Done de épica |
 | **TS-12** | Como equipo queremos un **pipeline de CI** que ejecute lint, typecheck y pruebas en cada PR, para que nadie mergee algo roto | No existe CI | NFR-BE-04 | Definition of Done |
 | **TS-13** | Como equipo queremos **validar las respuestas contra `openapi.yaml`**, para que el contrato no se desvíe del código real | Estrategia de pruebas §3 | NFR-BE-04 | Contrato |
 
@@ -111,12 +111,16 @@ al backend de «funcionar por partes» a «funcionar como sistema».
 
 | ID | Historia técnica | Origen | Requisitos | Habilita |
 | --- | --- | --- | --- | --- |
-| **TS-14** | Como equipo queremos **conectar el frontend al backend** (cliente HTTP real), para que la UI deje de ser estática | Matriz §6: 0 llamadas HTTP | FR-FE-* | Todas las de tienda |
-| **TS-15** | Como equipo queremos **resolver el desajuste de `VITE_API_BASE_URL`** (apunta al 3000, los servicios usan 3001-3004), para que la configuración sea correcta | Trazabilidad §12.2 | NFR-FE-03 | [TS-14](#34-calidad-y-automatización) |
-| **TS-16** | Como equipo queremos un **script `format` y Prettier en el frontend**, para tener el mismo estándar que el backend | Trazabilidad §12.3 | NFR-FE-* | Calidad FE |
+| **TS-14** | Como equipo queremos **conectar el frontend al backend** (cliente HTTP real), para que la UI deje de ser estática | Matriz §6: 0 llamadas HTTP | FR-FE-10, FR-FE-13 | Todas las de tienda |
+| **TS-15** | Como equipo queremos **resolver el desajuste de `VITE_API_BASE_URL`** (apunta al 3000, los servicios usan 3001-3004), para que la configuración sea correcta | Trazabilidad §12.2 | FR-FE-13 | [TS-14](#35-frontend) — ✅ **hecha en v1.1** |
+| **TS-16** | Como equipo queremos un **script `format` y Prettier en el frontend**, para tener el mismo estándar que el backend | Trazabilidad §12.3 | NFR-FE-06 | Calidad FE — ✅ **hecha en v1.1** |
 
 > **Cómo se verifica:** la UI muestra datos reales del backend; cambiar `VITE_API_BASE_URL`
 > apunta a un puerto donde algo escucha; `npm run format` existe y funciona.
+>
+> **TS-15** se resolvió con el **proxy inverso por prefijo** de Vite (`vite.config.ts`) y
+> `VITE_API_BASE_URL=/api/v1`. **TS-16** con Prettier (`^3.9.10`), configurado para
+> respetar el estilo ya existente del código.
 
 ### 3.6 Seguridad
 
@@ -127,6 +131,26 @@ al backend de «funcionar por partes» a «funcionar como sistema».
 
 > **Cómo se verifica:** una ruta ADMIN con rol `PLAYER` devuelve `403`; pasar el límite de
 > peticiones devuelve `429`.
+
+### 3.7 Alcance ampliado en v1.1 (juego, avisos y operación)
+
+Estas historias nacieron de los **13 requisitos nuevos** del SRS (v1.1). Sus contratos ya
+están definidos: el del juego en
+[`Contrato-entre-servicios.md`](./Contrato-entre-servicios.md) §7-§9.
+
+| ID | Historia técnica | Origen | Requisitos | Habilita |
+| --- | --- | --- | --- | --- |
+| **TS-19** | Como equipo queremos **canjear monedas por objetos en el mercader** con validación de precio en el servidor, para que el jugador compre objetos sin trampas | Requisito nuevo | FR-BE-22, FR-GA-10, FR-BR-01 | [US-19](./Epicas-e-Historias.md) |
+| **TS-20** | Como equipo queremos **compensar un débito si la operación posterior falla** (revertir el cobro cuando el checkout no se completa), para que nadie pierda monedas | Requisito nuevo | FR-BE-23 | [US-10](./Epicas-e-Historias.md) |
+| **TS-21** | Como equipo queremos **persistir la clave de idempotencia** en base de datos con su plazo de vida, para que un reintento no duplique el efecto aunque el proceso se reinicie | Requisito nuevo | FR-DB-09, FR-BE-19, FR-BR-15 | [TS-06](#32-integridad-de-dinero-y-datos) |
+| **TS-22** | Como equipo queremos **autenticar las llamadas entre servicios** con un token interno de alcance limitado, para que ningún servicio pueda llamar a otro sin autorización | Requisito nuevo | FR-SEC-11 | [TS-01](#31-integración-entre-microservicios-la-deuda-más-urgente) |
+| **TS-23** | Como equipo queremos el **módulo de notificaciones** con su bandeja interna y el aviso generado por el servicio que produce el hecho, para que el usuario sepa qué ocurrió con sus monedas y sus pedidos | Requisito nuevo | FR-NO-01…FR-NO-10, FR-FE-11 | [US-13](./Epicas-e-Historias.md) |
+| **TS-24** | Como equipo queremos un **comando global de arranque** que levante base de datos, los 4 servicios y el frontend, para no levantar 6 procesos a mano | Requisito nuevo | FR-INF-07, NFR-INF-04 | [TS-08](#33-base-técnica--infraestructura) |
+
+> **Cómo se verifica:** cada una tiene su criterio en la matriz
+> ([`Trazabilidad.md`](./Trazabilidad.md) §12.1). El canje del mercader se prueba con el
+> mismo criterio crítico que la tirada de la ruleta: **si el saldo no alcanza, no se cobra
+> nada** y la operación es idempotente.
 
 ---
 
@@ -139,10 +163,15 @@ piezas» pero no «como conjunto». Orden sugerido:
    1. TS-01 … TS-04   Integración entre servicios   ← desbloquea reglas de negocio reales
    2. TS-05 … TS-07   Integridad de dinero          ← evitamos saldo/pedidos inconsistentes
    3. TS-11, TS-12    Pruebas + CI                  ← convierte "hecho" en "demostrable"
-   4. TS-14, TS-15    Conectar frontend             ← el usuario ve algo funcionar
+   4. TS-14           Conectar frontend             ← el usuario ve algo funcionar
    5. TS-08, TS-09    Docker + migraciones          ← reproducibilidad y despliegue
    6. TS-16 … TS-18   Calidad y seguridad           ← endurecimiento
+   7. TS-19 … TS-24   Ampliación v1.1               ← mercader, avisos y operación
 ```
+
+> **Nota:** **TS-15** (ruta base del frontend) y **TS-16** (Prettier) ya están **hechas**
+> en la v1.1 de la documentación; **TS-12** (CI) sigue pendiente y es el siguiente
+> candidato natural, porque es lo que convierte «hecho» en «demostrable».
 
 > Esta prioridad coincide a propósito con la **deuda priorizada** de
 > [Estrategia de pruebas](./Estrategia-de-Pruebas.md) §8: probar lo de arriba es lo que

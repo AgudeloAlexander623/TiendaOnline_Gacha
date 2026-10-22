@@ -29,9 +29,8 @@ function ProductDetailPage() {
 
           <p className="text-3xl font-bold text-gray-900">$189.900</p>
           <p className="mt-4 text-gray-600">
-            Esta es la vista de detalle de producto. Aquí se mostrarán la descripción,
-            imágenes, disponibilidad y opciones de descuento cuando el catálogo esté
-            conectado al backend.
+            Esta es la vista de detalle de producto. Aquí se mostrarán la descripción, imágenes,
+            disponibilidad y opciones de descuento cuando el catálogo esté conectado al backend.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">

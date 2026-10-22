@@ -13,8 +13,8 @@ function OrdersPage() {
       <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
         <p className="text-lg font-medium text-gray-700">Aún no tienes pedidos</p>
         <p className="mt-1 text-sm text-gray-500">
-          Cuando realices tu primera compra, aparecerá aquí con su estado. Esta vista se
-          conectará al backend en la fase de pedidos.
+          Cuando realices tu primera compra, aparecerá aquí con su estado. Esta vista se conectará
+          al backend en la fase de pedidos.
         </p>
         <Link
           to="/catalog"

@@ -17,14 +17,15 @@
 ## 1. Qué es GearQuest
 
 GearQuest es una **tienda web de periféricos para computador** con una vuelta de tuerca:
-además de comprar, puedes **jugar** para ganar **monedas** y usar esas monedas en una
-**máquina gacha** para conseguir **descuentos**.
+además de comprar, puedes **jugar** para ganar **monedas** y usar esas monedas en la
+**ruleta** (la máquina gacha) o en el **mercader** del mapa para conseguir **descuentos** y
+objetos.
 
 En pocas palabras:
 
 1. **Compras** periféricos (teclados, ratones, audífonos…).
-2. **Juegas** un minijuego y ganas monedas.
-3. **Usas las monedas** en el gacha para obtener descuentos.
+2. **Juegas la aventura** (un metroidvania de laberintos y jefes) y ganas monedas.
+3. **Usas las monedas** en la ruleta o en el mercader para obtener descuentos y objetos.
 4. **Pagas** con el descuento aplicado.
 
 > **Importante:** las compras y recargas son **simuladas**. No se procesa dinero real ni
@@ -41,7 +42,12 @@ En pocas palabras:
 | Registro de usuario (correo y contraseña) | ⚠️ Backend sí; frontend sin conectar |
 | Inicio de sesión | ⚠️ Backend sí; frontend sin conectar |
 | Cerrar sesión | ⚠️ Backend sí; frontend sin conectar |
-| Recuperar contraseña | ⬜ Pendiente |
+| Recuperar contraseña | ⬜ **Fuera del alcance actual** |
+
+> **Nota sobre "recuperar contraseña":** no hay ningún requisito del SRS ni ruta de API que
+> lo contemplen, y el backend no lo implementa. No forma parte de esta versión; si se quiere
+> añadir, hay que escribir primero el requisito. Ver
+> [`Trazabilidad.md`](./Trazabilidad.md) §12.1.
 
 **Qué podrás hacer cuando esté conectado:**
 
@@ -106,7 +112,7 @@ En pocas palabras:
 
 1. Desde el carrito, pulsa **Finalizar compra**.
 2. El sistema crea un **pedido** con un número único.
-3. El pedido pasa por estados: **pendiente → confirmado → enviado → entregado**
+3. El pedido pasa por estos estados: **pendiente → pagado → enviado → entregado**
    (o **cancelado**).
 4. Puedes consultar tus pedidos y su estado en cualquier momento.
 
@@ -133,7 +139,7 @@ Hay **dos tipos** de monedas y se comportan distinto:
 
 | Tipo | Cómo se consiguen | ¿Caducan? |
 | --- | --- | --- |
-| **Ganadas** | Jugando el minijuego | Sí, a los **30 días** |
+| **Ganadas** | Jugando la aventura | Sí, a los **30 días** |
 | **Compradas** | Con una recarga (simulada) | **No** caducan |
 
 > **¿Por qué?** Para incentivar que se juegue con regularidad. Las monedas de regalo
@@ -142,39 +148,61 @@ Hay **dos tipos** de monedas y se comportan distinto:
 > **Pendiente:** aún no se ha definido en qué **orden** se gastan las monedas ganadas y
 > las compradas. Ver [`Decisiones pendientes`](../README.MD).
 
-### 4.3 Jugar el minijuego
+### 4.3 Jugar la aventura
 
 | Función | Estado |
 | --- | --- |
-| Minijuego (Godot) | ⬜ No implementado |
+| Aventura (Godot) | ⬜ No implementado |
 | Otorgar monedas al terminar | ✅ Backend sí (regla simple) |
 
 **Cómo funcionará:**
 
-1. Entras al minijuego desde la web.
-2. Juegas y consigues un puntaje.
-3. Al terminar, el **servidor** decide cuántas monedas ganas.
-4. Las monedas se suman a tu saldo como monedas **ganadas** (caducan a los 30 días).
+1. Entras a la aventura desde la web.
+2. Exploras el mapa (hay **5 laberintos**, cada uno con su jefe final), combates y abres
+   cofres. Al derrotar enemigos **ganas monedas**.
+3. Si mueres, **pierdes los objetos** que llevas encima, pero **conservas las monedas**.
+4. Al terminar, el **servidor** decide cuántas monedas ganas y las suma a tu saldo como
+   monedas **ganadas** (caducan a los 30 días).
 
 > **Regla anti-trampa:** el servidor **no confía** en el puntaje que llega desde el juego
 > sin más; aplica sus propias reglas para convertirlo en monedas. La validación definitiva
 > aún está **pendiente** (ver [`Trazabilidad.md`](./Trazabilidad.md)).
 
-### 4.4 La máquina gacha
+> **El juego es un metroidvania:** el mapa 5 lo culmina el **Rey Demonio**, que entrega un
+> arma legendaria única. El detalle completo está en
+> [`Game.md`](./Software-requeriments\(SRS\)/Game.md).
+
+### 4.4 El mercader del mapa
 
 | Función | Estado |
 | --- | --- |
-| Ver gachas disponibles | ✅ Backend sí; ⬜ frontend maqueta |
+| Ver el catálogo del mercader | ⬜ No implementado |
+| Canjear monedas por objetos | ⬜ No implementado (falta la operación en el backend) |
+
+**Cómo funcionará:**
+
+1. Durante la aventura llegas a una **zona fija** con el mercader.
+2. Ves sus objetos (pociones, armas, armaduras) con su **precio en monedas** y su rareza.
+3. Pides el canje y el **servidor** descuenta las monedas y te lo entrega.
+
+> El canje se valida en el servidor igual que una tirada: si no tienes saldo suficiente, se
+> rechaza y **no** se te cobra nada.
+
+### 4.5 La ruleta (gacha)
+
+| Función | Estado |
+| --- | --- |
+| Ver ruletas disponibles | ✅ Backend sí; ⬜ frontend maqueta |
 | Hacer una tirada | ✅ Backend sí; ⬜ frontend maqueta |
 | Ver el premio obtenido | ✅ Backend sí; ⬜ frontend maqueta |
 | Inventario de premios | ✅ Backend sí; ⬜ frontend maqueta |
 
 **Cómo funciona:**
 
-1. Abres la sección del **gacha**.
-2. Eliges una máquina (cada una tiene su costo por tirada).
+1. Abres la sección de la **ruleta**.
+2. Eliges una ruleta (cada una tiene su costo por tirada).
 3. Pulsas **Girar** (se te descuentan monedas).
-4. El servidor decide el premio según las **probabilidades** de esa máquina.
+4. El servidor decide el premio según las **probabilidades** de esa ruleta.
 5. El premio va a tu **inventario**.
 
 > **Las probabilidades las define el servidor**, no la página. Y **cada tirada queda
@@ -227,13 +255,19 @@ Hay **dos tipos** de monedas y se comportan distinto:
 
 | Función | Estado |
 | --- | --- |
-| Notificaciones internas en la web | ⬜ No implementado |
-| Avisos por correo electrónico | ⬜ No implementado |
-| Avisos por SMS | ⬜ No implementado |
+| Notificaciones internas en la web | ⬜ No implementado (el canal interno es **obligatorio**) |
+| Avisos por correo electrónico | ⬜ No implementado (proveedor por elegir) |
+| Avisos por SMS | ⬜ No implementado (proveedor por elegir) |
 
 Está **previsto** avisar, por ejemplo, cuando un pedido cambie de estado, cuando unas
-monedas estén por vencer o cuando una recarga se complete. Los canales (interno, correo,
-SMS) y sus proveedores **aún no están elegidos**.
+monedas estén por vencer o cuando una recarga se complete. El canal **interno** (dentro de
+la propia aplicación) es **obligatorio** y no depende de ningún proveedor externo; el correo
+y el SMS **dependen de elegir un proveedor**, que aún no está decidido.
+
+Los avisos se generarán desde el servicio que produce el hecho (por ejemplo, el que acredita
+las monedas) y se mostrarán en una **bandeja de avisos** dentro de la cuenta, donde se
+podrán marcar como leídos. Ver
+[`Notifications.md`](./Software-requeriments\(SRS\)/Notifications.md).
 
 ---
 
@@ -244,6 +278,12 @@ No. Compras y recargas son **simuladas**. Es un proyecto académico.
 
 **¿Las monedas que gano caducan?**
 Solo las **ganadas jugando**: a los 30 días. Las **compradas** no caducan.
+
+**¿Qué se puede hacer en el juego?**
+Tres cosas: **explorar la aventura** (un metroidvania de 5 laberintos con jefes, del que se
+ganan monedas), **canjear monedas por objetos en el mercader** del mapa y **tirar la ruleta**
+(gacha) para obtener recompensas. El detalle está en
+[`Game.md`](./Software-requeriments\(SRS\)/Game.md).
 
 **¿Puedo hacer trampa ganando monedas?**
 El servidor intenta evitarlo decidiendo él mismo el saldo y las recompensas. La validación

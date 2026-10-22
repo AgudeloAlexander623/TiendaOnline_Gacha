@@ -33,14 +33,23 @@ campos y errores — y cada una lo adivina distinto. Con contrato:
 
 ### El contrato de GearQuest
 
-El backend son 4 servicios con **65 endpoints** (57 de negocio + 8 de salud, contando los
-`/health` y `/health/ready` de cada servicio). El contrato se escribe en el estándar
+El backend son 4 servicios que registran **65 rutas** (57 de negocio + 8 de salud: `/health`
+y `/health/ready` en cada servicio). Como los 4 pares de endpoints de salud son idénticos,
+eso equivale a **59 operaciones distintas**, que son exactamente las que documenta
+`openapi.yaml` (**45 rutas** y **59 operaciones**). El contrato se escribe en el estándar
 **OpenAPI 3.1**: un fichero de texto (`openapi.yaml`) que cualquier herramienta entiende y
 puede convertir en documentación interactiva, en tests o en un cliente.
 
 `openapi.yaml` se extrajo **directamente del código** (`backend/services/*/src/modules/**`)
 y se validó con Redocly CLI. Es la fuente de verdad del formato; el modelo de datos
 completo vive en los `prisma/schema.prisma` de cada servicio.
+
+> **Verificado:** el conjunto de `(método, ruta)` del código y el del `openapi.yaml` coinciden
+> uno a uno. No hay ninguna operación del código sin documentar ni al revés.
+
+> **Contratos entre servicios:** este documento describe la API **pública** (la que consumen
+> el frontend y el juego). Las llamadas **internas** entre microservicios tienen su propio
+> contrato, en [`../Contrato-entre-servicios.md`](../Contrato-entre-servicios.md).
 
 ---
 
@@ -76,16 +85,24 @@ Cada servicio es un proceso independiente con su propia base de datos y su propi
 | --- | ---: | --- | --- | ---: |
 | identity-service | **3001** | `gearquest_identity` | Registro, sesión, roles, usuarios | 10 |
 | store-service | **3002** | `gearquest_store` | Catálogo, inventario, carrito, pedidos, descuentos | 27 |
-| economy-service | **3003** | `gearquest_economy` | Monedero, movimientos, gacha, minijuego, objetos | 9 |
+| economy-service | **3003** | `gearquest_economy` | Monedero, movimientos, ruleta, sesiones de aventura, objetos | 9 |
 | payments-service | **3004** | `gearquest_payments` | Paquetes, pagos simulados, recargas | 11 |
 | *(compartido)* | — | — | `/health` y `/health/ready` en cada servicio | 8 |
 
-> ### ⚠️ Incidencia detectada: `VITE_API_BASE_URL`
-> El frontend trae `frontend/.env.example` con `VITE_API_BASE_URL=http://localhost:3000`,
-> pero **ningún servicio escucha en el 3000**. La variable correcta es una URL por
-> servicio (3001-3004) o un proxy del dev-server. Está registrado como hallazgo en
-> [`../Trazabilidad.md`](../Trazabilidad.md) §12.2. **No se ha tocado el frontend**:
-> es un cambio de código, no de documentación.
+> ### ✅ `VITE_API_BASE_URL` resuelto
+> El frontend traía `VITE_API_BASE_URL=http://localhost:3000`, donde **ningún servicio
+> escucha**. Ahora `frontend/.env.example` usa `VITE_API_BASE_URL=/api/v1` y el servidor de
+> desarrollo de Vite hace de **proxy inverso**: reparte cada prefijo de ruta a su servicio
+> (`frontend/vite.config.ts`). Así el navegador necesita **una sola URL base**.
+> En producción, el mismo reparto corresponde al proxy del servidor (ver `FR-FE-13` en el
+> SRS del frontend). Ver [`../Trazabilidad.md`](../Trazabilidad.md) §12.2.
+
+### 3.1 El contrato entre servicios
+
+Las llamadas **internas** entre microservicios (por ejemplo, que `store-service` cobre
+monedas en `economy-service`) **no** pasan por la API pública: tienen su propio contrato, en
+[`../Contrato-entre-servicios.md`](../Contrato-entre-servicios.md), que define las
+operaciones de saldo, la validación de partida y la autenticación interna.
 
 ---
 
@@ -180,5 +197,5 @@ Los cuatro pendientes anteriores están trazados en [`../Trazabilidad.md`](../Tr
    como equipo (es un cambio que rompe a los clientes), no dentro de un PR cualquiera.
 
 > **Pendiente de mejora (no bloquea):** cuando el backend estabilice, el contrato se puede
-> *autogenerar* desde los esquemas Zod para eliminar el trabajo manual. Hoy, con 57
+> *autogenerar* desde los esquemas Zod para eliminar el trabajo manual. Hoy, con 59
 > operaciones, mantenerlo a mano es razonable y más honesto que una generación parcial.

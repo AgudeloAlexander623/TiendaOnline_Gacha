@@ -138,9 +138,22 @@ pasó, pero **quien otorga monedas es siempre el servidor**, tras validar el res
 
 ## 6. Dependencias e integraciones
 
-- **economy-service (backend):** fuente de verdad de monedas, ruleta y recompensas; contrato de comunicación **por definir**.
+- **economy-service (backend):** fuente de verdad de monedas, ruleta, recompensas y
+  validación de partidas. El contrato de comunicación ya está definido en
+  [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) (6 operaciones: saldo,
+  débito, crédito, validación de partida (§7), canje en el mercader (§8) y avisos (§9)) y
+  publicado en [`API/openapi.yaml`](../API/openapi.yaml).
 - **Frontend:** punto de acceso al juego y lugar donde se muestran los resultados.
-- **Reglas de negocio:** costes, probabilidades y recompensas dependen de [`Business-Rules.md`](./Business-Rules.md).
+- **Reglas de negocio:** costes, probabilidades y recompensas dependen de
+  [`Business-Rules.md`](./Business-Rules.md).
+
+> **Correspondencia con el modelo de datos:** el `enum GameType` del `economy-service`
+> tiene los valores `GACHA` y `MINIGAME`. El valor **`MINIGAME` corresponde a la
+> partida de aventura** (la única que genera monedas por juego) y **`GACHA` a la ruleta**.
+> El `enum GameSessionStatus` (`STARTED`, `FINISHED`, `ABANDONED`, `REJECTED`) mapea
+> así: `FINISHED` = partida completada, `ABANDONED` = partida abandonada o muerte
+> (el jugador pierde los items, no las monedas) y `REJECTED` = resultado descartado
+> por el servidor (anti-trampa).
 
 ## 7. Criterios de aceptación del área
 
@@ -160,12 +173,24 @@ pasó, pero **quien otorga monedas es siempre el servidor**, tras validar el res
 3. Probabilidades, coste y tablas de recompensas de la ruleta.
 4. Cantidad de muertes de un enemigo para que desaparezca (anti-farming).
 5. Contenido del mercader y precios de canje.
-6. Protocolo de validación entre el juego y el backend.
-7. Forma de integración en la tienda: enlace, modal o embebido.
-8. Alcance del análisis antifraude aplicado al juego (servicio Python).
+6. Forma de integración en la tienda: enlace, modal o embebido.
+7. Alcance del análisis antifraude aplicado al juego (servicio Python).
+8. Contenido del cofre de cada zona de descanso y qué items se guardan.
+
+> **Ya resueltas** (no dependen del equipo, están implementadas o documentadas):
+> el protocolo de validación entre el juego y el backend, definido en
+> [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) §7 (operación
+> `POST /internal/game-sessions/{sessionId}/validate`) y §8 (operación
+> `POST /internal/merchant/redemptions`); y las reglas de muerte,
+> cofres y anti-farming, fijadas en §2.4 de este documento.
 
 ## 9. Referencias
 
 - `README.MD` (raíz): §4.2 (juego y monedas), §7.1 (integridad de monedas).
 - [`Business-Rules.md`](./Business-Rules.md): reglas de monedas, descuentos y vencimientos.
-- [`Backend.md`](./Backend.md): requisitos de `economy-service`.
+- [`Backend.md`](./Backend.md): requisitos de `economy-service` (`FR-BE-17`, `FR-BE-22`).
+- [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): contrato interno entre
+  servicios (validación de partida, canje en el mercader).
+- [`API/openapi.yaml`](../API/openapi.yaml): contrato público de la API.
+- [`Casos-de-Uso/03-Juego-y-Economia.md`](../Casos-de-Uso/03-Juego-y-Economia.md):
+  `UC-12` (aventura), `UC-13` (ruleta) y `UC-19` (mercader).

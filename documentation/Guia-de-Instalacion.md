@@ -18,8 +18,9 @@
 ## 1. Qué es GearQuest, en una frase
 
 GearQuest es una **tienda web de periféricos para computador** que combina compras
-normales con un sistema de recompensas gamificado: juegas un minijuego, ganas
-**monedas**, y usas esas monedas en una **máquina gacha** para conseguir descuentos.
+normales con un sistema de recompensas gamificado: juegas la **aventura**, ganas
+**monedas**, y usas esas monedas en la **ruleta** o en el **mercader** para conseguir
+descuentos y objetos.
 
 Para que no te pierdas: el proyecto está dividido en tres aplicaciones.
 
@@ -27,7 +28,7 @@ Para que no te pierdas: el proyecto está dividido en tres aplicaciones.
 | --- | --- | --- | --- |
 | **Frontend** | `frontend/` | La página que ve el usuario (React) | `5173` |
 | **Backend** | `backend/` | 4 microservicios que guardan y deciden todo (Node) | `3001`–`3004` |
-| **Juego** | `GAME/` | Minijuego y ruta gacha en Godot | *(pendiente)* |
+| **Juego** | `GAME/` | La aventura (metroidvania) con mercader y ruleta, en Godot | *(pendiente)* |
 
 > **Nota importante:** en este documento se explica cómo levantar **frontend y backend**.
 > El juego (Godot) y el servicio Python de análisis **todavía no existen**, así que no

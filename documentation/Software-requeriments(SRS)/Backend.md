@@ -22,7 +22,7 @@ un producto, el saldo de monedas, si un descuento aplica o si un usuario tiene p
 
 Está dividido en **cuatro servicios independientes** (microservicios), cada uno con su
 propia base de datos. Ventajas: si un área falla, las demás siguen funcionando; y el
-equipo de tres puede avanzar en paralelo sin pisarse el código.
+equipo de cuatro puede avanzar en paralelo sin pisarse el código.
 
 ## 3. Alcance
 
@@ -30,7 +30,7 @@ equipo de tres puede avanzar en paralelo sin pisarse el código.
 | --- | --- | --- | --- |
 | `identity-service` | Registro, inicio de sesión, usuarios y roles | 3001 | `gearquest_identity` |
 | `store-service` | Catálogo, inventario, carrito, pedidos y descuentos | 3002 | `gearquest_store` |
-| `economy-service` | Monedero, movimientos, gacha y recompensas | 3003 | `gearquest_economy` |
+| `economy-service` | Monedero, movimientos, ruleta, inventario del jugador y recompensas | 3003 | `gearquest_economy` |
 | `payments-service` | Pagos y recargas simuladas | 3004 | `gearquest_payments` |
 | `packages/common` | Código y utilidades compartidas (`@gearquest/common`) | — | — |
 
@@ -70,10 +70,12 @@ equipo de tres puede avanzar en paralelo sin pisarse el código.
 | --- | --- | --- | --- |
 | FR-BE-14 | Consultar el monedero con el saldo desglosado por tipo de moneda y vencimiento | Must | Distingue monedas ganadas vigentes, ganadas por vencer y compradas |
 | FR-BE-15 | Registrar cada movimiento (ganancia, consumo, vencimiento) en un historial auditable | Must | El historial no se puede editar ni borrar desde la aplicación |
-| FR-BE-16 | Ejecutar tiradas de gacha descontando monedas y entregando recompensas | Must | Solo se tira con saldo suficiente; cada tirada queda registrada |
-| FR-BE-17 | Validar en el servidor los resultados del minijuego antes de otorgar monedas | Must | El cliente **nunca** envía un saldo que el servidor acepte sin validar |
+| FR-BE-16 | Ejecutar tiradas de la ruleta (gacha) descontando monedas y entregando recompensas | Must | Solo se tira con saldo suficiente; cada tirada queda registrada |
+| FR-BE-17 | Validar en el servidor los resultados de la partida de aventura antes de otorgar monedas | Must | El cliente **nunca** envía un saldo que el servidor acepte sin validar |
 | FR-BE-18 | Aplicar el vencimiento de monedas ganadas a los 30 días | Must | Al vencer, el saldo disponible baja pero el registro original **no** desaparece |
 | FR-BE-19 | Proteger las operaciones de saldo ante peticiones repetidas o concurrentes | Must | Dos clics simultáneos no gastan ni otorgan monedas dos veces |
+| FR-BE-22 | Canjear monedas por objetos en la tienda del mercader, con la misma validación que una tirada | Must | El canje descuenta el precio en monedas, entrega el objeto al inventario y queda registrado; sin saldo suficiente se rechaza |
+| FR-BE-23 | Revertir un débito ya aplicado cuando la operación posterior del flujo falla | Must | Si el checkout o el canje falla después de debitar, el saldo vuelve a su valor anterior y queda constancia del movimiento compensatorio |
 
 ### 4.5. payments-service (recargas simuladas)
 
@@ -87,20 +89,28 @@ equipo de tres puede avanzar en paralelo sin pisarse el código.
 | ID | Requisito | Prioridad | Criterio de aceptación |
 | --- | --- | --- | --- |
 | NFR-BE-01 | TypeScript estricto en todo el backend, evitando `any` innecesarios | Must | `npm run typecheck` pasa sin errores en todos los workspaces |
-| NFR-BE-02 | Pruebas automatizadas (Vitest + Supertest) sobre reglas críticas | Must | Cubiertas: saldos, vencimientos, descuentos, permisos y pedidos; `npm test` en verde |
+| NFR-BE-02 | Pruebas automatizadas (Vitest + Supertest) sobre reglas críticas | Must | `npm test` en verde y **cada** regla crítica de saldo, vencimiento, descuento, permiso y pedido cubierta por al menos una prueba |
 | NFR-BE-03 | Código con estilo uniforme (ESLint + Prettier) | Must | `npm run lint` y `npm run format:check` sin incidencias |
-| NFR-BE-04 | Contratos de API claros y en formato JSON predecible | Must | Cada endpoint documenta entrada, salida y errores; los cambios se documentan |
+| NFR-BE-04 | Contratos de API claros y en formato JSON predecible | Must | Cada endpoint documenta entrada, salida y errores en [`API/openapi.yaml`](../API/openapi.yaml); los cambios se documentan |
 | NFR-BE-05 | Seguridad base: Helmet, CORS restringido y límite de solicitudes | Must | Cabeceras de seguridad presentes; rutas no autorizadas reciben `401/403` |
 | NFR-BE-06 | Configuración por variables de entorno, con plantilla `.env.example` por servicio | Must | Un nuevo integrante levanta el entorno siguiendo solo el README |
 | NFR-BE-07 | Independencia entre servicios: el fallo de uno no detiene a los demás | Should | Detener un servicio no impide consultar los otros |
 | NFR-BE-08 | Arranque y despliegue reproducibles mediante contenedores | Should | El mismo comando levanta el entorno en cualquier máquina con Docker |
 
+> **Cómo se leen los criterios de aceptación:** describen el estado **objetivo** del
+> requisito, no una garantía del estado actual. El estado real de cada requisito, con
+> evidencia en el código, está en la
+> [matriz de trazabilidad](../Trazabilidad.md). Un criterio que hoy no se cumple sigue
+> siendo un criterio: por eso la matriz lo marca como ⚠️ o ⬜ y no como ✅.
+
 ## 6. Dependencias e integraciones
 
 - **PostgreSQL:** cuatro bases de datos, una por servicio (ver [`Database.md`](./Database.md)).
 - **Frontend:** consumidor principal de las APIs por HTTP REST.
-- **Juego (Godot):** consume `economy-service` para monedas, tiradas y resultados
-  (contrato por definir — ver [`Game.md`](./Game.md)).
+- **Juego (Godot):** consume `economy-service` para monedas, tiradas y validación de
+  partidas (contrato definido en
+  [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) §7-§8; alcance del juego
+  en [`Game.md`](./Game.md)).
 - **Servicio Python (futuro):** recibirá eventos para análisis; **no sustituye** ninguna
   validación del backend (ver [`Security.md`](./Security.md)).
 - **Entre servicios:** solo por contratos explícitos. Ningún servicio puede modificar
@@ -116,13 +126,26 @@ equipo de tres puede avanzar en paralelo sin pisarse el código.
 
 ## 8. Decisiones pendientes
 
-1. Estrategia de autenticación (JWT vs. sesiones) y tiempo de expiración.
-2. Contratos definitivos de API (rutas, versionado y errores estándar).
-3. Modelo de datos de cada servicio (modelos en `schema.prisma`).
-4. Estrategia de concurrencia y transacciones en operaciones de saldo.
-5. Herramientas de integración continua (CI) y cobertura de pruebas.
+1. Tiempo de expiración del token de acceso y política exacta de rotación del token de
+   refresco. *(La estrategia JWT con refresco rotativo ya está implementada — ADR-0009.)*
+2. Mecanismo de idempotencia: qué clave envía el cliente, quién la genera y cuánto se
+   conserva. *(Ver `FR-BE-19` y `FR-DB-09`.)*
+3. Política de compensación entre servicios cuando una operación falla después de haber
+   debitado. *(Ver `FR-BE-23`.)*
+4. Herramientas de integración continua (CI) y cobertura de pruebas. *(Ver `FR-INF-08`.)*
+
+> **Ya resueltas** (no dependen de una decisión pendiente): el contrato público de la API
+> está publicado en [`API/openapi.yaml`](../API/openapi.yaml), el modelo de datos de cada
+> servicio está definido en los `schema.prisma` (26 modelos, ver
+> [`Diccionario-de-Datos.md`](../Diccionario-de-Datos.md)) y las transacciones de saldo
+> usan el soporte transaccional de Prisma.
 
 ## 9. Referencias
 
 - `README.MD` (raíz): §3 (decisiones), §6 (arquitectura), §7 (seguridad).
 - `backend/README.md`: estructura, comandos y bases de datos.
+- [`API/openapi.yaml`](../API/openapi.yaml): contrato público de la API (fuente de verdad).
+- [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): contrato interno entre
+  servicios, incluida la autenticación service-to-service.
+- [`Diccionario-de-Datos.md`](../Diccionario-de-Datos.md): descripción de los 26 modelos.
+- [`Trazabilidad.md`](../Trazabilidad.md): estado real de cada requisito de este documento.

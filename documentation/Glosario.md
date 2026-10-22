@@ -21,27 +21,27 @@
 
 ## 1.1 Términos del negocio de GearQuest
 
-### Gacha
+### Ruleta (gacha)
 
-Sistema de recompensas **aleatorias** inspirado en las máquinas «gachapón» japonesas:
-pagas una **tirada** y recibes un premio al azar. En GearQuest, cada tirada cuesta
-**monedas** y puede o no dar un premio (según probabilidades definidas por el sistema,
-no por el jugador).
+Componente del juego estilo «gachapón» japonés: pagas una **tirada** y recibes un premio al
+azar. En GearQuest, cada tirada cuesta **monedas** y puede o o dar un premio (según
+probabilidades definidas por el sistema, no por el jugador). Es uno de los tres componentes
+del juego, junto con la **aventura** y el **mercader**.
 
 ### Tirada (*pull*)
 
-Cada **intento** de obtener un premio en el gacha. Se registra en el historial
+Cada **intento** de obtener un premio en la ruleta. Se registra en el historial
 (`GachaPull`) para poder auditar qué pasó y cuándo. Una tirada consume monedas, aunque no
 se gane nada.
 
 ### Moneda
 
-La **divisa virtual** de GearQuest. No es dinero real: sirve para jugar al gacha y
-obtener descuentos. Hay dos tipos, y esto es **clave**:
+La **divisa virtual** de GearQuest. No es dinero real: sirve para jugar en la ruleta,
+comprar en el mercader y obtener descuentos. Hay dos tipos, y esto es **clave**:
 
 | Tipo | Cómo se obtiene | ¿Vence? |
 | --- | --- | --- |
-| **Ganada** (*EARNED*) | Jugando el minijuego | **Sí**, a los 30 días |
+| **Ganada** (*EARNED*) | Jugando la aventura | **Sí**, a los 30 días |
 | **Comprada** (*PURCHASED*) | Mediante una recarga (simulada) | **No** vence |
 
 ### Lote de monedas (*CoinBatch*)
@@ -66,10 +66,16 @@ en detalle; ver [`Decisiones pendientes`](../README.MD).
 Acción de **comprar** monedas. En GearQuest es **simulada**: no se procesa dinero real ni
 se piden datos de tarjeta. Sirve para practicar todo el flujo de pago de forma segura.
 
-### Minijuego
+### Aventura
 
-Juego sencillo donde el usuario **gana monedas**. El puntaje se envía al servidor, que
-decide cuántas monedas otorgar. El juego real (Godot) **aún no está implementado**.
+El **componente principal del juego**: un *metroidvania* 2D en el que el personaje explora
+laberintos, combate, abre cofres y derrota jefes. De la aventura se obtienen **monedas**
+(al derrotar enemigos) y **objetos** (armas, armaduras y pociones). El juego real (Godot)
+**aún no está implementado**.
+
+> En el modelo de datos, la partida de aventura corresponde al valor `MINIGAME` del enum
+> `GameType` del `economy-service`. Laruleta corresponde a `GACHA`. Ver
+> [`Game.md`](./Software-requeriments\(SRS\)/Game.md) §6.
 
 ---
 
@@ -251,7 +257,7 @@ el sistema **no** debe cobrar dos veces.
 
 ## 1.4 Términos del juego
 
-### Gacha (ver [1.1](#gacha))
+### Ruleta (gacha) (ver [1.1](#ruleta-gacha))
 
 ### Probabilidad / peso (*weight*)
 
@@ -263,9 +269,60 @@ probabilidad. El servidor decide el resultado usando estos pesos, **no** el juga
 El **nivel de escasez** de un premio (común, raro, épico…). A mayor rareza, menor
 probabilidad y mejor recompensa.
 
+### Metroidvania
+
+Género de videojuego en el que se explora un **mapa** interconectado y se va abriendo paso
+con las habilidades y herramientas que se van abriendo. En GearQuest es el género de la
+**aventura**: 5 mapas tipo laberinto, cada uno con su jefe final.
+
+### Mapa / laberinto
+
+Cada una de las **5 zonas** de la aventura. Son laberintos con caminos alternativos, enemigos
+y objetos. El **mapa 5** es el último y lo culminan el **Rey Demonio**.
+
+### Jefe (*boss*)
+
+Enemigo final de cada mapa. Es un combate más duro que los enemigos normales y su derrota
+es la condición para pasar al siguiente mapa. El del mapa 5, el **Rey Demonio**, entrega un
+arma legendaria única.
+
+### Combate
+
+Sistema de pelea del personaje. Hay dos formas de atacar: **cuerpo a cuerpo** (con armas
+cortantes) o **a distancia** (con armas de proyectil), según el arma equipada. El jugador
+ve una **barra de vida** que refleja su estado.
+
+### Cofre
+
+Caja donde se **guardan los objetos** obtenidos. Se encuentra en las **zonas de descanso**.
+Lo que se guarda en el cofre sobrevive a la muerte; lo que se lleva encima y no está
+guardado, se pierde.
+
+### Zona de descanso
+
+Área **segura** del mapa, sin enemigos, que actúa como punto de control: contiene un
+**cofre** y es donde se puede guardar la partida.
+
+### Mercader
+
+Personaje (o puesto) que aparece en una **zona fija de cada mapa** y permite **canjear
+monedas por objetos**: pociones, armas y armaduras. El canje lo valida el servidor, igual
+que una tirada de la ruleta.
+
+### Rey Demonio
+
+El **jefe final** de toda la aventura (mapa 5). Su derrota entrega un arma legendaria única,
+que es el máximo premio del juego.
+
+### Item (*objeto*)
+
+Cualquier cosa que el personaje puede llevar: arma, parte de armadura o poción. Los objetos
+tienen **rareza**. Se guardan en el inventario y los del juego se pueden canjear por monedas
+en el mercader o sacar de la ruleta.
+
 ### Godot
 
-El **motor de videojuegos** elegido para el minijuego y la ruta gacha. Aún no está
+El **motor de videojuegos** elegido para la aventura, el mercader y la ruleta. Aún no está
 implementado.
 
 ### Anti-trampa

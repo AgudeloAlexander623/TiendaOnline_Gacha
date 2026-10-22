@@ -39,9 +39,9 @@ importa.
 | Nivel | Qué prueba | Herramienta | Dónde |
 | --- | --- | --- | --- |
 | **Unitario** | Reglas puras: sorteo ponderado, puntaje→monedas, cálculo de saldo, validación de esquemas | Vitest | `services/*/tests/`, junto al módulo |
-| **Integración de servicio** | Un módulo entero contra una **base de datos real** (o contenedor): checkout, débito, vencimientos, gacha | Vitest + PostgreSQL de pruebas | `services/*/tests/integration/` *(por crear)* |
+| **Integración de servicio** | Un módulo entero contra una **base de datos real** (o contenedor): checkout, débito, vencimientos, ruleta | Vitest + PostgreSQL de pruebas | `services/*/tests/integration/` *(por crear)* |
 | **Contrato (API)** | Que la respuesta real cumple `openapi.yaml` | *(propuesto)* validación contra el contrato | CI |
-| **Extremo a extremo** | Flujos completos entre servicios (registro → compra → gacha) | *(propuesto)* | CI / manual guiado |
+| **Extremo a extremo** | Flujos completos entre servicios (registro → compra → ruleta) | *(propuesto)* | CI / manual guiado |
 | **Manual exploratorio** | Lo que aún no está automatizado (UI, juego) | Guion de prueba | Antes de cada entrega |
 
 El frontend (todavía sin conectar, ver matriz §6) se prueba hoy con `tsc -b` (tipos) y
@@ -58,7 +58,7 @@ Estas son las reglas que **sí o sí** deben tener prueba, con el requisito que 
 | 1 | El **saldo** solo cuenta monedas vigentes (expira lotes vencidos) | FR-BR-04, FR-BE-18 | Integración: lote vencido no suma; queda movimiento `EXPIRE` | ⬜ |
 | 2 | Las monedas **compradas nunca caducan**; las ganadas sí (30 días) | FR-BR-02, FR-BR-03 | Integración + unitario de la política de vencimiento | ⬜ |
 | 3 | El **historial** es append-only y cuadra (`balanceAfter` encadenado) | FR-BR-06, FR-DB-04 | Integración: la suma de movimientos = saldo actual | ⬜ |
-| 4 | **Tirada de gacha**: debita el coste y entrega premio en una sola transacción | FR-BE-16, FR-GA-11/12 | Unitario (sorteo ponderado) + integración (débito y registro) | ⚠️ unitario sí, integración no |
+| 4 | **Tirada de la ruleta**: debita el coste y entrega premio en una sola transacción | FR-BE-16, FR-GA-11/12 | Unitario (sorteo ponderado) + integración (débito y registro) | ⚠️ unitario sí, integración no |
 | 5 | **Sin saldo suficiente** la tirada falla y no cobra | FR-BE-16 | Integración: error `INSUFFICIENT_BALANCE`, saldo intacto | ⬜ |
 | 6 | **Checkout**: descuenta inventario y guarda snapshot de precios de forma atómica | FR-BE-12, FR-BR-12/13 | Integración: sin stock → 409 y nada se descuenta | ⚠️ parcial |
 | 7 | **El cliente nunca fija precio ni saldo** que se acepte sin validar | FR-BR-16, NFR-BR-01 | Integración: enviar `total`/`balance` falso no altera nada | ⬜ |
@@ -124,7 +124,7 @@ npm run build          # tsc -b (tipos) + vite build
 | ---: | --- | --- |
 | 1 | Pruebas de integración del **monedero** (saldo, vencimiento, libro mayor) | Reglas 1-3 |
 | 2 | Pruebas de **checkout** (sin stock, snapshot de precios, atomicidad) | Regla 6 |
-| 3 | Pruebas de **gacha** (débito, sin saldo, premio) | Reglas 4-5 |
+| 3 | Pruebas de **ruleta** (débito, sin saldo, premio) | Reglas 4-5 |
 | 4 | **Idempotencia** en operaciones de saldo + su prueba | Regla 8 (cierra `FR-BE-19`) |
 | 5 | Matriz de **permisos** por ruta (rol `PLAYER` → 403 en ADMIN) | Regla 9 |
 | 6 | Validación de **contrato** (respuestas contra `openapi.yaml`) en CI | NFR-BE-04 |

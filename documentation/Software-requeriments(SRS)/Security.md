@@ -40,6 +40,7 @@ la única defensa.
 | FR-SEC-08 | Los mensajes de error no revelan información interna | Must | Ninguna respuesta incluye rutas, versiones, consultas SQL o trazas |
 | FR-SEC-09 | No se registran (log) contraseñas, tokens ni datos sensibles | Must | Búsqueda en logs: sin coincidencias de esos datos |
 | FR-SEC-10 | El análisis de patrones sospechosos (Python) es complementario | Should | Sus hallazgos alertan, pero las validaciones críticas siguen en el backend |
+| FR-SEC-11 | Las llamadas entre microservicios se autentican con un token interno de alcance limitado | Must | Un servicio sin token interno válido recibe `401`; el token lleva el alcance de la operación y nunca se entrega al usuario final |
 
 ## 4. Integridad de monedas y descuentos
 
@@ -59,7 +60,7 @@ Estas reglas protegen el "dinero" del proyecto y se detallan también en
 
 | ID | Requisito | Prioridad | Criterio de aceptación |
 | --- | --- | --- | --- |
-| NFR-SEC-01 | Pruebas de seguridad básicas antes de cada despliegue | Must | Cubiertos: permisos, abuso de recompensas, concurrencia y vencimientos |
+| NFR-SEC-01 | Pruebas de seguridad básicas antes de cada despliegue | Must | Existen pruebas automatizadas que cubren permisos, abuso de recompensas, concurrencia y vencimientos, y el checklist de despliegue las ejecuta |
 | NFR-SEC-02 | Revisión de dependencias antes de publicar | Should | Se revisan vulnerabilidades conocidas de las librerías usadas |
 | NFR-SEC-03 | Mínimo dato personal: solo lo necesario | Must | Formularios que piden únicamente lo imprescindible |
 | NFR-SEC-04 | Cultura de seguridad en el equipo | Must | Nada de credenciales en chats, pantallazos o commits |
@@ -77,11 +78,20 @@ Estas reglas protegen el "dinero" del proyecto y se detallan también en
 
 ## 7. Decisiones pendientes
 
-1. Estrategia de autenticación (JWT vs. sesiones) y expiración de credenciales.
-2. Alcance y reglas del análisis antifraude (servicio Python).
-3. Política de reintentos y bloqueo ante sospecha de abuso.
-4. Proveedores de correo y SMS (con sus costos) para notificaciones.
+1. Alcance y reglas del análisis antifraude (servicio Python).
+2. Política de reintentos y bloqueo ante sospecha de abuso.
+3. Proveedores de correo y SMS (con sus costos) para notificaciones.
+4. Vida y rotación del token interno de servicio a servicio, y su almacén de secretos.
+
+> **Ya resueltas:** la estrategia de autenticación de usuarios (JWT con token de refresco
+> rotativo, ADR-0009) y el mecanismo de autenticación entre servicios (token interno con
+> alcance, definido en [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md) §10 y
+> exigido por `FR-SEC-11`).
 
 ## 8. Referencias
 
 - `README.MD` (raíz): §7 (seguridad y buenas prácticas), §7.1 (integridad de monedas).
+- [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): autenticación
+  service-to-service (`FR-SEC-11`).
+- [`Business-Rules.md`](./Business-Rules.md): reglas de integridad de monedas y descuentos.
+- [`Trazabilidad.md`](../Trazabilidad.md): estado real de cada requisito de este documento.

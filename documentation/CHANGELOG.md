@@ -41,13 +41,48 @@ de una respuesta de la API o el nombre de un `code` de error.
 
 ### Añadido
 - **Guía de estilo de código:** `documentation/Estilo-de-Codigo.md`, convenciones **descriptivas** del código real (formato Prettier/EditorConfig, TypeScript estricto, nomenclatura, estructura router→schemas→service, manejo de errores, convenciones de frontend y pruebas). Enlaza a `CONTRIBUTING.md` y demás documentos en lugar de duplicarlos.
+- **13 requisitos nuevos en el SRS** (de 141 a 154), **sin renumerar ninguno** de los anteriores: `FR-BE-22` (canje del mercader), `FR-BE-23` (compensación de débitos), `FR-FE-11` (bandeja de avisos), `FR-FE-12` (panel de administración), `FR-FE-13` (ruta base única), `NFR-FE-08` (token seguro en el navegador), `FR-DB-09` (idempotencia persistida), `FR-SEC-11` (autenticación service-to-service), `FR-INF-07` (comando global de arranque), `FR-INF-08` (CI en cada PR), `NFR-INF-05` (observabilidad), `FR-NO-09` (marcar aviso como leído) y `FR-NO-10` (aviso generado por el servicio productor).
+- **2 casos de uso y 1 historia de usuario nuevos:** `UC-19` (canjear monedas por objetos en el mercader) y `US-19`.
+- **6 historias técnicas nuevas** (`documentation/Historias-Tecnicas.md`): TS-19 (canje del mercader), TS-20 (compensación de débitos), TS-21 (idempotencia persistida), TS-22 (token interno service-to-service), TS-23 (módulo de notificaciones) y TS-24 (comando global de arranque). El documento pasa de 18 a **24 historias técnicas**.
+- **2 operaciones internas en el contrato entre servicios:** `POST /internal/merchant/redemptions` (canje del mercader) y `POST /internal/notifications` (aviso interno). El contrato pasa de 4 a **6 operaciones**; las secciones siguientes se renumeraron (§8→§10, §9→§11, §10→§12, §11→§13) y se actualizaron todas las referencias cruzadas.
+- **Campos de partida de aventura en el contrato** (`Contrato-entre-servicios.md` §7): `outcome`, `mapId`, `enemiesDefeated`, `bossesDefeated`, `itemsObtained`, `chestSaved` e `itemsRetained`, con el mapeo de los enums `GameType` (`MINIGAME` = aventura, `GACHA` = ruleta) y `GameSessionStatus` (`FINISHED` = completada, `ABANDONED` = abandonada/muerte, `REJECTED` = descartada).
+- **Documentación del backend:** `backend/documentation_Backend/Documentation01.md` (que estaba vacío, 0 bytes) se renombró a `README.md` y se redactó como índice de la documentación del backend.
+- **Dominios `notifications/` y `admin/`** en `frontend/src/features/`, preparados para `FR-FE-11` y `FR-FE-12`.
+- **`frontend/documentation/personal/README.md`:** plantilla y reglas de uso de la carpeta de documentación individual, que estaba sin explicación (solo un `.gitkeep`).
+- **2 decisiones de arquitectura nuevas** (`documentation/Decisiones.md`): **ADR-0015** «Una única URL base en el frontend, con proxy inverso por prefijo» (el porqué del proxy) y **ADR-0016** «El juego es una aventura metroidvania; la ruleta y el mercader son sus componentes» (la fuente de verdad del alcance del juego). El documento pasa de 14 a **16 ADR**.
+
+### Cambiado
+- **El juego se redefinió como una aventura *metroidvania*.** `documentation/Software-requeriments(SRS)/Game.md` (v2.0) pasa a ser la **fuente de verdad** del alcance del juego y todo lo demás se alinea hacia él: la **aventura** (5 laberintos con jefes, el Rey Demonio al final) es el juego, y la **ruleta** (gacha) y el **mercader** son sus componentes. Se actualizaron el README raíz, los casos de uso (`UC-12`, `UC-13`, `UC-19`), las épicas (`US-12`, `US-13`, `US-19`), el glosario, el manual de usuario, el SRS de reglas de negocio y el SRS de notificaciones.
+- **Matriz de trazabilidad v1.1** (`documentation/Trazabilidad.md`): 154 requisitos (antes 141) con el recuento real **58 ✅ / 35 ⚠️ / 61 ⬜**, 13 filas nuevas, §12.1 ampliado a 15 ítems de deuda, §12.2 con las contradicciones corregidas y §12.4 con las **44 decisiones** pendientes del SRS.
+- **Contrato de API:** la documentación aclara que las **65 rutas** registradas equivalen a **59 operaciones** distintas (los 8 endpoints de salud colapsan en 2 rutas únicas) y que el conjunto `(método, ruta)` del código y el de `openapi.yaml` **coinciden uno a uno**. Se añadió el enlace al contrato entre servicios (§3.1).
+- **`backend/README.md`:** el estado, el stack, el árbol de directorios y la sección «Próximos pasos» se reescribieron con la realidad del código (138 ficheros, 26 modelos, 57 endpoints) y se sustituyeron por una tabla de lo que **falta**, con el requisito que lo respalda.
+- **`frontend/documentation/FRONTEND_ARCHITECTURE.md`:** pasa de «esquema propuesto, sin código» a la arquitectura **real** (9 páginas, 0 llamadas HTTP, proxy por prefijo, dominios y requisitos).
+- **`frontend/ReadmeFrontEnd.md`:** se actualizó el estado del proyecto, la explicación de las variables de entorno y la tabla de dominios.
+
+### Corregido
+- **`VITE_API_BASE_URL` roto:** el frontend declaraba `http://localhost:3000`, donde **ningún servicio escucha**. Ahora `frontend/.env.example` usa `/api/v1` y `frontend/vite.config.ts` define un **proxy inverso por prefijo** que reparte cada ruta a su servicio (3001-3004). Es el requisito `FR-FE-13` y elimina de raíz el bug del puerto 3000.
+- **Configuración de ESLint muerta:** `frontend/eslintrc.cjs` (que ESLint 10 no lee) se eliminó y se quitó su referencia de `eslint.config.js`.
+- **Prettier en el frontend:** se añadió (`^3.9.10`) con `.prettierrc.json` configurado para **respetar** el estilo ya existente (`semi: false`, `singleQuote: true`, 100 columnas) y con los scripts `format`, `format:check` y `lint:fix`. Todo el código se reformateó: **solo cambia el formato**, ni una línea de comportamiento. `npm run format:check`, `npm run lint` y `npm run build` quedan en verde.
+- **`FR-DB-01` pasa a ⚠️:** el SRS pedía «credenciales propias» por base de datos, pero las cuatro usan el mismo rol `postgres:postgres` (solo difieren en el nombre de la base). La matriz ahora lo dice con su evidencia.
+- **README raíz:** «el equipo de tres integrantes» → cuatro; «etapa de planificación» → desarrollo; la descripción de los módulos como «vacíos a propósito» → el estado real del backend y del frontend.
+- **Referencias cruzadas rotas:** los casos de uso enlazaban a requisitos inexistentes (`FR-GA-04`, `FR-GA-08`); `Security.md` apuntaba a `§8` del contrato entre servicios, que al renumerar pasó a ser `§10`.
+- **`documentation/CHANGELOG_ESQUEMA.md`** (frontend) decía «ARCHITECTURE.md», pero el fichero real es `FRONTEND_ARCHITECTURE.md`, y mantenía un changelog paralelo que contradecía la regla de un único changelog por proyecto.
+- **`documentation/Decisiones.md`:** ADR-0008 ya no dice que al frontend «le falta Prettier» (ya lo tiene) y apunta al ADR-0015 nuevo.
+
+### Seguridad
+- **Sin secretos ni datos sensibles** en los cambios: los ejemplos siguen usando valores evidentemente falsos y remitiendo a variables de entorno.
+
+### Notas
+- La documentación auditada cubre **37 documentos** del repositorio, revisados **uno a uno** contra el código (65 rutas, 26 modelos Prisma, 4 migraciones, 4 seeds y los 3 `TODO(economia)`).
+- Verificaciones ejecutadas: `154 IDs del SRS ↔ 154 filas de la matriz` (0 huérfanos, 0 duplicados), `0 referencias rotas` en casos de uso, épicas, glosario y manual, y `59 operaciones del código ↔ 59 del openapi.yaml` (coinciden exactamente).
+- Los cambios de código del frontend son **de bajo riesgo**: reformateo, configuración de herramientas y el proxy de desarrollo. No se toca ninguna lógica de negocio.
 
 ## [0.1.0] - 2026-10-19
 ### Añadido
 - **Documentación técnica inicial (SRS):** 8 documentos que cubren Backend, Reglas de Negocio, Base de Datos, Frontend, Juego, Infraestructura, Notificaciones y Seguridad (`documentation/Software-requeriments(SRS)/`), con sus *Decisiones pendientes* por área.
 - **Casos de uso:** 18 casos de uso organizados en 4 ficheros (`documentation/Casos-de-Uso/`), con actores, flujos y requisitos asociados.
 - **Diagramas de flujo y arquitectura:** 9 diagramas SVG generados con `tools/svgkit.py` + `layout.py` (flujo, explícitos, secuencia, máquina de estados) dentro de `documentation/diagramas de flujo/`, con índice y convenciones (`README.md`).
-  - 01 Compra de producto, 02 Apertura de gacha, 03 Monedas y vencimiento, 04 Revisión de comportamiento sospechoso, 05 Arquitectura general (contenedores), 06 Secuencia autenticación, 07 Secuencia juego↔backend, 08 Ciclo de vida del pedido, 09 Modelo de datos (ER).
+  - 01 Compra de producto, 02 Apertura de la ruleta, 03 Monedas y vencimiento, 04 Revisión de comportamiento sospechoso, 05 Arquitectura general (contenedores), 06 Secuencia autenticación, 07 Secuencia juego↔backend, 08 Ciclo de vida del pedido, 09 Modelo de datos (ER).
 - **Matriz de trazabilidad:** `documentation/Trazabilidad.md` cruza los 141 requisitos del SRS con el estado real del código (57 ✅ / 35 ⚠️ / 49 ⬜), incluyendo evidencia por fichero y deuda técnica explícita (`TODO`).
 - **Contrato de API (OpenAPI):** `documentation/API/openapi.yaml` (3.1.0) con 59 operaciones documentadas para los 4 microservicios, validado con Redocly CLI y acompañado de `documentation/API/README.md` (cómo visualizarlo, puertos, auth JWT, formato de errores). Configuración de validación en `documentation/API/redocly.yaml`.
 - **Diccionario de datos:** `documentation/Diccionario-de-Datos.md` con los 26 modelos Prisma de los 4 servicios (identity, store, economy, payments), campos, enums, reglas de integridad y referencias entre servicios (sin FK entre bases).
@@ -81,5 +116,7 @@ de una respuesta de la API o el nombre de un `code` de error.
 - El contrato API describe lo **realmente implementado**; no documenta como disponible lo que está pendiente (canje de descuentos con débito de monedas, acreditación de monedas compradas). Esto se deja explícito en `documentation/API/README.md` y se traza en `documentation/Trazabilidad.md` §12.1.
 - Se corrige la contradicción histórica del SRS ("lógica de negocio todavía no está implementada"): la matriz de trazabilidad refleja el estado real. El `README.md` del SRS se actualiza con un enlace a `../Trazabilidad.md`.
 - Se documenta la discrepancia `VITE_API_BASE_URL`: en `frontend/.env.example` apunta a `http://localhost:3000`, mientras que los servicios escuchan en 3001-3004 (hallazgo en `Trazabilidad.md` §12.2). **No se modifica el frontend** (fuera del ámbito de documentación autorizado).
+  - **Resuelto en `[Sin versionar]`:** el frontend ahora usa `/api/v1` con un proxy inverso por prefijo (`FR-FE-13`).
+- La auditoría de 29 documentos citada arriba corresponde a esta versión. La **auditoría completa** (37 documentos, revisados uno a uno contra el código) está en `[Sin versionar]`.
 
 [0.1.0]: https://github.com/AgudeloAlexander623/TiendaOnline_Gacha/commit/ef9a720

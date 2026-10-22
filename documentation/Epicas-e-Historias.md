@@ -54,7 +54,7 @@ objetivo.
 | --- | --- | --- | --- | --- | --- |
 | **EP-01** | Cuenta e identidad | Que una persona pueda entrar y gestionar su cuenta | US-01 … US-04 | UC-01 … UC-04 | Must |
 | **EP-02** | Tienda y compra | Que se pueda explorar el catálogo y comprar | US-05 … US-11 | UC-05 … UC-11 | Must |
-| **EP-03** | Juego y economía | Que se puedan ganar, comprar y gastar monedas | US-12 … US-16 | UC-12 … UC-16 | Must |
+| **EP-03** | Juego y economía | Que se ganen monedas en la aventura y se gasten en la ruleta y el mercader | US-12 … US-16, US-19 | UC-12 … UC-16, UC-19 | Must |
 | **EP-04** | Avisos al usuario | Que la persona se entere de lo que pasa con sus monedas | US-17 … US-18 | UC-17 … UC-18 | Should / Could |
 
 ### Diagrama de las épicas
@@ -67,7 +67,7 @@ objetivo.
    │   Cuenta e    │   Tienda y    │   Juego y          │   Avisos al     │
    │   identidad   │    compra     │   economía         │    usuario      │
    ├───────────────┼───────────────┼────────────────────┼─────────────────┤
-   │ UC-01…UC-04   │ UC-05…UC-11   │ UC-12…UC-16        │ UC-17, UC-18    │
+   │ UC-01…UC-04   │ UC-05…UC-11   │ UC-12…UC-16, UC-19 │ UC-17, UC-18    │
    └───────────────┴───────────────┴────────────────────┴─────────────────┘
         (entrar)        (comprar)        (jugar y monedas)     (enterarse)
 ```
@@ -105,11 +105,12 @@ objetivo.
 
 | ID | Historia de usuario | Caso de uso | Requisitos | Prioridad |
 | --- | --- | --- | --- | --- |
-| **US-12** | Como jugador quiero **jugar partidas** para ganar monedas | [UC-12](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-GA-19, FR-BE-17 | Must |
-| **US-13** | Como jugador quiero **gastar mis monedas en tiradas** para obtener recompensas | [UC-13](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-BE-16, FR-GA-11 | Must |
+| **US-12** | Como jugador quiero **explorar la aventura** para ganar monedas y guardar mis objetos | [UC-12](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-GA-05, FR-GA-19, FR-BE-17 | Must |
+| **US-13** | Como jugador quiero **gastar mis monedas en la ruleta** para obtener recompensas | [UC-13](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-BE-16, FR-GA-11 | Must |
 | **US-14** | Como cliente quiero **ver mis monedas y sus vencimientos** para saber cuánto puedo gastar | [UC-14](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-BR-01, FR-BR-04 | Must |
 | **US-15** | Como cliente quiero **ver mis movimientos** para entender de dónde vienen y a dónde fueron mis monedas | [UC-15](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-BR-05, FR-BR-06 | Must |
 | **US-16** | Como cliente quiero **simular una recarga** para obtener monedas compradas que no vencen | [UC-16](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-BR-03, FR-BR-10 | Must |
+| **US-19** | Como jugador quiero **canjear monedas por objetos en el mercader** para mejorar mi equipo | [UC-19](./Casos-de-Uso/03-Juego-y-Economia.md) | FR-GA-10, FR-BE-22 | Must |
 
 ### EP-04 · Avisos al usuario
 

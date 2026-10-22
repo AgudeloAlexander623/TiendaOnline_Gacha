@@ -17,8 +17,8 @@ function HomePage() {
           Gear<span className="text-emerald-400">Quest</span>
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-gray-300">
-          Periféricos para tu equipo, con un toque de juego: gana monedas jugando,
-          cámbialas por descuentos y equipa tu setup.
+          Periféricos para tu equipo, con un toque de juego: gana monedas jugando, cámbialas por
+          descuentos y equipa tu setup.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Link

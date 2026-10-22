@@ -52,6 +52,8 @@ algo sin saber por qué estaba así y rompe el sistema.
 | [ADR-0012](#adr-0012--motor-propio-para-los-diagramas-svg) | Motor propio (Python) para los diagramas SVG | Aceptada |
 | [ADR-0013](#adr-0013--no-exponer-secretos-en-la-documentación) | No exponer secretos ni datos críticos en la documentación | Aceptada |
 | [ADR-0014](#adr-0014--clasificar-la-información-antes-de-documentarla) | Clasificar la información antes de documentarla | Aceptada |
+| [ADR-0015](#adr-0015--una-única-url-base-en-el-frontend-con-proxy-inverso-por-prefijo) | Una única URL base en el frontend, con proxy inverso por prefijo | Aceptada |
+| [ADR-0016](#adr-0016--el-juego-es-una-aventura-metroidvania-la-ruleta-y-el-mercader-son-sus-componentes) | El juego es una aventura metroidvania; la ruleta y el mercader son sus componentes | Aceptada |
 
 ---
 
@@ -309,8 +311,13 @@ Necesitábamos una interfaz web moderna y rápida de desarrollar entre 4 persona
 
 - ✅ Vite arranca en milisegundos y compila rápido.
 - ✅ Tailwind mantiene los estilos consistentes.
-- ⚠️ El frontend **aún no está conectado** al backend (0 llamadas HTTP) y le falta
-  Prettier. Ver [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+- ✅ El frontend usa **una única URL base** (`/api/v1`) con un **proxy inverso por prefijo**
+  en `vite.config.ts`, en vez de una URL por servicio (ver
+  [ADR-0015](#adr-0015--una-única-url-base-en-el-frontend-con-proxy-inverso-por-prefijo)).
+- ⚠️ El frontend **aún no está conectado** al backend (0 llamadas HTTP): falta la capa
+  `services/` y el cliente HTTP (`FR-FE-10`, `FR-FE-13`).
+- ✅ Prettier está instalado y configurado para respetar el estilo ya existente
+  (`npm run format` y `npm run format:check` en verde).
 
 ---
 
@@ -530,10 +537,126 @@ si algo no se puede publicar, no se escribe todavía.
 
 ---
 
+## ADR-0015 · Una única URL base en el frontend, con proxy inverso por prefijo
+
+- **Fecha:** 2026-10-22
+- **Estado:** Aceptada
+
+### Contexto
+
+El backend son **4 servicios** que escuchan en los puertos 3001-3004. El frontend, en
+cambio, es **una sola aplicación** en el navegador. La configuración inicial usaba
+`VITE_API_BASE_URL=http://localhost:3000`, un puerto donde **no escucha nadie**: la app
+no podía hablar con el backend por mucho que se escribiera el cliente HTTP.
+
+Había dos formas de resolverlo: hardcodear **una URL por servicio** (el navegador tendría
+que llamar a 4 orígenes distintos, con sus problemas de CORS y de cookies), o poner **un
+único punto de entrada** delante de los 4 servicios.
+
+### Decisión
+
+El frontend usa **una sola URL base** (`/api/v1`) y el **proxy inverso** reparte cada
+prefijo de ruta al servicio que le corresponde:
+
+| Prefijo | Servicio | Puerto |
+| --- | --- | ---: |
+| `/api/v1/auth`, `/api/v1/users` | `identity-service` | 3001 |
+| `/api/v1/carts`, `/api/v1/categories`, `/api/v1/discounts`, `/api/v1/inventory`, `/api/v1/orders`, `/api/v1/products` | `store-service` | 3002 |
+| `/api/v1/gacha`, `/api/v1/items`, `/api/v1/rewards`, `/api/v1/transactions`, `/api/v1/wallet` | `economy-service` | 3003 |
+| `/api/v1/packages`, `/api/v1/payments`, `/api/v1/recharges` | `payments-service` | 3004 |
+
+En **desarrollo**, el reparto lo hace el servidor de Vite (`vite.config.ts`). En
+**producción**, lo hará el proxy del servidor, con **la misma tabla de prefijos**.
+
+### Por qué (alternativas)
+
+- **Una URL por servicio en el navegador:** simple de escribir, pero obliga a que el
+  cliente HTTP conozca la topología del backend y a configurar CORS para 4 orígenes. Además,
+  el bug del puerto 3000 volvería en cuanto cambiara un puerto.
+- **Variables de entorno por servicio** (`VITE_API_AUTH_URL`, `VITE_API_STORE_URL`, …):
+  más flexible, pero **dispersa** la configuración y obliga a repetirla en cada
+  `.env`.
+- **Un único prefijo + proxy** ✅: el frontend conoce **una** dirección; cambiar un
+  puerto es tocar el proxy, no el código de la aplicación. Es además la forma que
+  funcione igual en desarrollo y en producción.
+
+### Consecuencias
+
+- ✅ Se elimina el bug del puerto 3000 y con él la configuración que no funcionaba.
+- ✅ Requisito **FR-FE-13** del SRS del frontend cubierto en su parte de infraestructura.
+- ✅ La misma tabla de prefijos sirve para el proxy de producción y para la
+  documentación del contrato.
+- ⚠️ Falta lo demás: la **capa `services/`** que use la URL base, el **cliente HTTP** y
+  el **almacenamiento seguro del token** (`FR-FE-10`, `NFR-FE-08`). El proxy resuelve
+  *a dónde* se llama, no *qué* se llama.
+- ⚠️ La tabla de prefijos debe **mantenerse sincronizada** con el contrato de la API
+  (`documentation/API/openapi.yaml`). Si se añade un prefijo nuevo, hay que añadirlo
+  también al proxy.
+
+---
+
+## ADR-0016 · El juego es una aventura metroidvania; la ruleta y el mercader son sus componentes
+
+- **Fecha:** 2026-10-22
+- **Estado:** Aceptada
+
+### Contexto
+
+La documentación describía el juego de **dos formas distintas** según el documento
+que se leyera: unos textos hablaban de un «minijuego» y una «ruta gacha» como dos
+cosas separadas; el SRS del juego (`Game.md`) describía otra cosa: un *metroidvania* de
+5 laberintos con jefes, cofres, zonas de descanso y un mercader dentro del mapa, con la
+ruleta como un componente más.
+
+Con dos descripciones distintas, cada documento del proyecto contaba una historia
+distinta y el equipo no sabía cuál era la real.
+
+### Decisión
+
+**`Game.md` es la fuente de verdad del alcance del juego**, y el resto de la
+documentación se alinea hacia él:
+
+| Concepto | Nombre en el juego | Valor en el código |
+| --- | --- | --- |
+| La partida del juego | **Aventura** | `GameType.MINIGAME` |
+| La máquina de premios | **Ruleta** (gacha) | `GameType.GACHA` |
+| La compra con monedas dentro del mapa | **Mercader** | *(operación interna nueva)* |
+
+El juego tiene **tres componentes**: la **aventura** (5 laberintos, cada uno con su jefe;
+el del mapa 5 es el **Rey Demonio**, que entrega el arma legendaria), el **mercader**
+(canje de monedas por objetos, con precio fijado por el servidor) y la **ruleta**
+(tirada aleatoria con probabilidades del servidor).
+
+El enum `GameType` conserva su valor histórico `MINIGAME` para la aventura; el **mapeo**
+está documentado, no se renombra el código.
+
+### Por qué (alternativas)
+
+- **Mantener las dos descripciones y marcar la ambigüedad:** nadie sabría cuál aplicar;
+  cada implementación saldría distinta.
+- **Cambiar `GameType.MINIGAME` a `ADVENTURE`:** más legible, pero obliga a tocar el
+  esquema, los seeds, las migraciones y los datos ya guardados, sin ganar nada
+  funcional.
+- **Fijar `Game.md` como fuente de verdad y alinear el resto** ✅: una sola descripción,
+  cero cambios de código, y el nombre histórico del enum documentado como mapeo.
+
+### Consecuencias
+
+- ✅ Los casos de uso (`UC-12`, `UC-13`, `UC-19`), las historias (`US-12`, `US-13`,
+  `US-19`), el glosario, el manual de usuario y el SRS de reglas de negocio cuentan
+  **la misma historia**.
+- ✅ Aparece un requisito nuevo que faltaba: el **canje del mercader** (`FR-BE-22`), con
+  su operación interna (`POST /internal/merchant/redemptions`).
+- ✅ Se puede escribir la especificación del juego sin contradicciones.
+- ⚠️ El nombre `MINIGAME` en el código **no** significa «minijuego». Cualquier persona
+  nueva debe leer el mapeo de §6 de `Game.md` antes de tocarlo.
+
+---
+
 ## 3. Cómo añadir una decisión nueva
 
 1. Copia el formato de un ADR existente (Contexto → Decisión → Por qué → Consecuencias).
-2. Asígnale el siguiente número libre (ADR-0015, ADR-0016, …).
+2. Asígnale el siguiente número libre (ADR-0017, ADR-0018, …).
 3. Añádelo al [índice](#2-índice-de-decisiones) con su estado.
 4. Si **reemplaza** a uno anterior, marca el viejo como *Reemplazada* y enlaza el nuevo.
 5. Inclúyelo en el mismo PR que el cambio que lo motiva.

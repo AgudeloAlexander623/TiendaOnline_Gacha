@@ -1,6 +1,6 @@
 # GearQuest
 
-> **Estado:** Planificación
+> **Estado:** Desarrollo
 > **Tipo:** Proyecto universitario
 > **Equipo:** 4 integrantes (ver abajo)
 > **Estructura:** Monorepo
@@ -27,7 +27,7 @@ son:
 | --- | --- | --- |
 | **Identidad y usuarios** | `identity-service` | Registro, sesión, perfiles y permisos |
 | **Tienda y pedidos** | `store-service` | Catálogo, inventario, carrito, pedidos y descuentos |
-| **Juego y economía** | `economy-service` | Monedero, monedas, gacha, minijuego y recompensas |
+| **Juego y economía** | `economy-service` | Monedero, monedas, ruleta, recompensas y sesiones de aventura |
 | **Pagos** | `payments-service` | Paquetes, pagos simulados y recargas |
 
 > **Regla del equipo:** cada quien es **dueño** de su dominio (código, pruebas y
@@ -38,7 +38,7 @@ son:
 
 **GearQuest** es una propuesta de tienda web de periféricos para computadores que combina el comercio electrónico con un sistema de recompensas gamificado.
 
-Los usuarios podrán consultar productos y participar en una experiencia de juego con dos componentes: una **ruta de juego gacha** (estilo maquinita), donde se gastan monedas en tiradas para obtener recompensas, y un **minijuego** donde se obtienen las monedas que luego se utilizan en el gacha. Las monedas permitirán acceder a descuentos, de acuerdo con las reglas de negocio que defina el equipo.
+Los usuarios podrán consultar productos y participar en una experiencia de juego con tres componentes: una **aventura** estilo *metroidvania* (explorar laberintos, combatir, derrotar jefes y abrir cofres) de la que se obtienen **monedas**; una **tienda del mercader** dentro del mapa, donde esas monedas se canjean por objetos; y una **ruleta** (el gacha), donde se gastan monedas en tiradas para obtener recompensas. Las monedas permitirán acceder a descuentos, de acuerdo con las reglas de negocio que defina el equipo.
 
 El sistema distinguirá entre monedas obtenidas jugando y monedas adquiridas mediante recargas simuladas. Las monedas ganadas jugando vencerán a los **30 días**, mientras que las monedas compradas no caducarán.
 
@@ -47,7 +47,7 @@ El proyecto tiene fines académicos. Las funcionalidades descritas son objetivos
 ## 2. Objetivos
 
 * Desarrollar una tienda web de periféricos.
-* Integrar la experiencia de juego (ruta gacha y minijuego) con la cuenta del usuario.
+* Integrar la experiencia de juego (aventura, mercader y ruleta) con la cuenta del usuario.
 * Implementar monedas, vencimientos y descuentos validados en el servidor.
 * Separar responsabilidades mediante una arquitectura de microservicios.
 * Aplicar buenas prácticas de seguridad, pruebas, control de versiones y documentación.
@@ -65,9 +65,9 @@ La documentación organiza el trabajo como lo pediría un cliente. Los cinco niv
 | --- | --- | --- |
 | **Idea de desarrollo web** | ¿Qué es GearQuest y qué problema resuelve? | §1 de este README |
 | **Épicas** | ¿Cuáles son los grandes objetivos? (4 épicas) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
-| **Historias de usuario** | ¿Qué necesita cada persona y para qué? (18 historias) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
+| **Historias de usuario** | ¿Qué necesita cada persona y para qué? (19 historias) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
 | **Requisitos funcionales y no funcionales** | ¿Qué debe hacer el sistema y con qué calidad? | [SRS](documentation/Software-requeriments(SRS)/README.md) |
-| **Historias técnicas** | ¿Qué trabajo técnico lo habilita? (18 historias) | [Historias técnicas](documentation/Historias-Tecnicas.md) |
+| **Historias técnicas** | ¿Qué trabajo técnico lo habilita? (24 historias) | [Historias técnicas](documentation/Historias-Tecnicas.md) |
 
 **Cierre de una tarea:** antes de dar algo por terminado, se aplica el
 [Definition of Done](documentation/Definition-of-Done.md): un checklist verificable de código,
@@ -89,7 +89,7 @@ reglas, pruebas, datos, documentación, seguridad e integración.
 * **Base de datos:** PostgreSQL (SQL relacional, no NoSQL).
 * **ORM:** Prisma.
 * **Motor del juego:** Godot 2D con C++.
-* **Componentes del juego:** ruta de juego gacha (estilo maquinita) y minijuego para obtener monedas.
+* **Componentes del juego:** aventura tipo *metroidvania* (mapas, combate y jefes), tienda del mercader en el mapa y ruleta (gacha) para canjear monedas por recompensas.
 * **Contenedores:** Docker.
 * **Pagos:** simulados, sin procesar dinero real.
 * **Monedas:** ganadas jugando y adquiridas mediante recargas simuladas.
@@ -104,13 +104,19 @@ reglas, pruebas, datos, documentación, seguridad e integración.
 * Cantidad de monedas necesaria para cada descuento.
 * Límites, vigencia y condiciones de uso de los descuentos.
 * Orden de consumo de monedas ganadas y compradas.
-* Diseño definitivo de los microservicios y sus responsabilidades.
-* Estrategia de autenticación y gestión de sesiones o tokens.
 * Proveedores de correo electrónico y SMS.
 * Proveedor de alojamiento y base de datos de producción.
-* Validación de resultados del juego y alcance del análisis antifraude.
-* Alcance definitivo del catálogo, carrito, pedidos y administración.
-* Herramientas de pruebas, linting y formato de código.
+* Validación real de los resultados de la aventura y alcance del análisis antifraude.
+* Diseño de los 5 mapas de la aventura, el contenido del mercader y las probabilidades de la ruleta.
+* Forma de integrar el juego (Godot) en la tienda: enlace, modal o embebido.
+* Dónde se guarda el token de sesión en el navegador (almacenamiento local o cookie `httpOnly`).
+* Puerta de entrada única al backend (proxy inverso) frente a cuatro URLs base por servicio.
+
+> **Ya resueltas y aplicadas en el código** (ya no son decisiones abiertas): arquitectura de
+> cuatro microservicios con base de datos propia, autenticación por JWT con token de refresco
+> rotativo, y herramientas de pruebas, linting y formato (Vitest + Supertest, ESLint y Prettier
+> en el backend; Prettier en el frontend). El detalle de cada una está en los ADR de
+> [`Decisiones.md`](documentation/Decisiones.md).
 
 ## 4. Funcionalidades previstas
 
@@ -127,22 +133,33 @@ Se prevé desarrollar las siguientes funcionalidades:
 
 ### 4.2. Juego y sistema de monedas
 
-La experiencia de juego se desarrollará en Godot con C++ y estará integrada con la cuenta del usuario. Se compone de dos partes:
+La experiencia de juego se desarrollará en Godot con C++ y estará integrada con la cuenta del usuario. Se compone de tres partes:
 
-* **Ruta de juego gacha (estilo maquinita):** modalidad donde el usuario gasta monedas en tiradas para obtener recompensas.
-* **Minijuego:** modalidad donde el usuario obtiene las monedas que después podrá utilizar en el gacha.
+* **Aventura:** un *metroidvania* 2D de dificultad exigente. El jugador recorre **5 mapas tipo laberinto**, cada uno con su jefe final, y combate cuerpo a cuerpo o a distancia según el arma equipada. Derrotar al jefe del nivel 5 (**Rey Demonio**) entrega un arma legendaria única.
+* **Tienda del mercader:** zona fija dentro de cada mapa donde el personaje canjea **monedas por objetos** (pociones, armas, armaduras).
+* **Ruleta (gacha):** se gastan monedas en **tiradas** con probabilidades a favor de la casa; los premios pueden ser descuentos de un producto, personajes, armas o items raros exclusivos de la ruleta.
+
+Reglas transversales del juego:
+
+* **Muerte:** el personaje pierde todos los items obtenidos en la aventura y conserva solo las monedas.
+* **Zonas de descanso ("carga"):** áreas seguras con un **cofre** donde se guarda el inventario entre partidas.
+* **Anti-farming:** un enemigo desaparece del mapa tras ser derrotado muchas veces en la misma partida *(implementación diferida)*.
 
 Las funcionalidades previstas son:
 
-* Partidas con duración definida.
-* Registro de resultados y recompensas.
+* Registro de partidas y recompensas.
 * Monedas obtenidas jugando.
 * Monedas adquiridas mediante recargas simuladas.
 * Vencimiento de las monedas ganadas a los 30 días.
 * Conservación de las monedas compradas sin fecha de vencimiento.
 * Historial de movimientos para registrar ganancias, consumos y vencimientos.
+* Inventario del jugador (armas, armaduras y pociones) con su rareza.
 
 El servidor será la fuente de verdad para los saldos. El cliente del juego no podrá decidir por sí solo cuántas monedas recibe el usuario.
+
+> El detalle completo de la experiencia de juego está en el
+> [SRS del componente de juego](documentation/Software-requeriments\(SRS\)/Game.md), que es la
+> **fuente de verdad** del alcance del juego.
 
 ### 4.3. Sistema de descuentos
 
@@ -190,7 +207,7 @@ La integración dependerá de la selección y configuración de los proveedores.
 | Backend               | Node.js + Express + TypeScript    | API y reglas de negocio                        |
 | Base de datos         | PostgreSQL                        | Persistencia relacional                        |
 | Acceso a datos        | Prisma ORM                        | Consultas y migraciones                        |
-| Juego                 | Godot 2D + C++                    | Experiencia de juego (gacha y minijuego)       |
+| Juego                 | Godot 2D + C++                    | Experiencia de juego (aventura, mercader y ruleta) |
 | Análisis de seguridad | Python + FastAPI                  | Análisis complementario de eventos sospechosos |
 | Contenedores          | Docker                            | Entornos reproducibles                         |
 | Orquestación          | Kubernetes (opcional)             | Orquestación de contenedores, si se justifica  |
@@ -210,7 +227,7 @@ La distribución definitiva se establecerá mediante el diseño de alto y bajo n
 
 * **Autenticación y usuarios:** registro, acceso y permisos.
 * **Catálogo y pedidos:** productos, inventario, carrito y pedidos.
-* **Juego y recompensas:** sesiones de juego, validación de resultados y movimientos de monedas.
+* **Juego y recompensas:** sesiones de aventura, validación de resultados, ruleta y movimientos de monedas.
 * **Descuentos:** reglas, elegibilidad y canjes.
 * **Notificaciones:** avisos internos, correo y SMS.
 * **Análisis de seguridad:** evaluación complementaria de patrones sospechosos.
@@ -239,7 +256,7 @@ Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
 │   │   │   ├── prisma/schema.prisma
 │   │   │   ├── src/{config,db,shared,modules/{catalog,discounts,health,inventory,orders}}/
 │   │   │   └── tests/
-│   │   ├── economy-service/        # Gacha, monedas, recompensas y transacciones (3003)
+│   │   ├── economy-service/        # Monedero, ruleta, inventario y recompensas (3003)
 │   │   │   ├── prisma/schema.prisma
 │   │   │   ├── src/{config,db,modules/{gacha,health,player-inventory,rewards,transactions,wallet}}/
 │   │   │   └── src/tests/
@@ -280,7 +297,7 @@ Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
 │   ├── tailwind.config.js
 │   ├── tsconfig*.json
 │   └── vite.config.ts
-├── GAME/                           # Proyecto Godot (C++): gacha y minijuego   (no existe aún — reservada)
+├── GAME/                           # Proyecto Godot (C++): aventura, mercader y ruleta (no existe aún — reservada)
 ├── DataBase/                       # Recursos y scripts de base de datos       (no existe aún — reservada)
 ├── documentation/                  # Documentación del proyecto (ver §14)
 │   ├── README.md                   #   Índice maestro de toda la documentación
@@ -293,7 +310,7 @@ Tienda_online_gacha/                # Raíz del monorepo (proyecto GearQuest)
 └── README.MD                       # Documentación principal del proyecto
 ```
 
-Las carpetas de estructura y configuración ya existen, pero los módulos de aplicación (`src/modules/*` del backend y `src/features/*` del frontend) están vacíos a propósito: la lógica de negocio todavía no se ha implementado. Por su parte, `GAME/` y `DataBase/` **todavía no existen en el repositorio**: están reservadas para el proyecto de Godot y los recursos de base de datos, respectivamente, y se crearán y poblarán durante el desarrollo.
+Las carpetas de estructura y configuración ya existen. El backend **ya tiene implementados sus módulos de aplicación** (`src/modules/*`: identidad, catálogo, inventario, carrito, pedidos, descuentos, monedero, ruleta, recompensas, pagos) y el frontend tiene sus 9 páginas de interfaz, aunque **todavía sin conectar al backend** (0 llamadas HTTP). El estado exacto de cada requisito vive en la [matriz de trazabilidad](documentation/Trazabilidad.md). Por su parte, `GAME/` y `DataBase/` **todavía no existen en el repositorio**: están reservadas para el proyecto de Godot y los recursos de base de datos, respectivamente, y se crearán y poblarán durante el desarrollo.
 
 ## 7. Seguridad y buenas prácticas
 
@@ -331,7 +348,7 @@ Estas medidas son objetivos de implementación, no una certificación de que el 
 
 ## 8. Calidad y colaboración
 
-Para facilitar el trabajo entre los tres integrantes, se propone:
+Para facilitar el trabajo entre los cuatro integrantes, se propone:
 
 * Utilizar Git y un repositorio compartido.
 * Crear ramas específicas para cambios acotados.
@@ -413,7 +430,7 @@ Kubernetes es opcional. Para el desarrollo local, Docker Compose puede ser sufic
 
 ## 12. Alcance y limitaciones actuales
 
-* GearQuest es un proyecto académico en etapa de planificación.
+* GearQuest es un proyecto académico en etapa de desarrollo: el backend opera con datos reales y el frontend está en fase de interfaz.
 * Las compras y recargas se simularán; no se procesará dinero real.
 * Las reglas definitivas de descuentos están pendientes.
 * Las integraciones de correo y SMS dependen de proveedores y de su costo.
@@ -441,7 +458,7 @@ Toda la documentación del proyecto vive en la carpeta [`documentation/`](docume
 | Documento | Para qué sirve |
 | --- | --- |
 | [Índice maestro](documentation/README.md) | Mapa de toda la documentación y por dónde empezar |
-| [Épicas e historias de usuario](documentation/Epicas-e-Historias.md) | Los 4 grandes objetivos del proyecto y las 18 historias de usuario |
+| [Épicas e historias de usuario](documentation/Epicas-e-Historias.md) | Los 4 grandes objetivos del proyecto y las 19 historias de usuario |
 | [Historias técnicas](documentation/Historias-Tecnicas.md) | El trabajo técnico que habilita las historias (integración, pruebas, infraestructura) |
 | [Definition of Done](documentation/Definition-of-Done.md) | Cuándo una tarea está **realmente** terminada (checklist verificable) |
 | [Guía de instalación](documentation/Guia-de-Instalacion.md) | Levantar el proyecto completo en local, paso a paso |

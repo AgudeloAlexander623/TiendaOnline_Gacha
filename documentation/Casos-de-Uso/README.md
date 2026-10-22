@@ -1,6 +1,6 @@
 # Casos de Uso — GearQuest
 
-> **Proyecto:** GearQuest — tienda de periféricos con gacha y minijuego
+> **Proyecto:** GearQuest — tienda de periféricos con aventura, mercader y ruleta
 > **Estado:** Borrador para revisión · **Versión:** 1.0 — 2026-10-18
 > **Complementa a:** [Especificación de Requisitos (SRS)](../Software-requeriments\(SRS\)/README.md)
 
@@ -81,11 +81,12 @@ Algunos casos se conectan entre sí; en el texto aparecen con estas etiquetas:
 
 | Caso | Nombre | Actor | Prioridad |
 | --- | --- | --- | --- |
-| UC-12 | Jugar una partida (minijuego) | Cliente | Must |
-| UC-13 | Hacer una tirada en el gacha | Cliente | Must |
+| UC-12 | Explorar y jugar la aventura | Cliente | Must |
+| UC-13 | Hacer una tirada en la ruleta | Cliente | Must |
 | UC-14 | Consultar el monedero | Cliente | Must |
 | UC-15 | Consultar el historial de monedas | Cliente | Must |
 | UC-16 | Realizar una recarga simulada | Cliente | Must |
+| UC-19 | Canjear monedas por objetos en el mercader | Cliente | Must |
 
 ### Notificaciones — [`04-Notificaciones.md`](./04-Notificaciones.md)
 
@@ -101,7 +102,7 @@ Casos-de-Uso/
 ├── README.md                        # Este índice
 ├── 01-Identidad-y-Usuarios.md       # UC-01 a UC-04
 ├── 02-Tienda-y-Pedidos.md           # UC-05 a UC-11
-├── 03-Juego-y-Economia.md           # UC-12 a UC-16
+├── 03-Juego-y-Economia.md           # UC-12 a UC-16 y UC-19
 └── 04-Notificaciones.md             # UC-17 y UC-18
 ```
 

@@ -13,8 +13,8 @@ function CartPage() {
       <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
         <p className="text-lg font-medium text-gray-700">Tu carrito está vacío</p>
         <p className="mt-1 text-sm text-gray-500">
-          Agrega productos desde el catálogo para verlos aquí. Esta pantalla se conectará al
-          carrito del backend en la fase de carrito y pedidos.
+          Agrega productos desde el catálogo para verlos aquí. Esta pantalla se conectará al carrito
+          del backend en la fase de carrito y pedidos.
         </p>
         <Link
           to="/catalog"

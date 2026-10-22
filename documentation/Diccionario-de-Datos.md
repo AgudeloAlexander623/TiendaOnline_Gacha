@@ -249,7 +249,7 @@ implementado** — ver `Trazabilidad.md` §12.1.
 
 ---
 
-## 4. economy-service — monedero, movimientos, gacha y juego
+## 4. economy-service — monedero, movimientos, ruleta y partida
 
 ### 4.1 `Wallet` → `wallets`
 Monedero del usuario (**uno por usuario**). No guarda el saldo: el saldo se calcula.
@@ -339,7 +339,7 @@ servidor; las probabilidades concretas están pendientes de definir).
 **Enums:** `Rarity = {COMMON, RARE, EPIC, LEGENDARY}` · `GachaRewardType = {COIN, ITEM, NOTHING}`
 
 ### 4.6 `GachaPull` → `gacha_pulls`
-Registro de cada tirada (auditoría del gacha).
+Registro de cada tirada (auditoría de la ruleta).
 
 | Campo | Tipo | Reglas | Descripción |
 | --- | --- | --- | --- |
@@ -352,7 +352,7 @@ Registro de cada tirada (auditoría del gacha).
 | `createdAt` | DateTime | Auto | Momento |
 
 ### 4.7 `PlayerItem` → `player_items`
-Objeto del inventario del jugador (obtenido en el gacha u otras fuentes).
+Objeto del inventario del jugador (obtenido en la ruleta o en la aventura).
 
 | Campo | Tipo | Reglas | Descripción |
 | --- | --- | --- | --- |

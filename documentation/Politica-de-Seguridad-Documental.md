@@ -77,11 +77,11 @@ interna), pero el **tono** importa: no debe sonar a invitación.
 
 ### ❌ Mal (suena a «ven a atacarme aquí»)
 
-> «Hoy el sistema **no valida** el resultado del minijuego: se acepta cualquier puntaje.»
+> «Hoy el sistema **no valida** el resultado de la partida: se acepta cualquier puntaje.»
 
 ### ✅ Bien (suena a límite gestionado)
 
-> «El endurecimiento de la validación del resultado del minijuego está **pendiente**;
+> «El endurecimiento de la validación del resultado de la partida está **pendiente**;
 > hoy se aplica una regla de conversión con tope.»
 
 ### Por qué

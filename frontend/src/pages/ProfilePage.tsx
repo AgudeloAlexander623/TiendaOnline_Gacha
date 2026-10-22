@@ -21,8 +21,8 @@ function ProfilePage() {
         <section className="rounded-xl border border-gray-200 bg-white p-5">
           <h2 className="font-semibold text-gray-900">Monedero</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Monedas ganadas (vencen a 30 días) y compradas (sin vencimiento), con su
-            historial de movimientos.
+            Monedas ganadas (vencen a 30 días) y compradas (sin vencimiento), con su historial de
+            movimientos.
           </p>
         </section>
 

@@ -61,8 +61,8 @@
 <text x="490.6" y="305" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-FE-10 · NFR-FE-03</text>
 <rect x="241.6" y="489.5" width="260" height="111" rx="10" fill="None" filter="url(#softshadow)"/>
 <text x="371.6" y="513.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Juego (GAME/ · pendiente)</text>
-<text x="255.6" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Godot 2D + C++ · aventura, gacha y</text>
-<text x="255.6" y="549.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">minijuego</text>
+<text x="255.6" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Godot 2D + C++ · aventura, ruleta y</text>
+<text x="255.6" y="549.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">mercader</text>
 <text x="255.6" y="564.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Reporta resultados; nunca fija saldos</text>
 <text x="255.6" y="579.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Sesión válida obligatoria (FR-GA-18)</text>
 <text x="490.6" y="592.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-GA-19 · FR-GA-20</text>
@@ -78,7 +78,7 @@
 <text x="883.1" y="422.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-12 · FR-BE-13</text>
 <rect x="679.1" y="489.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>
 <text x="786.6" y="513.5" font-size="13" fill="#0f172a" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">economy-service :3003</text>
-<text x="693.1" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Monedero, gacha y recompensas</text>
+<text x="693.1" y="534.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Monedero, ruleta y recompensas</text>
 <text x="693.1" y="549.3" font-size="11" fill="#0f172a" font-family="Arial, Helvetica, sans-serif">• Movimientos, vencimientos y reglas</text>
 <text x="883.1" y="562.5" font-size="9" fill="#64748b" font-family="Consolas, 'DejaVu Sans Mono', monospace" text-anchor="end">FR-BE-16 · FR-BE-18</text>
 <rect x="679.1" y="629.5" width="215" height="81" rx="10" fill="None" filter="url(#softshadow)"/>

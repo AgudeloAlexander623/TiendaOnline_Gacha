@@ -54,6 +54,7 @@ algo sin saber por qué estaba así y rompe el sistema.
 | [ADR-0014](#adr-0014--clasificar-la-información-antes-de-documentarla) | Clasificar la información antes de documentarla | Aceptada |
 | [ADR-0015](#adr-0015--una-única-url-base-en-el-frontend-con-proxy-inverso-por-prefijo) | Una única URL base en el frontend, con proxy inverso por prefijo | Aceptada |
 | [ADR-0016](#adr-0016--el-juego-es-una-aventura-metroidvania-la-ruleta-y-el-mercader-son-sus-componentes) | El juego es una aventura metroidvania; la ruleta y el mercader son sus componentes | Aceptada |
+| [ADR-0017](#adr-0017--catálogo-por-familias-dentro-de-store-service-con-un-solo-carrito-y-un-solo-pago) | Catálogo por familias dentro de store-service, con un solo carrito y un solo pago | Aceptada |
 
 ---
 
@@ -653,10 +654,115 @@ está documentado, no se renombra el código.
 
 ---
 
+## ADR-0017 · Catálogo por familias dentro de store-service, con un solo carrito y un solo pago
+
+- **Fecha:** 2026-10-22
+- **Estado:** Aceptada
+
+### Contexto
+
+La **página de ventas** (el frontend) iba a vender un solo tipo de producto: **periféricos**.
+El negocio quiere ampliar el catálogo a **tres familias**:
+
+| Familia | Atributos propios | Regla propia |
+| --- | --- | --- |
+| Periféricos | tipo de conexión, DPI, teclas, garantía | stock físico que se repone |
+| Licencias | clave, activaciones, expiración, plataforma | **la clave es un secreto** y se consume una vez |
+| Juegos | género, plataforma, clasificación, desarrollador | filtros por edad y plataforma |
+
+Hoy las tres cosas caben en una sola tabla (`products`) porque solo hay una: campos `null`
+por todas partes y condicionales en cada consulta.
+
+La pregunta de fondo era otra: **¿se parte el catálogo en tres servicios ya, o se separa
+dentro del servicio que ya existe?** Y, coupled con eso: **¿un carrito o tres?**
+
+### Decisión
+
+**Un solo servicio (`store-service`) con tres dominios separados dentro, y un solo carrito
+con un solo pago.**
+
+1. **El catálogo se separa por dominio, no por proceso.** El módulo `catalog` de
+   `store-service` pasa a tener una base compartida (`catalog.service.ts` *kind-aware*) y
+   **tres routers** que fijan su familia: `peripherals`, `licenses` y `games`. Cada familia
+   tiene **sus propias rutas** (`/api/v1/peripherals`, `/api/v1/licenses`, `/api/v1/games`),
+   sus **propios atributos** (tablas `PeripheralSpec`, `LicenseSpec` + `LicenseKey` y
+   `GameSpec`) y sus **propias reglas**.
+2. **El carrito y el pedido siguen siendo únicos.** Un carrito puede contener periféricos,
+   licencias y juegos a la vez, y se confirma en un único pedido y un único pago.
+3. **El modelo de datos mantiene la integridad referencial:** `Product` es la tabla base con
+   un discriminador `kind`; `CartItem` y `OrderItem` siguen apuntando a `Product` con clave
+   foránea real.
+4. **La plataforma es la vendedora de las licencias.** No hay revendedores externos, así
+   que el producto **no** lleva `sellerId`.
+5. **La extracción a microservicios se hace más adelante**, cuando el proyecto lo
+   justifique. Los nombres de ruta ya son los de los futuros servicios, de modo que la
+   extracción sea mecánica.
+
+### Por qué (alternativas)
+
+- **Tres servicios desde ya (periféricos, licencias, juegos):** coherente con
+  [ADR-0001](#adr-0001--usar-microservicios-por-dominio-en-un-monorepo), pero el
+  `store-service` es **27 de las 59 operaciones** del contrato público. Partirlo ahora
+  significa rehacer casi la mitad de la API, crear **3 bases, 3 configuraciones, 3
+  despliegues** y, sobre todo, obligar al carrito a **preguntar precio y stock a los tres**
+  en cada operación: llamadas internas entre servicios, que son exactamente la deuda que
+  el proyecto tiene **abierta hoy** (`TS-01`…`TS-04` y tres `TODO(economia)`).
+  Multiplicar esa deuda por tres, sobre la parte menos madura del sistema, es multiplicar
+  el riesgo.
+- **Un carrito por catálogo:** cada servicio sería autónomo, sin llamadas cruzadas… pero
+  habría **tres checkouts, tres pedidos y tres pagos**. La persona que quiere un teclado y
+  una licencia pagaría dos veces. Se descartó: se eligió el modelo de marketplace
+  (estilo MercadoLibre): **un carrito, un pago**.
+- **Todo en una tabla `products` con campos opcionales (lo de hoy):** es lo más rápido de
+  implementar, pero produce columnas vacías y lógica condicional en cada consulta. No
+  escala a la tercera familia.
+- **Un `GET /api/v1/products?kind=LICENSE` en vez de prefijos:** menos endpoints, pero
+  mezcla las familias en la URL y obliga a renumerar todo el día que se extraiga cada
+  catálogo a su servicio. Con prefijos, `/api/v1/peripherals` **es** la ruta de
+  `peripherals-service`: la separación futura no obliga a renumerar nada.
+- **Separar el dominio ahora y los procesos después** ✅: el beneficio real (atributos
+  propios, reglas propias, errores propios) se obtiene **completo** desde el primer día,
+  con **cero** servicios, bases ni despliegues nuevos. La separación en procesos queda
+  para cuando el proyecto la justifique, y para entonces la frontera ya está en el sitio
+  correcto.
+
+### Consecuencias
+
+- ✅ Cada familia tiene sus atributos y sus reglas, **sin campos vacíos** ni condicionales
+  en las consultas.
+- ✅ El carrito y el checkout **no cambian**: cero trabajo en el flujo que ya funciona.
+- ✅ **Cero** servicios, bases de datos, puertos o configuraciones nuevas.
+- ✅ Los nombres de ruta quedan **decididos** para el futuro (`/api/v1/peripherals` ↔
+  `peripherals-service`).
+- ⚠️ `/api/v1/products` **desaparece** del contrato público. No rompe a nadie porque el
+  frontend todavía no hace llamadas HTTP (`FR-FE-10` ⬜), pero es un cambio rompedor y va
+  anotado como tal en el `CHANGELOG.md`.
+- ⚠️ **Deuda asumida:** cuando las familias se extraigan a servicios separados, la tabla
+  `products` habrá que **partirla** en tres, porque la clave foránea del carrito apunta a
+  la base común. Se acepta: hoy la integridad referencial vale más que la comodidad
+  futura.
+- ⚠️ Las **licencias** son un producto con reglas propias: la clave es un secreto
+  (cifrada, nunca listada, nunca en logs) y tiene activación limitada y expiración.
+  Eso exige una variable de entorno nueva (`LICENSE_KEY_ENCRYPTION_KEY`) y una operación
+  de entrega de claves.
+- ⚠️ **«Juego»** en el catálogo choca con **«la aventura»** de
+  [ADR-0016](#adr-0016--el-juego-es-una-aventura-metroidvania-la-ruleta-y-el-mercader-son-sus-componentes).
+  El glosario distingue *juego en catálogo* de *aventura*.
+- ✅ `Game.md` (fuente de verdad del juego) y `economy-service` **no se tocan**: el
+  servicio que conecta con la información del juego sigue siendo el de economía.
+
+### Diseño completo
+
+- [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) — alcance, negocio y fases.
+- [`backend/documentation_Backend/Catalogo-por-Familias.md`](../backend/documentation_Backend/Catalogo-por-Familias.md)
+  — rutas, capas, variables, migraciones y pruebas.
+
+---
+
 ## 3. Cómo añadir una decisión nueva
 
 1. Copia el formato de un ADR existente (Contexto → Decisión → Por qué → Consecuencias).
-2. Asígnale el siguiente número libre (ADR-0017, ADR-0018, …).
+2. Asígnale el siguiente número libre (ADR-0018, ADR-0019, …).
 3. Añádelo al [índice](#2-índice-de-decisiones) con su estado.
 4. Si **reemplaza** a uno anterior, marca el viejo como *Reemplazada* y enlaza el nuevo.
 5. Inclúyelo en el mismo PR que el cambio que lo motiva.

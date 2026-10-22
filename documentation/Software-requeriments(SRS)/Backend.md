@@ -2,7 +2,7 @@
 
 > **Área:** Backend (API y reglas de negocio)
 > **Estado:** Borrador para revisión
-> **Versión:** 1.0 — 2026-10-18
+> **Versión:** 1.1 — 2026-10-22
 > **Tecnología de referencia:** Node.js + Express + TypeScript, Prisma ORM, PostgreSQL
 > **Documento base:** `backend/README.md` y `README.MD` (raíz), secciones 3, 6 y 7
 
@@ -63,6 +63,18 @@ equipo de cuatro puede avanzar en paralelo sin pisarse el código.
 | FR-BE-11 | Gestionar el carrito: agregar, quitar y consultar productos | Must | El carrito refleja siempre el precio vigente **calculado por el servidor** |
 | FR-BE-12 | Crear y consultar pedidos, descontando el inventario de forma segura | Must | No se puede comprar por encima del stock disponible, ni con el mismo carrito dos veces |
 | FR-BE-13 | Consultar y aplicar descuentos verificando elegibilidad, saldo y límites | Must | Un descuento no aplicable se rechaza en el servidor, aunque el cliente lo pida |
+| FR-BE-24 | Listar y consultar el catálogo de **periféricos** con sus atributos propios (tipo de conexión, DPI, número de teclas, garantía, compatibilidad) | Must | El listado pagina y filtra por familia; el detalle incluye los atributos del periférico y el stock disponible |
+| FR-BE-25 | Listar y consultar el catálogo de **licencias** sin exponer la clave, y entregar la clave comprada **solo a quien la compró** | Must | Ningún listado de licencias incluye la clave; la clave solo se entrega en el detalle del pedido de su propietario |
+| FR-BE-26 | Listar y consultar el catálogo de **juegos** con sus atributos propios (género, plataforma, clasificación por edad, desarrollador) | Must | El listado filtra por género, plataforma y clasificación; el detalle incluye los atributos del juego y el stock disponible |
+| FR-BE-27 | Gestionar **un solo carrito y un solo checkout** capaces de mezclar las tres familias de producto | Must | Un carrito puede contener periféricos, licencias y juegos a la vez, y se confirma en un único pedido y un único pago |
+| FR-BE-28 | **Revalidar** precio, stock y estado en el checkout para cualquier familia de producto | Must | El checkout vuelve a consultar el catálogo antes de cobrar; si el precio o el stock ya no cuadran, se rechaza **sin cobrar nada** |
+
+> **Catálogo por familias (v1.1):** el catálogo del `store-service` se separa en **tres
+> dominios** —periféricos, licencias y juegos— cada uno con sus propios atributos y sus
+> propias rutas (`/api/v1/peripherals`, `/api/v1/licenses`, `/api/v1/games`), **dentro del
+> mismo servicio**. El carrito, el pedido, el inventario y los descuentos **no cambian**.
+> El diseño completo está en [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md) y
+> la decisión en [ADR-0017](../Decisiones.md).
 
 ### 4.4. economy-service (economía del juego)
 
@@ -133,6 +145,9 @@ equipo de cuatro puede avanzar en paralelo sin pisarse el código.
 3. Política de compensación entre servicios cuando una operación falla después de haber
    debitado. *(Ver `FR-BE-23`.)*
 4. Herramientas de integración continua (CI) y cobertura de pruebas. *(Ver `FR-INF-08`.)*
+5. Cuándo se extrae cada familia del catálogo a su propio microservicio. *(La separación
+   de dominio ya está decidida —ADR-0017—; la de procesos, no. Ver
+   [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md) §3.)*
 
 > **Ya resueltas** (no dependen de una decisión pendiente): el contrato público de la API
 > está publicado en [`API/openapi.yaml`](../API/openapi.yaml), el modelo de datos de cada
@@ -148,4 +163,7 @@ equipo de cuatro puede avanzar en paralelo sin pisarse el código.
 - [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): contrato interno entre
   servicios, incluida la autenticación service-to-service.
 - [`Diccionario-de-Datos.md`](../Diccionario-de-Datos.md): descripción de los 26 modelos.
+- [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md): diseño del catálogo por
+  familias (periféricos, licencias y juegos) con carrito único, y
+  [ADR-0017](../Decisiones.md) con la decisión que lo respalda.
 - [`Trazabilidad.md`](../Trazabilidad.md): estado real de cada requisito de este documento.

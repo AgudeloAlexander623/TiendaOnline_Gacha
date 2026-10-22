@@ -1,8 +1,9 @@
 # Casos de Uso — Tienda y Pedidos
 
 > **Dominio:** Tienda y pedidos · **Servicio responsable:** store-service (puerto 3002)
-> **Estado:** Borrador para revisión · **Versión:** 1.0 — 2026-10-18
+> **Estado:** Borrador para revisión · **Versión:** 1.1 — 2026-10-22
 > **Requisitos de referencia:** [`SRS · Backend.md`](../Software-requeriments\(SRS\)/Backend.md) · [`SRS · Business-Rules.md`](../Software-requeriments\(SRS\)/Business-Rules.md)
+> **Diseño del catálogo por familias:** [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md)
 
 ---
 
@@ -11,6 +12,10 @@
 Este documento describe el **corazón comercial** de GearQuest: recorrer la tienda, armar
 un carrito, confirmar un pedido y usar un descuento. Aquí aparece también el único actor
 con permisos especiales: el **Administrador**, que mantiene el catálogo al día.
+
+Desde la v1.1 el catálogo tiene **tres familias** —periféricos, licencias y juegos— pero el
+**carrito y el pedido siguen siendo únicos**: se puede comprar de las tres en la misma
+compra. Los tres casos de compra de cada familia están en `UC-20`, `UC-21` y `UC-22`.
 
 ## 2. Actores
 
@@ -30,6 +35,9 @@ con permisos especiales: el **Administrador**, que mantiene el catálogo al día
 | UC-09 | Consultar el historial de pedidos | Cliente | Must |
 | UC-10 | Canjear un descuento | Cliente | Must |
 | UC-11 | Administrar productos e inventario | Administrador | Must |
+| UC-20 | Comprar un periférico | Cliente | Must |
+| UC-21 | Comprar una licencia y recibir su clave | Cliente | Must |
+| UC-22 | Comprar un juego | Cliente | Must |
 
 ## 4. Detalle de los casos de uso
 
@@ -228,3 +236,106 @@ descuento, pero no es obligatorio.
 **Resultado:** el catálogo y el stock reflejan la realidad del negocio.
 
 **Requisitos asociados (SRS):** FR-BE-10 · FR-BE-08 · FR-SEC-02
+
+---
+
+### UC-20 · Comprar un periférico
+
+| Campo | Contenido |
+| --- | --- |
+| Historia de usuario | Como cliente quiero comprar un periférico para tenerlo en mi computador |
+| Actor | Cliente |
+| Precondiciones | Sesión iniciada (UC-02); el periférico está publicado y con stock (UC-05) |
+| Disparador | Agrega un periférico al carrito y confirma el pedido |
+| Prioridad | Must |
+
+**Flujo principal**
+
+1. La persona abre la sección de periféricos y filtra por tipo de conexión, categoría o
+   nombre.
+2. El servidor devuelve el listado paginado con precio, disponibilidad y los atributos del
+   periférico (conexión, garantía, compatibilidad).
+3. Agrega el que quiere al carrito (UC-07).
+4. Confirma la compra; el servidor **revalida el precio y el stock** antes de cobrar.
+5. El pedido queda registrado con el nombre y el precio del momento, y el stock se descuenta.
+
+**Flujos alternativos y de excepción**
+
+- *Sin stock:* se avisa que ya no queda y el servidor **no cobra nada**.
+- *El precio cambió entre agregar y pagar:* el servidor cobra el precio vigente y lo
+  muestra antes de confirmar; el cliente puede cancelar si no le sirve.
+- *Producto retirado:* deja de estar disponible y el carrito avisa.
+
+**Resultado:** existe un pedido con el periférico comprado, el stock descontado y el
+precio congelado en el pedido.
+
+**Requisitos asociados (SRS):** FR-BE-24 · FR-BE-11 · FR-BE-12 · FR-BE-28 · FR-BR-17 ·
+FR-DB-10
+
+---
+
+### UC-21 · Comprar una licencia y recibir su clave
+
+| Campo | Contenido |
+| --- | --- |
+| Historia de usuario | Como cliente quiero comprar una licencia y recibir su clave para poder usarla |
+| Actor | Cliente |
+| Precondiciones | Sesión iniciada (UC-02); la licencia está publicada y quedan claves disponibles (UC-05) |
+| Disparador | Agrega la licencia al carrito, confirma el pedido y abre el detalle del pedido |
+| Prioridad | Must |
+
+**Flujo principal**
+
+1. La persona abre la sección de licencias y filtra por plataforma o tipo de licencia.
+2. El servidor devuelve el listado **sin ninguna clave**: solo el producto, el precio, la
+   plataforma, la vigencia y cuántas activaciones permite.
+3. Agrega la licencia al carrito (UC-07) y confirma el pedido (UC-08).
+4. El servidor asigna una **clave disponible** al pedido y la marca como entregada.
+5. La persona abre el detalle de su pedido y ve la clave, junto a las instrucciones de
+   activación.
+
+**Flujos alternativos y de excepción**
+
+- *Sin claves disponibles:* la licencia aparece como agotada y no se puede agregar.
+- *Alguien pide las claves del pedido de otra persona:* el servidor lo rechaza; las claves
+  solo se entregan a quien compró ese pedido.
+- *La clave llega a un límite de activaciones:* deja de servir y hay que pedir soporte.
+- *La licencia caducó:* deja de servir; el pedido no se reembolsa (producto digital).
+
+**Resultado:** la persona tiene su clave, vinculada a su pedido, y nadie más puede verla.
+
+**Requisitos asociados (SRS):** FR-BE-25 · FR-BE-12 · FR-BE-28 · FR-BR-18 · FR-BR-19 ·
+FR-SEC-12
+
+---
+
+### UC-22 · Comprar un juego
+
+| Campo | Contenido |
+| --- | --- |
+| Historia de usuario | Como cliente quiero comprar un juego para poder jugarlo |
+| Actor | Cliente |
+| Precondiciones | Sesión iniciada (UC-02); el juego está publicado y con stock (UC-05) |
+| Disparador | Agrega un juego al carrito y confirma el pedido |
+| Prioridad | Must |
+
+**Flujo principal**
+
+1. La persona abre la sección de juegos y filtra por género, plataforma o clasificación por
+   edad.
+2. El servidor devuelve el listado paginado con precio, disponibilidad y los atributos del
+   juego (género, plataforma, clasificación, desarrollador).
+3. Agrega el juego al carrito (UC-07).
+4. Confirma el pedido; el servidor **revalida precio y stock** y lo registra.
+5. La persona ve su pedido con el juego comprado.
+
+**Flujos alternativos y de excepción**
+
+- *Sin stock:* se avisa que no queda y no se cobra nada.
+- *Carrito con Peripheral y juego mezclados:* se confirma igual, en **un solo pedido y un
+  solo pago** (es la misma regla que el resto del carrito).
+
+**Resultado:** existe un pedido con el juego comprado y el stock descontado.
+
+**Requisitos asociados (SRS):** FR-BE-26 · FR-BE-11 · FR-BE-12 · FR-BE-27 · FR-BE-28 ·
+FR-DB-10

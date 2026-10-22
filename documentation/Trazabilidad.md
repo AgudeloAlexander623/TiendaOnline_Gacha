@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — GearQuest
 
 > **Proyecto:** GearQuest — tienda de periféricos con sistema de recompensas gamificado
-> **Versión:** 1.1 · **Fecha:** 2026-10-22
+> **Versión:** 1.2 · **Fecha:** 2026-10-22
 > **Fuente de verdad:** auditoría directa del código del repositorio (no de intenciones)
 > **Complementa a:** [SRS](./Software-requeriments\(SRS\)/README.md) · [Casos de Uso](./Casos-de-Uso/README.md)
 
@@ -30,9 +30,24 @@ producto: cada requisito del SRS (`FR-*`, `NFR-*`) queda aquí con su **estado r
 **Notación de rutas:** `identity/…`, `store/…`, `economy/…`, `payments/…` son relativas a
 `backend/services/`; `frontend/…` es relativa a la raíz del repositorio.
 
-**Resumen de estados:** 58 ✅ · 35 ⚠️ · 61 ⬜ de 154 requisitos (recuento en §13)
+**Resumen de estados:** 59 ✅ · 36 ⚠️ · 69 ⬜ de 164 requisitos (recuento en §13)
 
-> **Cambios en esta versión (1.1):** el SRS creció de 141 a 154 requisitos al añadir 13
+> **Cambios en esta versión (1.2):** el SRS creció de 154 a **164** requisitos al añadir
+> **10 requisitos nuevos** que describen el **catálogo por familias** (periféricos,
+> licencias y juegos) dentro de `store-service`, con **un solo carrito y un solo pago**:
+> `FR-BE-24`…`FR-BE-28` (catálogos por familia, carrito y checkout únicos, revalidación de
+> precio y stock), `FR-DB-10` (producto con tipo y tablas de atributos por familia),
+> `FR-BR-17`…`FR-BR-19` (sku único, la clave de licencia como secreto, licencia digital
+> sin reembolso) y `FR-SEC-12` (la clave solo se entrega a quien la compró). Se añadieron
+> también `UC-20`…`UC-22` (comprar un periférico, una licencia y un juego), `US-20` y las
+> historias técnicas `TS-25`…`TS-29`. **Ninguno de los 154 requisitos anteriores se
+> renumeró.** Todo esto está **sin implementar**: las 10 filas nuevas son ⬜.
+>
+> El diseño y su porqué están en [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md)
+> y en el [ADR-0017](./Decisiones.md). El detalle técnico (rutas, capas, migraciones) está
+> en [`backend/documentation_Backend/Catalogo-por-Familias.md`](../backend/documentation_Backend/Catalogo-por-Familias.md).
+>
+> **Cambios en la versión anterior (1.1):** el SRS creció de 141 a 154 requisitos al añadir 13
 > requisitos que faltaban (canje del mercader, compensación entre servicios, bandeja de
 > avisos, panel de administración, ruta base única, token seguro en el navegador,
 > idempotencia persistida, autenticación entre servicios, comando global, CI/CD,
@@ -48,15 +63,15 @@ producto: cada requisito del SRS (`FR-*`, `NFR-*`) queda aquí con su **estado r
 
 | Área (documento SRS) | Total | ✅ | ⚠️ | ⬜ |
 | --- | ---: | ---: | ---: | ---: |
-| Backend | 31 | 22 | 7 | 2 |
-| Reglas de negocio | 18 | 13 | 5 | 0 |
-| Base de datos | 14 | 9 | 3 | 2 |
+| Backend | 36 | 22 | 8 | 6 |
+| Reglas de negocio | 21 | 14 | 5 | 2 |
+| Base de datos | 15 | 9 | 3 | 3 |
 | Frontend | 21 | 4 | 10 | 7 |
 | Juego (Godot) | 28 | 0 | 6 | 22 |
 | Infraestructura | 13 | 2 | 2 | 9 |
 | Notificaciones | 14 | 0 | 0 | 14 |
-| Seguridad | 15 | 8 | 2 | 5 |
-| **Total** | **154** | **58** | **35** | **61** |
+| Seguridad | 16 | 8 | 2 | 6 |
+| **Total** | **164** | **59** | **36** | **69** |
 
 **Lectura en una frase:** el **backend es el área más madura** (identidad, tienda, economía,
 pagos y seguridad base operan con datos reales), el **frontend es UI estática sin conectar**
@@ -65,7 +80,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 
 ---
 
-## 3. Backend — `Software-requeriments(SRS)/Backend.md` (31)
+## 3. Backend — `Software-requeriments(SRS)/Backend.md` (36)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -92,6 +107,11 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-BE-21 | Acreditar monedas compradas sin vencimiento | Must | ⚠️ | **Pendiente**: `TODO(economia)` en `payments.service.ts:176` (acreditar `PURCHASED` en economy) |
 | FR-BE-22 | Canjear monedas por objetos en el mercader | Must | ⬜ | **Nuevo en v1.1.** Sin endpoint de canje; existe `POST /gacha/banners/:id/pull` (FR-BE-16) pero no su equivalente en el mercader |
 | FR-BE-23 | Revertir un débito si la operación posterior falla | Must | ⬜ | **Nuevo en v1.1.** Sin compensación entre servicios: los `TODO(economia)` (§12.1) débitos y no acreditan |
+| FR-BE-24 | Catálogo de periféricos con sus atributos propios | Must | ⬜ | **Nuevo en v1.2.** El catálogo actual es genérico (`products`) y solo de una familia: no hay tipo de producto ni atributos por familia |
+| FR-BE-25 | Catálogo de licencias sin exponer la clave; entrega solo a quien compró | Must | ⬜ | **Nuevo en v1.2.** No existe el catálogo de licencias ni la noción de clave (`FR-BR-18`, `FR-SEC-12`) |
+| FR-BE-26 | Catálogo de juegos con sus atributos propios | Must | ⬜ | **Nuevo en v1.2.** No existe el catálogo de juegos |
+| FR-BE-27 | Carrito y checkout únicos que mezclan las tres familias | Must | ⬜ | **Nuevo en v1.2.** El carrito actual solo admite productos de la familia única (`CartItem → Product` sin tipo) |
+| FR-BE-28 | Revalidar precio y stock en el checkout | Must | ⚠️ | **Nuevo en v1.2.** El checkout **sí** revalida (`orders.service.ts:64-163`), pero solo para la familia existente; falta la regla por familia y la prueba |
 | NFR-BE-01 | TypeScript estricto | Must | ✅ | `backend/tsconfig.base.json` (`"strict": true`) + script `typecheck` por workspace |
 | NFR-BE-02 | Pruebas automatizadas sobre reglas críticas | Must | ⚠️ | Vitest + Supertest operativos, pero **8 ficheros / 180 líneas**: solo esquemas, salud y autorización; ningún test toca BD |
 | NFR-BE-03 | ESLint + Prettier | Must | ✅ | `backend/eslint.config.mjs`, `.prettierrc.json`, scripts `lint`/`format` |
@@ -101,7 +121,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | NFR-BE-07 | Independencia entre servicios | Should | ✅ | 4 bases propias (`initdb/01-create-databases.sql`); JWT verificado localmente, sin llamadas entre servicios |
 | NFR-BE-08 | Arranque/despliegue reproducible en contenedores | Should | ⚠️ | `infra/docker/docker-compose.yml` solo levanta PostgreSQL; **no hay Dockerfiles** de las aplicaciones |
 
-## 4. Reglas de negocio — `Business-Rules.md` (18)
+## 4. Reglas de negocio — `Business-Rules.md` (21)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -121,10 +141,13 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-BR-14 | Descuento calculado en el servidor antes de confirmar | Must | ⚠️ | Campos `discountAmount` listos; **cálculo con débito de monedas pendiente** (FR-BR-08) |
 | FR-BR-15 | Operaciones de saldo seguras ante repetición/concurrencia | Must | ⚠️ | Transacciones + restricciones `@@unique`; **sin idempotencia por petición** |
 | FR-BR-16 | El cliente nunca envía un saldo que se acepte sin validar | Must | ✅ | Los saldos solo se modifican en `economy`; los demás servicios no escriben monederos |
+| FR-BR-17 | El `sku` es único en todo el catálogo, no por familia | Must | ✅ | **Nuevo en v1.2.** Ya se cumple hoy: `Product.sku @unique` en `store/prisma/schema.prisma:58`. Hay que **mantenerlo** al añadir las familias |
+| FR-BR-18 | La clave de licencia es un secreto: nunca se lista ni se registra | Must | ⬜ | **Nuevo en v1.2.** No existe todavía el catálogo de licencias ni el cifrado de claves |
+| FR-BR-19 | Licencia digital: activación limitada, con expiración y sin reembolso | Must | ⬜ | **Nuevo en v1.2.** No existe el modelo de licencia |
 | NFR-BR-01 | Las reglas viven en el backend, no en la interfaz | Must | ✅ | Cálculos exclusivamente en `*.service.ts`; frontend sin lógica de negocio |
 | NFR-BR-02 | Toda regla crítica con prueba automatizada | Must | ⚠️ | Cubiertas: sorteo ponderado y `scoreToCoins` (`gacha.service.test.ts`); **faltan**: wallet/vencimientos, checkout, pagos, permisos |
 
-## 5. Base de datos — `Database.md` (14)
+## 5. Base de datos — `Database.md` (15)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -137,6 +160,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-DB-07 | Script de creación reproducible | Must | ✅ | `npm run db:up` (compose) + `initdb` SQL al primer arranque |
 | FR-DB-08 | Datos de prueba ficticios, nunca reales | Must | ✅ | `prisma/seed.ts` idempotente en los 4 servicios |
 | FR-DB-09 | Persistir la clave de idempotencia | Must | ⬜ | **Nuevo en v1.1.** No hay tabla ni columna de idempotencia; ver FR-BE-19 |
+| FR-DB-10 | Producto con tipo y tablas de atributos por familia | Must | ⬜ | **Nuevo en v1.2.** `Product` no tiene discriminador ni tablas de atributos (`PeripheralSpec`, `LicenseSpec` + `LicenseKey`, `GameSpec`): todo vive en `products` con campos opcionales |
 | NFR-DB-01 | Rendimiento en consultas frecuentes | Should | ⚠️ | Índices creados (`@@index([userId])`, `[walletId]`, `[expiresAt]`…); **sin mediciones** de latencia |
 | NFR-DB-02 | Copias de seguridad antes de despliegue real | Should | ⬜ | Sin procedimiento definido (decisión pendiente en Database.md) |
 | NFR-DB-03 | Mínima exposición de datos personales | Must | ⚠️ | Esquema mínimo (email, displayName); **falta política formal** de retención/borrado |
@@ -252,7 +276,7 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | NFR-NO-03 | Registro de envíos | Should | ⬜ | Sin envíos |
 | NFR-NO-04 | Respetar preferencias del usuario | Could | ⬜ | Sin módulo de preferencias |
 
-## 10. Seguridad — `Security.md` (15)
+## 10. Seguridad — `Security.md` (16)
 
 | Código | Requisito (resumen) | Prioridad | Estado | Evidencia / motivo |
 | --- | --- | --- | --- | --- |
@@ -267,12 +291,13 @@ Los cuatro puntos de deuda técnica más relevantes están en §12.
 | FR-SEC-09 | No registrar contraseñas/tokens/datos sensibles | Must | ✅ | `AppError` prohíbe secretos en `context`; logger pino con campos controlados |
 | FR-SEC-10 | Análisis antifraude (Python) complementario | Should | ⬜ | Servicio Python no creado (por diseño: nunca sustituye reglas críticas) |
 | FR-SEC-11 | Autenticación service-to-service con token interno | Must | ⬜ | **Nuevo en v1.1.** Hoy los servicios **no se llaman entre sí** (no hay llamada interna que autenticar); el token interno está descrito en `Contrato-entre-servicios.md` §10 pero no implementado |
+| FR-SEC-12 | La clave de licencia solo se entrega a quien compró el pedido | Must | ⬜ | **Nuevo en v1.2.** No existe el catálogo de licencias; el control de acceso por rol (`requireRole`) sí está resuelto (`FR-SEC-02`), pero falta la regla de propiedad del pedido |
 | NFR-SEC-01 | Pruebas de seguridad básicas antes de desplegar | Must | ⬜ | Sin CI ni checklist de despliegue (lo define `CONTRIBUTING.md` en revisión de PR) |
 | NFR-SEC-02 | Revisión de dependencias antes de publicar | Should | ⬜ | Sin proceso (`npm audit` manual) |
 | NFR-SEC-03 | Mínimo dato personal | Must | ✅ | Solo `email` y `displayName` en `User`; sin datos bancarios (recargas simuladas) |
 | NFR-SEC-04 | Cultura de seguridad en el equipo | Must | ⚠️ | Se establece con `CONTRIBUTING.md` + reglas del SRS; sin revisión recurrente aún |
 
-## 11. Casos de uso — `Casos-de-Uso/` (19)
+## 11. Casos de uso — `Casos-de-Uso/` (22)
 
 El estado de un caso de uso es el de **su flujo completo** (backend + interfaz). Un backend
 listo con la interfaz sin conectar queda en ⚠️.
@@ -298,6 +323,9 @@ listo con la interfaz sin conectar queda en ⚠️.
 | UC-17 | Consultar avisos internos | ⬜ | Sin módulo de notificaciones |
 | UC-18 | Configurar preferencias de aviso | ⬜ | Sin módulo de notificaciones |
 | UC-19 | Canjear monedas por objetos en el mercader | ⬜ | **Nuevo en v1.1.** Sin operación de canje en el backend (FR-BE-22) ni zona de mercader (FR-GA-09) |
+| UC-20 | Comprar un periférico | ⬜ | **Nuevo en v1.2.** El flujo de compra genérico existe (UC-08 ⚠️), pero no el catálogo por familias (FR-BE-24) |
+| UC-21 | Comprar una licencia y recibir su clave | ⬜ | **Nuevo en v1.2.** Sin catálogo de licencias, sin cifrado de claves y sin operación de entrega (FR-BE-25, FR-SEC-12) |
+| UC-22 | Comprar un juego | ⬜ | **Nuevo en v1.2.** Sin catálogo de juegos (FR-BE-26) |
 
 ---
 
@@ -336,6 +364,20 @@ Dockerfiles de las aplicaciones (NFR-BE-08, FR-INF-01).
 | 14 | Observabilidad centralizada en el entorno publicado | NFR-INF-05 |
 | 15 | Rol de PostgreSQL propio por servicio (hoy las cuatro comparten `postgres:postgres`) | FR-DB-01 |
 
+**Trabajo nuevo que abrió el SRS en v1.2 (catálogo por familias) y que aún no existe en el
+código:**
+
+| # | Qué falta | Requisitos |
+| --- | --- | --- |
+| 16 | Producto con discriminador de tipo y tablas de atributos por familia (`PeripheralSpec`, `LicenseSpec` + `LicenseKey`, `GameSpec`) | FR-DB-10, TS-25 |
+| 17 | Catálogo de periféricos con su ruta y sus atributos propios | FR-BE-24, TS-26 |
+| 18 | Catálogo de licencias con cifrado de claves, entrega restringida al comprador y control de activaciones | FR-BE-25, FR-BR-18, FR-BR-19, FR-SEC-12, TS-27 |
+| 19 | Catálogo de juegos con su ruta y sus atributos propios | FR-BE-26, TS-26 |
+| 20 | Carrito y checkout únicos que mezclen las tres familias, con revalidación de precio y stock | FR-BE-27, FR-BE-28, TS-28 |
+| 21 | Contrato `openapi.yaml` y proxy del frontend con los prefijos por familia (`/peripherals`, `/licenses`, `/games`) | TS-29 |
+| 22 | Partir la tabla `products` en tres al extraer cada familia a su propio microservicio (**deuda asumida**, ver ADR-0017) | FR-DB-10 |
+| 23 | Procedimiento de re-cifrado de claves al rotar `LICENSE_KEY_ENCRYPTION_KEY` | FR-SEC-12, FR-BR-18 |
+
 ### 12.2 Contradicciones detectadas y corregidas
 
 | Contradicción | Acción |
@@ -353,6 +395,9 @@ Dockerfiles de las aplicaciones (NFR-BE-08, FR-INF-01).
 | El frontend no tenía Prettier, a diferencia del backend | **Corregido en v1.1**: Prettier añadido con `format`/`format:check` en verde, configurado para respetar el estilo ya existente |
 | `Notifications.md` enlazaba al frontend sin nombrar ningún requisito | Enlazado a `FR-FE-11` y con la operación interna de aviso (FR-NO-10) |
 | `API/README.md` no enlazaba el contrato entre servicios | Enlazado a [`Contrato-entre-servicios.md`](./Contrato-entre-servicios.md) |
+| Todo el SRS y el README raíz describían la tienda como de **un solo tipo de producto** (periféricos), pero el negocio pide **tres familias** (periféricos, licencias y juegos) | **Resuelto en v1.2**: `FR-BE-24`…`FR-BE-28`, `FR-DB-10`, `FR-BR-17`…`FR-BR-19` y `FR-SEC-12`; diseño en [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md) y decisión en [ADR-0017](./Decisiones.md) |
+| El SRS no decía **quién vende las licencias** (¿la plataforma o terceros?) | **Resuelto en v1.2**: la plataforma revende; por eso el producto **no** lleva `sellerId` (ADR-0017) |
+| «Juego» en el catálogo y «la aventura» del juego usan la misma palabra | **Resuelto en v1.2**: el glosario distingue *juego en catálogo* de *aventura*; `Game.md` sigue siendo la fuente de verdad del juego |
 
 ### 12.3 Detectado fuera de `documentation/`
 
@@ -366,11 +411,12 @@ Dockerfiles de las aplicaciones (NFR-BE-08, FR-INF-01).
 
 ### 12.4 Decisiones pendientes del SRS
 
-El SRS acumula **44 decisiones pendientes** listadas por documento (§8 de cada uno): 8 del
-juego, 7 de notificaciones, 6 de frontend, 6 de reglas de negocio, 5 de base de datos y 4
+El SRS acumula **48 decisiones pendientes** listadas por documento (§8 de cada uno): 8 del
+juego, 7 de notificaciones, 7 de reglas de negocio, 6 del frontend, 6 de base de datos, 5
 de cada uno de backend, seguridad e infraestructura. Las que bloquean más trabajo: orden de
 consumo de monedas, coste/probabilidades de la ruleta, contenido y precios del mercader,
-estrategia de idempotencia, proveedor de despliegue y proveedor de correo/SMS.
+estrategia de idempotencia, proveedor de despliegue, proveedor de correo/SMS y **cuándo
+extraer cada familia del catálogo a su propio microservicio**.
 
 ---
 
@@ -380,15 +426,15 @@ estrategia de idempotencia, proveedor de despliegue y proveedor de correo/SMS.
 
 | Área | ✅ | ⚠️ | ⬜ | Total |
 | --- | ---: | ---: | ---: | ---: |
-| Backend | 22 | 7 | 2 | 31 |
-| Reglas de negocio | 13 | 5 | 0 | 18 |
-| Base de datos | 9 | 3 | 2 | 14 |
+| Backend | 22 | 8 | 6 | 36 |
+| Reglas de negocio | 14 | 5 | 2 | 21 |
+| Base de datos | 9 | 3 | 3 | 15 |
 | Frontend | 4 | 10 | 7 | 21 |
 | Juego | 0 | 6 | 22 | 28 |
 | Infraestructura | 2 | 2 | 9 | 13 |
 | Notificaciones | 0 | 0 | 14 | 14 |
-| Seguridad | 8 | 2 | 5 | 15 |
-| **Total** | **58** | **35** | **61** | **154** |
+| Seguridad | 8 | 2 | 6 | 16 |
+| **Total** | **59** | **36** | **69** | **164** |
 
 ---
 

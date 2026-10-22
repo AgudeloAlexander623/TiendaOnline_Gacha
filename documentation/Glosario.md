@@ -66,6 +66,43 @@ en detalle; ver [`Decisiones pendientes`](../README.MD).
 Acción de **comprar** monedas. En GearQuest es **simulada**: no se procesa dinero real ni
 se piden datos de tarjeta. Sirve para practicar todo el flujo de pago de forma segura.
 
+### Familia de producto
+
+Cada uno de los **tres tipos de cosa** que vende la página de ventas: **periférico**,
+**licencia** y **juego**. Cada familia tiene sus propios atributos y sus propias reglas, pero
+las tres comparten **un solo carrito y un solo pago**. El término técnico del discriminador es
+`ProductKind`. Ver [`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md).
+
+### Periférico
+
+Producto **físico** para el computador: teclado, ratón, monitor, auriculares. Tiene atributos
+que las otras familias no tienen (tipo de conexión, DPI, garantía, compatibilidad) y su stock
+se gasta y se repone como el de cualquier artículo físico.
+
+### Licencia
+
+Producto **digital** que la plataforma **revende**: una clave que da derecho a usar un
+programa. No es un artículo físico y **no se reembolsa**. Su «stock» no es un número: son las
+**claves disponibles**.
+
+### Clave de licencia
+
+El **texto secreto** que se entrega al comprador de una licencia y que le permite activarla.
+Se trata como una **contraseña**: se guarda cifrada, nunca aparece en un listado ni en un log,
+y solo la ve quien compró el pedido que la contiene. Una clave filtrada es una venta perdida.
+
+### Juego en catálogo
+
+Un **producto de la tienda**: un juego que la plataforma revende, con su precio, su género, su
+plataforma y su clasificación por edad. **No confundir** con la *aventura*, que es el juego
+propio de GearQuest (ver más abajo).
+
+### SKU (*stock keeping unit*)
+
+El **código interno único** que identifica un producto dentro del catálogo. No se repite
+**ni entre familias**: un periférico y una licencia no pueden compartir SKU, porque el pedido
+tiene que saber sin ambigüedad qué se compró.
+
 ### Aventura
 
 El **componente principal del juego**: un *metroidvania* 2D en el que el personaje explora
@@ -73,8 +110,12 @@ laberintos, combate, abre cofres y derrota jefes. De la aventura se obtienen **m
 (al derrotar enemigos) y **objetos** (armas, armaduras y pociones). El juego real (Godot)
 **aún no está implementado**.
 
+> **No confundir con «juego en catálogo»:** la *aventura* es el juego propio de GearQuest; un
+> *juego en catálogo* es un producto que la tienda revende. Son cosas distintas con el mismo
+> nombre (`ADR-0017`, §Riesgos).
+
 > En el modelo de datos, la partida de aventura corresponde al valor `MINIGAME` del enum
-> `GameType` del `economy-service`. Laruleta corresponde a `GACHA`. Ver
+> `GameType` del `economy-service`. La ruleta corresponde a `GACHA`. Ver
 > [`Game.md`](./Software-requeriments\(SRS\)/Game.md) §6.
 
 ---

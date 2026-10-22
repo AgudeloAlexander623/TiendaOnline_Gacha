@@ -152,6 +152,26 @@ están definidos: el del juego en
 > mismo criterio crítico que la tirada de la ruleta: **si el saldo no alcanza, no se cobra
 > nada** y la operación es idempotente.
 
+### 3.8 Catálogo por familias (v1.2)
+
+Estas cinco historias nacen de los **10 requisitos nuevos** del SRS (v1.2) sobre el
+**catálogo por familias** ([ADR-0017](./Decisiones.md), diseño completo en
+[`Catalogo-por-Familias.md`](./Catalogo-por-Familias.md)).
+
+| ID | Historia técnica | Origen | Requisitos | Habilita |
+| --- | --- | --- | --- | --- |
+| **TS-25** | Como equipo queremos un **modelo de producto con tipo y tablas de atributos por familia** (`PeripheralSpec`, `LicenseSpec` + `LicenseKey`, `GameSpec`), para que cada familia tenga sus campos sin condicionales en las consultas | Requisito nuevo | FR-DB-10, FR-BE-24, FR-BE-26 | [US-20](./Epicas-e-Historias.md) |
+| **TS-26** | Como equipo queremos un **catálogo *kind-aware* con un servicio compartido y tres routers** que fijan su familia (`/peripherals`, `/licenses`, `/games`), para tener tres dominios sin duplicar la lógica | Requisito nuevo | FR-BE-24, FR-BE-25, FR-BE-26 | [US-20](./Epicas-e-Historias.md) |
+| **TS-27** | Como equipo queremos **cifrar, entregar y controlar las claves de licencia** (cifrada en reposo, nunca listada, activación limitada, revocable), para que la clave no se pueda filtrar ni reutilizar | Requisito nuevo | FR-BE-25, FR-BR-18, FR-BR-19, FR-SEC-12 | [UC-21](./Casos-de-Uso/02-Tienda-y-Pedidos.md) |
+| **TS-28** | Como equipo queremos un **carrito y un checkout únicos que mezclen las tres familias** con revalidación de precio y stock en el servidor, para que exista un solo pago sin que el cliente fije importes | Requisito nuevo | FR-BE-27, FR-BE-28, FR-BR-17 | [US-20](./Epicas-e-Historias.md) |
+| **TS-29** | Como equipo queremos **publicar el contrato y el proxy con los prefijos por familia** (`openapi.yaml` + `vite.config.ts`), para que el frontend llegue a los tres catálogos con la ruta base única | Requisito nuevo | NFR-BE-04, FR-FE-13 | [TS-14](#35-frontend) |
+
+> **Cómo se verifica:** una prueba por familia que compruebe que el listado **no** devuelve
+> productos de las otras; una prueba que compruebe que **ningún** listado de licencias
+> contiene una clave; una prueba que compruebe que pedir las claves de un pedido ajeno
+> devuelve `403`; y una prueba de checkout con un carrito **mixto** que confirme **un** solo
+> pedido.
+
 ---
 
 ## 4. Priorización (qué hacer primero)
@@ -167,6 +187,7 @@ piezas» pero no «como conjunto». Orden sugerido:
    5. TS-08, TS-09    Docker + migraciones          ← reproducibilidad y despliegue
    6. TS-16 … TS-18   Calidad y seguridad           ← endurecimiento
    7. TS-19 … TS-24   Ampliación v1.1               ← mercader, avisos y operación
+   8. TS-25 … TS-29   Catálogo por familias         ← periféricos, licencias y juegos
 ```
 
 > **Nota:** **TS-15** (ruta base del frontend) y **TS-16** (Prettier) ya están **hechas**

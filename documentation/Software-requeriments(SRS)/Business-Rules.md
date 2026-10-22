@@ -2,7 +2,7 @@
 
 > **Área:** Reglas de negocio (monedas, descuentos, recargas y pedidos)
 > **Estado:** Borrador para revisión — contiene decisiones **pendientes**
-> **Versión:** 1.0 — 2026-10-18
+> **Versión:** 1.1 — 2026-10-22
 > **Documento base:** `README.MD` (raíz), §4
 
 ---
@@ -87,6 +87,14 @@ tienda del mercader** del mapa y se accede a **descuentos** en la tienda.
 | FR-BR-15 | Las operaciones de saldo son seguras ante peticiones repetidas o simultáneas | Must | Doble clic o reintento no gastan monedas dos veces |
 | FR-BR-16 | El cliente nunca envía un saldo que el servidor acepte sin validar | Must | Los saldos provienen exclusivamente del cálculo del servidor |
 
+### 4.6. Catálogo por familias
+
+| ID | Regla | Prioridad | Criterio de aceptación |
+| --- | --- | --- | --- |
+| FR-BR-17 | El código de producto (`sku`) es **único en todo el catálogo**, no por familia | Must | No existen dos productos con el mismo `sku` aunque sean de familias distintas; el pedido identifica el producto sin ambigüedad |
+| FR-BR-18 | La **clave de licencia es un secreto**: nunca se lista, nunca se registra en logs y nunca viaja en una respuesta de catálogo | Must | Ningún listado de licencias ni de pedidos incluye la clave; en la base de datos está cifrada |
+| FR-BR-19 | Una licencia es **digital e intransferible**: tiene activación limitada, puede caducar y **no se reembolsa** | Must | Superado el límite de activaciones la clave deja de servir; vencida la fecha la clave deja de servir; un pedido de licencia no admite devolución |
+
 ## 5. Requisitos no funcionales
 
 | ID | Regla | Prioridad | Criterio de aceptación |
@@ -116,9 +124,14 @@ siempre la pregunta "¿qué pasó con mis monedas?".
 4. **Coste, probabilidades y recompensas** de las tiradas de la ruleta.
 5. **Contenido del mercader y precios de canje** en monedas.
 6. **Aviso previo** de vencimiento: ¿con cuántos días de anticipación se avisa?
+7. **Precio y catálogo de las tres familias**: qué productos concretos se cargan en el
+   seed y qué precios de ejemplo se usan. *(La estructura del catálogo ya está decidida:
+   ver [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md).)*
 
 ## 8. Referencias
 
 - `README.MD` (raíz): §4 (funcionalidades previstas), §7.1 (integridad de monedas).
 - [`Game.md`](./Game.md): alcance del juego (aventura, mercader y ruleta) del que salen estas reglas.
+- [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md): reglas del catálogo por
+  familias (periféricos, licencias y juegos) y el recorrido de la compra.
 - `frontend/ReadmeFrontEnd.md`: descripción del monedero y los niveles de descuento.

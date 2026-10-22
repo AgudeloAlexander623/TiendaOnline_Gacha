@@ -65,9 +65,9 @@ La documentación organiza el trabajo como lo pediría un cliente. Los cinco niv
 | --- | --- | --- |
 | **Idea de desarrollo web** | ¿Qué es GearQuest y qué problema resuelve? | §1 de este README |
 | **Épicas** | ¿Cuáles son los grandes objetivos? (4 épicas) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
-| **Historias de usuario** | ¿Qué necesita cada persona y para qué? (19 historias) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
+| **Historias de usuario** | ¿Qué necesita cada persona y para qué? (20 historias) | [Épicas e historias](documentation/Epicas-e-Historias.md) |
 | **Requisitos funcionales y no funcionales** | ¿Qué debe hacer el sistema y con qué calidad? | [SRS](documentation/Software-requeriments(SRS)/README.md) |
-| **Historias técnicas** | ¿Qué trabajo técnico lo habilita? (24 historias) | [Historias técnicas](documentation/Historias-Tecnicas.md) |
+| **Historias técnicas** | ¿Qué trabajo técnico lo habilita? (29 historias) | [Historias técnicas](documentation/Historias-Tecnicas.md) |
 
 **Cierre de una tarea:** antes de dar algo por terminado, se aplica el
 [Definition of Done](documentation/Definition-of-Done.md): un checklist verificable de código,
@@ -458,7 +458,7 @@ Toda la documentación del proyecto vive en la carpeta [`documentation/`](docume
 | Documento | Para qué sirve |
 | --- | --- |
 | [Índice maestro](documentation/README.md) | Mapa de toda la documentación y por dónde empezar |
-| [Épicas e historias de usuario](documentation/Epicas-e-Historias.md) | Los 4 grandes objetivos del proyecto y las 19 historias de usuario |
+| [Épicas e historias de usuario](documentation/Epicas-e-Historias.md) | Los 4 grandes objetivos del proyecto y las 20 historias de usuario |
 | [Historias técnicas](documentation/Historias-Tecnicas.md) | El trabajo técnico que habilita las historias (integración, pruebas, infraestructura) |
 | [Definition of Done](documentation/Definition-of-Done.md) | Cuándo una tarea está **realmente** terminada (checklist verificable) |
 | [Guía de instalación](documentation/Guia-de-Instalacion.md) | Levantar el proyecto completo en local, paso a paso |

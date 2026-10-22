@@ -2,7 +2,7 @@
 
 > **Área:** Persistencia de datos
 > **Estado:** Borrador para revisión
-> **Versión:** 1.0 — 2026-10-18
+> **Versión:** 1.1 — 2026-10-22
 > **Tecnología de referencia:** PostgreSQL (relacional, SQL) + Prisma ORM
 > **Documento base:** `README.MD` (raíz) §5 y §6, `backend/README.md`
 
@@ -51,6 +51,7 @@ crean automáticamente con `infra/docker/initdb/01-create-databases.sql`.
 | FR-DB-07 | Script de creación de bases reproducible | Must | Un entorno nuevo crea las cuatro bases ejecutando solo `npm run db:up` |
 | FR-DB-08 | Datos de prueba ficticios; nunca datos personales reales | Must | El repositorio no contiene nombres, correos ni teléfonos reales |
 | FR-DB-09 | Persistir la clave de idempotencia de las operaciones de saldo sensibles | Must | Una petición repetida con la misma clave devuelve el resultado original y no ejecuta el débito ni el crédito dos veces; las claves se conservan el tiempo acordado |
+| FR-DB-10 | Modelar el producto con un **tipo** y una **tabla de atributos por familia** (periférico, licencia, juego), sin campos vacíos ni condicionales en las consultas | Must | Cada producto declara su tipo; los atributos propios viven en la tabla de su familia; el carrito y el pedido apuntan al producto con clave foránea real |
 
 ## 5. Requisitos no funcionales
 
@@ -78,6 +79,14 @@ crean automáticamente con `infra/docker/initdb/01-create-databases.sql`.
 >
 > Si alguna vez esta tabla y los `schema.prisma` discrepan, **manda el `schema.prisma`** y hay
 > que corregir el diccionario.
+>
+> **Pendiente (v1.1):** el catálogo por familias añade un discriminador de tipo en el
+> producto y **tres tablas de atributos** (`PeripheralSpec`, `LicenseSpec` + `LicenseKey` y
+> `GameSpec`). **Todavía no existen en el código**: se crean en la fase 2 del trabajo
+> descrito en [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md), y el diccionario y
+> el diagrama 09 se actualizan en esa misma fase. El detalle está en
+> [`backend/documentation_Backend/Catalogo-por-Familias.md`](../../backend/documentation_Backend/Catalogo-por-Familias.md)
+> §3.
 
 ## 7. Criterios de aceptación del área
 
@@ -94,6 +103,9 @@ crean automáticamente con `infra/docker/initdb/01-create-databases.sql`.
 4. Diseño de la tabla de idempotencia: nombre, clave única, tiempo de conservación y
    relación con la tabla de movimientos. *(Ver `FR-DB-09`.)*
 5. Rol de PostgreSQL propio por servicio, con sus permisos limitados a su base.
+6. Algoritmo de cifrado de las claves de licencia y procedimiento de **rotación** de la
+   clave de cifrado sin dejar las claves ya vendidas ilegibles. *(Ver `FR-DB-10` y
+   [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md) §9.)*
 
 > **Ya resueltas:** el modelo definitivo de tablas y relaciones (los 26 modelos de los
 > `schema.prisma`, descritos en [`Diccionario-de-Datos.md`](../Diccionario-de-Datos.md)) y

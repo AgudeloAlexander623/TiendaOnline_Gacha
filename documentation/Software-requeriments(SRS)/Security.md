@@ -2,7 +2,7 @@
 
 > **Área:** Seguridad y protección de datos
 > **Estado:** Borrador para revisión
-> **Versión:** 1.0 — 2026-10-18
+> **Versión:** 1.1 — 2026-10-22
 > **Documento base:** `README.MD` (raíz), §7
 
 ---
@@ -21,9 +21,14 @@ Una tienda con monedas y descuentos atrae dos problemas típicos:
 2. **Abuso del sistema de recompensas:** obtener monedas o descuentos sin jugar (o jugando
    de forma desleal).
 
+Y, desde que el catálogo incluye **licencias**, un tercero:
+
+3. **Filtración de secretos:** las claves de licencia son como una contraseña de un solo
+   uso. Si una se filtra, la venta está perdida y el problema no tiene fecha de cierre.
+
 Por eso la premisa del proyecto es: **el servidor no confía en el cliente**. Todo dato que
 llegue desde el navegador o desde el juego se valida antes de aceptarse. El análisis
-automático de comportamientos sospechosos (servicio Python) será un **complemento**, nunca
+automático de comportamientos sospechosos (servicio Python) será un **complementar**, nunca
 la única defensa.
 
 ## 3. Requisitos funcionales de seguridad
@@ -41,6 +46,7 @@ la única defensa.
 | FR-SEC-09 | No se registran (log) contraseñas, tokens ni datos sensibles | Must | Búsqueda en logs: sin coincidencias de esos datos |
 | FR-SEC-10 | El análisis de patrones sospechosos (Python) es complementario | Should | Sus hallazgos alertan, pero las validaciones críticas siguen en el backend |
 | FR-SEC-11 | Las llamadas entre microservicios se autentican con un token interno de alcance limitado | Must | Un servicio sin token interno válido recibe `401`; el token lleva el alcance de la operación y nunca se entrega al usuario final |
+| FR-SEC-12 | Las **claves de licencia** solo se entregan a quien compró el pedido que las contiene | Must | Quien pide las claves de un pedido ajeno recibe `403`; ningún listado público ni de administración devuelve el valor de una clave |
 
 ## 4. Integridad de monedas y descuentos
 
@@ -82,6 +88,9 @@ Estas reglas protegen el "dinero" del proyecto y se detallan también en
 2. Política de reintentos y bloqueo ante sospecha de abuso.
 3. Proveedores de correo y SMS (con sus costos) para notificaciones.
 4. Vida y rotación del token interno de servicio a servicio, y su almacén de secretos.
+5. Algoritmo de cifrado de las claves de licencia y procedimiento de rotación de esa
+   clave. *(Ver `FR-SEC-12`, `FR-BR-18` y
+   [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md) §9.)*
 
 > **Ya resueltas:** la estrategia de autenticación de usuarios (JWT con token de refresco
 > rotativo, ADR-0009) y el mecanismo de autenticación entre servicios (token interno con
@@ -94,4 +103,6 @@ Estas reglas protegen el "dinero" del proyecto y se detallan también en
 - [`Contrato-entre-servicios.md`](../Contrato-entre-servicios.md): autenticación
   service-to-service (`FR-SEC-11`).
 - [`Business-Rules.md`](./Business-Rules.md): reglas de integridad de monedas y descuentos.
+- [`Catalogo-por-Familias.md`](../Catalogo-por-Familias.md): tratamiento de la clave de
+  licencia como secreto (`FR-SEC-12`, `FR-BR-18`).
 - [`Trazabilidad.md`](../Trazabilidad.md): estado real de cada requisito de este documento.

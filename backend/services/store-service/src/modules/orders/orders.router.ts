@@ -16,6 +16,7 @@ import {
   listMyOrders,
   updateOrderStatus,
 } from "./orders.service.js";
+import { OrderStatus } from "../../generated/prisma/enums.js";
 
 export const ordersRouter = Router();
 
@@ -64,3 +65,4 @@ ordersRouter.patch(
     res.json(await updateOrderStatus(id, input));
   }),
 );
+

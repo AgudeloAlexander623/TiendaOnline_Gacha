@@ -1,17 +1,18 @@
 // Lógica de negocio de pagos SIMULADOS.
-//
-// Reglas de negocio:
-// - Las transiciones de estado son explícitas:
-//   PENDING → APPROVED | REJECTED | CANCELLED ; APPROVED → REFUNDED.
-// - Cada cambio relevante deja un `PaymentEvent` (auditoría).
-// - Al aprobar un pago con recargas, estas pasan a COMPLETED.
-// - TODO(economia): acreditar las monedas PURCHASED en el economy-service
-//   al aprobar la recarga (integración pendiente entre microservicios).
+// Reglas: transiciones explícitas, eventos de auditoría, recargas pasan a COMPLETED al aprobar.
+// Al aprobar recarga, se acredita en economy-service con idempotencia + compensación lógica.
 
 import type { Payment, Recharge } from "../../generated/prisma/client.js";
 import { config } from "../../config/config.js";
 import { prisma } from "../../db/prisma.js";
 import { AppError } from "../../shared/errors.js";
+import { callInternal } from "../../shared/http/internalClient.js";
+import {
+  createCompensationLog,
+  markCompensationCompleted,
+  markCompensationFailed,
+  markCompensationInProgress,
+} from "../../shared/compensation.js";
 import type {
   CreatePaymentInput,
   ListPaymentsQuery,
@@ -140,7 +141,10 @@ export async function confirmPayment(
   id: string,
   requester: { id: string; role: string },
 ): Promise<PaymentView> {
-  const payment = await prisma.payment.findUnique({ where: { id } });
+  const payment = await prisma.payment.findUnique({
+    where: { id },
+    include: { recharges: true },
+  });
   if (!payment) {
     throw new AppError("Pago no encontrado", {
       code: "PAYMENT_NOT_FOUND",
@@ -160,22 +164,64 @@ export async function confirmPayment(
     });
   }
 
-  return prisma.$transaction(async (tx) => {
-    const updated = await tx.payment.update({
-      where: { id },
-      data: { status: "APPROVED", externalId: `mock_${id.slice(0, 8)}` },
-      include: { recharges: true },
+  const correlationId = id;
+
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      const u = await tx.payment.update({
+        where: { id },
+        data: { status: "APPROVED", externalId: `mock_${id.slice(0, 8)}` },
+        include: { recharges: true },
+      });
+      await tx.paymentEvent.create({
+        data: { paymentId: id, type: "APPROVED", payload: { provider: u.provider } },
+      });
+      await tx.recharge.updateMany({
+        where: { paymentId: id, status: "PENDING" },
+        data: { status: "COMPLETED" },
+      });
+      return u;
     });
-    await tx.paymentEvent.create({
-      data: { paymentId: id, type: "APPROVED", payload: { provider: updated.provider } },
-    });
-    await tx.recharge.updateMany({
-      where: { paymentId: id, status: "PENDING" },
-      data: { status: "COMPLETED" },
-    });
-    // TODO(economia): acreditar monedas PURCHASED en el economy-service.
-    return serializePayment(updated);
-  });
+
+    for (const recharge of payment.recharges) {
+      if (recharge.coins <= 0) continue;
+      const log = createCompensationLog({
+        correlationId: `${correlationId}:${recharge.id}`,
+        service: "payments-service",
+        actionType: "RECHARGE_CREDIT",
+        inverseType: "ECONOMY_DEBIT_COMPENSATION",
+        payload: { userId: payment.userId, paymentId: id, rechargeId: recharge.id, coins: recharge.coins },
+      });
+      try {
+        markCompensationInProgress(log.correlationId);
+        await callInternal({
+          method: "POST",
+          url: `${process.env.ECONOMY_SERVICE_URL || "http://localhost:3003"}/internal/wallets/${payment.userId}/credit`,
+          body: {
+            amount: recharge.coins,
+            coinType: "PURCHASED",
+            source: "PURCHASE",
+            reason: "PURCHASE",
+            referenceType: "payment",
+            referenceId: payment.id,
+          },
+          issuer: "payments-service",
+          subject: "payments-service",
+          scope: ["wallet:credit"],
+          idempotencyKey: `payment:credit:${payment.id}:${recharge.id}`,
+        });
+        markCompensationCompleted(log.correlationId);
+      } catch (cErr) {
+        markCompensationFailed(log.correlationId, cErr instanceof Error ? cErr.message : "unknown");
+        throw cErr;
+      }
+    }
+
+    const final = await prisma.payment.findUnique({ where: { id }, include: { recharges: true } });
+    return serializePayment(final!);
+  } catch (err) {
+    throw err;
+  }
 }
 
 export async function refundPayment(

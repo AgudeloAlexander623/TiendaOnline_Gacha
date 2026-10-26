@@ -1,10 +1,10 @@
-// Autenticación basada en el access token JWT emitido por el identity-service.
-// El store-service NO emite tokens: solo verifica los existentes.
+// Autenticación de usuario y autenticación servicio-a-servicio.
 
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 import { AppError } from "./errors.js";
+import { hasServiceScope, verifyServiceToken } from "./jwt.js";
 
 export type Role = "PLAYER" | "ADMIN";
 
@@ -16,6 +16,7 @@ export interface AuthUser {
 
 export interface AuthenticatedRequest extends Request {
   user?: AuthUser;
+  service?: { iss: string; sub: string; scope: string[] };
 }
 
 interface AccessTokenPayload {
@@ -26,6 +27,7 @@ interface AccessTokenPayload {
 
 const BEARER_PREFIX = "Bearer ";
 
+/** Autentica token de usuario emitido por identity-service. */
 export function authenticate(
   req: Request,
   _res: Response,
@@ -53,6 +55,33 @@ export function authenticate(
   }
 }
 
+/** Autentica token de servicio para rutas internas. */
+export function authenticateService(requiredScopes: string[] = []) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith(BEARER_PREFIX)) {
+      next(new AppError("Token de servicio requerido", { code: "MISSING_TOKEN", statusCode: 401 }));
+      return;
+    }
+    try {
+      const payload = verifyServiceToken(header.slice(BEARER_PREFIX.length));
+      if (!hasServiceScope(payload, requiredScopes)) {
+        next(new AppError("Permisos insuficientes", { code: "FORBIDDEN", statusCode: 403 }));
+        return;
+      }
+      (req as AuthenticatedRequest).service = {
+        iss: payload.iss,
+        sub: payload.sub,
+        scope: payload.scope,
+      };
+      next();
+    } catch {
+      next(new AppError("Token de servicio inválido o expirado", { code: "INVALID_TOKEN", statusCode: 401 }));
+    }
+  };
+}
+
+/** Valida presencia de usuario autenticado. */
 export function requireUser(req: Request): AuthUser {
   const user = (req as AuthenticatedRequest).user;
   if (!user) {
@@ -61,6 +90,7 @@ export function requireUser(req: Request): AuthUser {
   return user;
 }
 
+/** Valida roles para rutas protegidas. */
 export function requireRole(
   ...roles: Role[]
 ): (req: Request, _res: Response, next: NextFunction) => void {

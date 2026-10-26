@@ -1,14 +1,17 @@
 // Lógica de negocio de pedidos (checkout desde el carrito).
-// Reglas de negocio:
-// - El checkout descuenta stock y registra movimientos OUT en una transacción.
-// - El carrito pasa a CHECKED_OUT (no se reutiliza).
-// - El descuento por monedas se calcula aquí, pero el débito real de monedas
-//   corresponde al economy-service (integración pendiente, marcada con TODO).
+// Reglas: descuento calculado aquí, débito de monedas debe pasar por economy-service con compensación.
 
 import { randomUUID } from "node:crypto";
 import type { Order, OrderItem } from "../../generated/prisma/client.js";
 import { prisma } from "../../db/prisma.js";
 import { AppError } from "../../shared/errors.js";
+import { callInternal } from "../../shared/http/internalClient.js";
+import {
+  createCompensationLog,
+  markCompensationCompleted,
+  markCompensationFailed,
+  markCompensationInProgress,
+} from "../../shared/compensation.js";
 import type {
   CheckoutInput,
   ListOrdersQuery,
@@ -78,6 +81,7 @@ export async function checkout(
   }
 
   let discountPercentage = 0;
+  let discountLevelCoins = 0;
   if (input.discountLevelId) {
     const level = await prisma.discountLevel.findUnique({
       where: { id: input.discountLevelId },
@@ -88,9 +92,8 @@ export async function checkout(
         statusCode: 400,
       });
     }
-    // TODO(economia): validar y debitar `level.coinsRequired` en el economy-service
-    // antes de aplicar el descuento. Hoy el canje de monedas aún no está conectado.
     discountPercentage = level.percentage;
+    discountLevelCoins = level.coinsRequired;
   }
 
   const subtotal = cart.items.reduce(
@@ -101,65 +104,132 @@ export async function checkout(
   const total = subtotal - discountAmount;
   const currency = cart.items[0]?.product.currency ?? "COP";
   const orderNumber = `GQ-${Date.now()}-${randomUUID().slice(0, 8).toUpperCase()}`;
+  const correlationId = randomUUID();
+  let debitTxId: string | undefined;
 
-  return prisma.$transaction(async (tx) => {
-    for (const item of cart.items) {
-      const inventory = await tx.inventoryItem.findUnique({
-        where: { productId: item.productId },
+  try {
+    if (discountLevelCoins > 0) {
+      const debitRes = await callInternal<{
+        debited: number;
+        balanceAfter: number;
+        batchesConsumed: Array<{ batchId: string; type: string; amount: number }>;
+        transactionId: string;
+      }>({
+        method: "POST",
+        url: `${process.env.ECONOMY_SERVICE_URL || "http://localhost:3003"}/internal/wallets/${userId}/debit`,
+        body: {
+          amount: discountLevelCoins,
+          reason: "DISCOUNT_REDEEM",
+          referenceType: "order",
+          referenceId: orderNumber,
+        },
+        issuer: "store-service",
+        subject: "store-service",
+        scope: ["wallet:debit"],
+        idempotencyKey: `checkout:debit:${correlationId}`,
       });
-      const available = inventory ? inventory.stock - inventory.reserved : 0;
-      if (available < item.quantity) {
-        throw new AppError(`Stock insuficiente para ${item.product.name}`, {
-          code: "INSUFFICIENT_STOCK",
-          statusCode: 409,
+      debitTxId = debitRes.transactionId;
+    }
+
+    const order = await prisma.$transaction(async (tx) => {
+      for (const item of cart.items) {
+        const inventory = await tx.inventoryItem.findUnique({
+          where: { productId: item.productId },
+        });
+        const available = inventory ? inventory.stock - inventory.reserved : 0;
+        if (available < item.quantity) {
+          throw new AppError(`Stock insuficiente para ${item.product.name}`, {
+            code: "INSUFFICIENT_STOCK",
+            statusCode: 409,
+          });
+        }
+      }
+
+      const created = await tx.order.create({
+        data: {
+          orderNumber,
+          userId,
+          status: "PENDING",
+          subtotal,
+          discountAmount,
+          total,
+          currency,
+          items: {
+            create: cart.items.map((item) => ({
+              productId: item.productId,
+              nameSnapshot: item.product.name,
+              unitPrice: item.unitPrice,
+              quantity: item.quantity,
+              lineTotal: Number(item.unitPrice) * item.quantity,
+            })),
+          },
+        },
+        include: { items: true },
+      });
+
+      for (const item of cart.items) {
+        await tx.inventoryItem.update({
+          where: { productId: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+        await tx.inventoryMovement.create({
+          data: {
+            productId: item.productId,
+            type: "OUT",
+            quantity: item.quantity,
+            reason: `Pedido ${orderNumber}`,
+          },
         });
       }
-    }
 
-    const order = await tx.order.create({
-      data: {
-        orderNumber,
-        userId,
-        status: "PENDING",
-        subtotal,
-        discountAmount,
-        total,
-        currency,
-        items: {
-          create: cart.items.map((item) => ({
-            productId: item.productId,
-            nameSnapshot: item.product.name,
-            unitPrice: item.unitPrice,
-            quantity: item.quantity,
-            lineTotal: Number(item.unitPrice) * item.quantity,
-          })),
-        },
-      },
-      include: { items: true },
-    });
-
-    for (const item of cart.items) {
-      await tx.inventoryItem.update({
-        where: { productId: item.productId },
-        data: { stock: { decrement: item.quantity } },
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { status: "CHECKED_OUT" },
       });
-      await tx.inventoryMovement.create({
-        data: {
-          productId: item.productId,
-          type: "OUT",
-          quantity: item.quantity,
-          reason: `Pedido ${orderNumber}`,
-        },
-      });
-    }
 
-    await tx.cart.update({
-      where: { id: cart.id },
-      data: { status: "CHECKED_OUT" },
+      return created;
     });
 
     return serializeOrder(order);
-  });
+  } catch (err) {
+    if (debitTxId && discountLevelCoins > 0) {
+      const log = createCompensationLog({
+        correlationId,
+        service: "store-service",
+        actionType: "ORDER_DISCOUNT_DEBIT",
+        inverseType: "ECONOMY_CREDIT_COMPENSATION",
+        payload: {
+          userId,
+          orderNumber,
+          debitTxId,
+          amount: discountLevelCoins,
+        },
+      });
+      try {
+        markCompensationInProgress(log.correlationId);
+        await callInternal({
+          method: "POST",
+          url: `${process.env.ECONOMY_SERVICE_URL || "http://localhost:3003"}/internal/wallets/${userId}/credit`,
+          body: {
+            amount: discountLevelCoins,
+            coinType: "EARNED",
+            reason: "COMPENSATION",
+            referenceType: "compensation",
+            referenceId: debitTxId,
+          },
+          issuer: "store-service",
+          subject: "store-service",
+          scope: ["wallet:credit"],
+          idempotencyKey: `compensation:credit:${debitTxId}`,
+        });
+        markCompensationCompleted(log.correlationId);
+      } catch (cErr) {
+        markCompensationFailed(log.correlationId, cErr instanceof Error ? cErr.message : "unknown");
+        throw err;
+      }
+    }
+    throw err;
+  }
 }
 
 export async function listMyOrders(

@@ -1,10 +1,5 @@
 // Núcleo de la economía: billetera, lotes de monedas y libro mayor.
-//
-// Reglas de negocio (ver README):
-// - El servidor es la fuente de verdad del saldo.
-// - Las monedas EARNED caducan (expiresAt); las PURCHASED no caducan.
-// - El consumo es FIFO por vencimiento: primero lo que antes expira.
-// - Los movimientos son un libro mayor append-only (nunca se borra el origen).
+// Reglas: servidor es fuente de verdad, EARNED caduca, PURCHASED no, FIFO por vencimiento, libro mayor append-only.
 
 import type { CoinBatch, Wallet } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
@@ -18,6 +13,12 @@ export interface CoinOperationMeta {
   referenceType?: string | null;
   referenceId?: string | null;
   description?: string | null;
+}
+
+export interface BatchConsumed {
+  batchId: string;
+  type: "EARNED" | "PURCHASED";
+  amount: number;
 }
 
 export async function getOrCreateWallet(
@@ -55,7 +56,6 @@ export async function expireDueBatches(
   });
 
   for (const batch of expired) {
-    // El lote vencido se consume por completo y se registra el vencimiento.
     await db.coinBatch.update({
       where: { id: batch.id },
       data: { remainingAmount: 0, status: "EXPIRED" },
@@ -107,7 +107,7 @@ export async function creditCoins(
     expiresAt?: Date | null;
   } & CoinOperationMeta,
   db: Tx = prisma,
-): Promise<number> {
+): Promise<{ balanceAfter: number; batchId: string }> {
   if (input.amount <= 0) {
     throw new AppError("El monto a acreditar debe ser positivo", {
       code: "INVALID_AMOUNT",
@@ -123,7 +123,7 @@ export async function creditCoins(
         ))
       : (input.expiresAt ?? null);
 
-  await db.coinBatch.create({
+  const batch = await db.coinBatch.create({
     data: {
       walletId,
       type: input.type,
@@ -148,10 +148,10 @@ export async function creditCoins(
     },
   });
 
-  return balanceAfter;
+  return { balanceAfter, batchId: batch.id };
 }
 
-/** Debita monedas consumiendo lotes por vencimiento más próximo. */
+/** Debita monedas consumiendo lotes por vencimiento más próximo (FIFO). */
 export async function debitCoins(
   walletId: string,
   input: {
@@ -159,7 +159,7 @@ export async function debitCoins(
     coinType?: "EARNED" | "PURCHASED";
   } & CoinOperationMeta,
   db: Tx = prisma,
-): Promise<number> {
+): Promise<{ balanceAfter: number; batchesConsumed: BatchConsumed[]; transactionId: string }> {
   if (input.amount <= 0) {
     throw new AppError("El monto a debitar debe ser positivo", {
       code: "INVALID_AMOUNT",
@@ -184,6 +184,7 @@ export async function debitCoins(
 
   let pending = input.amount;
   let firstConsumedType: "EARNED" | "PURCHASED" | undefined;
+  const batchesConsumed: BatchConsumed[] = [];
 
   for (const batch of batches) {
     if (pending === 0) {
@@ -198,12 +199,13 @@ export async function debitCoins(
         status: newRemaining === 0 ? "DEPLETED" : "ACTIVE",
       },
     });
+    batchesConsumed.push({ batchId: batch.id, type: batch.type, amount: take });
     firstConsumedType ??= batch.type;
     pending -= take;
   }
 
   const balanceAfter = await sumActiveBatches(db, walletId);
-  await db.coinTransaction.create({
+  const tx = await db.coinTransaction.create({
     data: {
       walletId,
       type: "DEBIT",
@@ -216,5 +218,5 @@ export async function debitCoins(
     },
   });
 
-  return balanceAfter;
+  return { balanceAfter, batchesConsumed, transactionId: tx.id };
 }

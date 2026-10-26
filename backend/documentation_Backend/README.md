@@ -118,3 +118,12 @@ src/modules/<dominio>/
 - [`../../documentation/Historias-Tecnicas.md`](../../documentation/Historias-Tecnicas.md) —
   las tareas técnicas que implementan la integración entre servicios y el catálogo por
   familias.
+
+## Cambios API interna economy (2026-10-24)
+- Endpoints internos: GET `/internal/wallets/:userId/balance`, POST `/internal/wallets/:userId/debit`, POST `/internal/wallets/:userId/credit`, POST `/internal/game-sessions/:sessionId/validate`
+- Autenticación servicio-a-servicio con JWT interno (scopes por operación)
+- Idempotencia persistida en BD (`idempotency_keys`) para POST internos
+- Débito FIFO por vencimiento con `batchesConsumed`
+- Crédito: `PURCHASED` sin vencimiento, `EARNED` con TTL 30 días
+- Validación de partida endurecida (FR-BE-17): solo otorga en FINISHED, puntaje acotado, ABANDONED conserva monedas sin items, REJECTED descarta
+- Migración: `prisma/migrations/20261024_add_internal_api/migration.sql`

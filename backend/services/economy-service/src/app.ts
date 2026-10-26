@@ -10,6 +10,7 @@ import { errorHandler, notFoundHandler } from "./shared/errors.js";
 import { logger } from "./shared/logger.js";
 import { gachaRouter } from "./modules/gacha/gacha.router.js";
 import { healthRouter } from "./modules/health/health.router.js";
+import { internalRouter } from "./modules/internal/internal.router.js";
 import { playerInventoryRouter } from "./modules/player-inventory/player-inventory.router.js";
 import { rewardsRouter } from "./modules/rewards/rewards.router.js";
 import { transactionsRouter } from "./modules/transactions/transactions.router.js";
@@ -40,6 +41,7 @@ export function createApp(): Express {
   );
 
   app.use("/health", healthRouter);
+  app.use("/internal", internalRouter);
   app.use("/api/v1/wallet", walletRouter);
   app.use("/api/v1/transactions", transactionsRouter);
   app.use("/api/v1/gacha", gachaRouter);

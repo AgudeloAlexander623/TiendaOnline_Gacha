@@ -33,28 +33,35 @@ const ALLOWED_SERVICE_ISSUERS = new Set([
   "payments-service",
 ]);
 
+/**
+ * Opciones de verificación compartidas.
+ * Fijar `algorithms` evita la confusión de algoritmo (por ejemplo, un token
+ * firmado con `none` o con otro algoritmo simétrico).
+ */
+const VERIFY_OPTIONS = { algorithms: ["HS256"] } satisfies jwt.VerifyOptions;
+
 /** Firma access token de usuario. */
 export function signAccessToken(payload: AccessTokenPayload): string {
   return jwt.sign(payload, config.JWT_SECRET, {
-    expiresIn: config.JWT_ACCESS_EXPIRES_IN,
-  } as SignOptions);
+    expiresIn: config.JWT_ACCESS_EXPIRES_IN as SignOptions["expiresIn"],
+  });
 }
 
 /** Firma refresh token de usuario. */
 export function signRefreshToken(payload: RefreshTokenPayload): string {
   return jwt.sign(payload, config.JWT_SECRET, {
-    expiresIn: config.JWT_REFRESH_EXPIRES_IN,
-  } as SignOptions);
+    expiresIn: config.JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"],
+  });
 }
 
 /** Verifica access token de usuario. */
 export function verifyAccessToken(token: string): AccessTokenPayload {
-  return jwt.verify(token, config.JWT_SECRET) as AccessTokenPayload;
+  return jwt.verify(token, config.JWT_SECRET, VERIFY_OPTIONS) as AccessTokenPayload;
 }
 
 /** Verifica refresh token de usuario. */
 export function verifyRefreshToken(token: string): RefreshTokenPayload {
-  return jwt.verify(token, config.JWT_SECRET) as RefreshTokenPayload;
+  return jwt.verify(token, config.JWT_SECRET, VERIFY_OPTIONS) as RefreshTokenPayload;
 }
 
 /** Firma token de servicio para llamadas internas (TTL corto). */
@@ -78,7 +85,7 @@ export function signServiceToken(input: {
 
 /** Verifica token de servicio con validación de aud/iss. */
 export function verifyServiceToken(token: string): ServiceTokenPayload {
-  const payload = jwt.verify(token, INTERNAL_JWT_SECRET) as ServiceTokenPayload;
+  const payload = jwt.verify(token, INTERNAL_JWT_SECRET, VERIFY_OPTIONS) as ServiceTokenPayload;
   if (payload.aud !== "internal") {
     throw new Error("invalid_service_audience");
   }

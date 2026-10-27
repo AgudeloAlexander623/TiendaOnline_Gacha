@@ -18,6 +18,10 @@ const envSchema = z.object({
   SERVICE_NAME: z.string().min(1).default("store-service"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL es obligatoria"),
   JWT_SECRET: z.string().min(16, "JWT_SECRET debe tener al menos 16 caracteres"),
+  // Caducidad de los tokens de usuario (formato ms: 15m, 30d). Sin valor, jsonwebtoken
+  // firmaría tokens sin `exp`; por eso hay default y son obligatorias en el tipo.
+  JWT_ACCESS_EXPIRES_IN: z.string().min(1).default("15m"),
+  JWT_REFRESH_EXPIRES_IN: z.string().min(1).default("30d"),
   CORS_ORIGIN: z.string().min(1).default("*"),
   RATE_LIMIT_MAX: z
     .string()

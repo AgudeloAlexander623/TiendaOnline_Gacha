@@ -18,6 +18,12 @@ const envSchema = z.object({
   SERVICE_NAME: z.string().min(1).default("store-service"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL es obligatoria"),
   JWT_SECRET: z.string().min(16, "JWT_SECRET debe tener al menos 16 caracteres"),
+  // Secreto para tokens de servicio (comunicación entre microservicios).
+  // Si no se define, se usa JWT_SECRET como respaldo en entornos locales.
+  INTERNAL_JWT_SECRET: z
+    .string()
+    .min(16, "INTERNAL_JWT_SECRET debe tener al menos 16 caracteres")
+    .optional(),
   // Caducidad de los tokens de usuario (formato ms: 15m, 30d). Sin valor, jsonwebtoken
   // firmaría tokens sin `exp`; por eso hay default y son obligatorias en el tipo.
   JWT_ACCESS_EXPIRES_IN: z.string().min(1).default("15m"),
@@ -45,5 +51,20 @@ if (!parsedEnv.success) {
   throw new Error(`Error de validación de variables de entorno:\n${errors}`);
 }
 
-export type Config = z.infer<typeof envSchema>;
-export const config: Config = parsedEnv.data;
+type ParsedEnv = z.infer<typeof envSchema>;
+
+/**
+ * Configuración validada del servicio.
+ *
+ * `INTERNAL_JWT_SECRET` siempre está presente: se toma de la variable de
+ * entorno homónima o, si no se definió, de `JWT_SECRET` (que ya fue validado
+ * como obligatorio y con longitud mínima).
+ */
+export type Config = Omit<ParsedEnv, "INTERNAL_JWT_SECRET"> & {
+  INTERNAL_JWT_SECRET: string;
+};
+
+export const config: Config = {
+  ...parsedEnv.data,
+  INTERNAL_JWT_SECRET: parsedEnv.data.INTERNAL_JWT_SECRET ?? parsedEnv.data.JWT_SECRET,
+};
